@@ -1,4 +1,4 @@
-# FocusFlow
+# FocusFlow...
 
 > A distraction-free, local-first learning workspace for YouTube developer courses, playlists, and tutorials.
 
@@ -67,6 +67,7 @@ graph TD
 ```
 
 ---
+
 
 ## Architectural Principles
 
