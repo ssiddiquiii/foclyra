@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { LogIn, LogOut, Cloud, ChevronDown, Layers } from 'lucide-react';
+import { LogIn, LogOut, Cloud, ChevronDown, Layers, Sparkles } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useUIStore } from '../hooks/useUIStore';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -36,18 +36,19 @@ export default function UserMenu({ onOpenAuth }) {
 
     return (
       <div className="flex items-center gap-2">
+        {isGuestExhausted && (
+          <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/25 text-amber-500 dark:text-amber-400 text-[10px] font-semibold">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+            <span>Trial Used</span>
+          </span>
+        )}
         <button
           onClick={handleOpenAuth}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-primary/30 bg-primary/10 hover:bg-primary/20 text-primary text-xs font-semibold shadow-sm transition hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
-          title="Sign in with Google to sync notes and get 5 courses"
+          className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-500 text-primary-foreground text-xs font-semibold shadow-[0_0_15px_rgba(99,102,241,0.25)] hover:shadow-[0_0_20px_rgba(99,102,241,0.4)] transition hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+          title="Sign in with Google or Email to unlock 5 courses & cloud backup"
         >
-          <LogIn size={14} />
-          <span className="hidden sm:inline">Sign In</span>
-          {isGuestExhausted && (
-            <span className="px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-500 text-[10px] font-bold">
-              Trial Used
-            </span>
-          )}
+          <Sparkles size={13} />
+          <span>Sign In</span>
         </button>
       </div>
     );
@@ -61,22 +62,25 @@ export default function UserMenu({ onOpenAuth }) {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setDropdownOpen(!dropdownOpen)}
-        className="flex items-center gap-2 p-1 sm:px-2.5 sm:py-1 rounded-xl border border-border bg-card hover:bg-muted text-foreground text-xs font-semibold transition cursor-pointer"
+        className="flex items-center gap-2 p-1 sm:px-2.5 sm:py-1 rounded-full border border-white/10 bg-card/80 hover:bg-muted text-foreground text-xs font-semibold shadow-xs transition hover:scale-[1.01] cursor-pointer backdrop-blur-md"
         aria-expanded={dropdownOpen}
       >
         {avatarUrl ? (
-          <img src={avatarUrl} alt={displayName} className="w-6 h-6 rounded-full object-cover border border-primary/30" />
+          <img src={avatarUrl} alt={displayName} className="w-6 h-6 rounded-full object-cover border border-primary/40 shadow-xs" />
         ) : (
-          <div className="w-6 h-6 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-xs">
+          <div className="w-6 h-6 rounded-full bg-primary/20 text-primary border border-primary/30 flex items-center justify-center font-bold text-xs">
             {displayName.charAt(0).toUpperCase()}
           </div>
         )}
-        <span className="hidden md:inline max-w-[110px] truncate">{displayName}</span>
+        <span className="hidden md:inline max-w-[110px] truncate text-xs">{displayName}</span>
+        <span className="hidden sm:inline-block px-1.5 py-0.2 rounded-full bg-primary/10 text-primary text-[10px] font-bold border border-primary/20">
+          {activeCount}/{maxLimit}
+        </span>
         <ChevronDown size={13} className="text-muted-foreground hidden sm:inline" />
       </button>
 
       {dropdownOpen && (
-        <div className="absolute right-0 top-full mt-2 w-64 rounded-2xl border border-border bg-card/95 p-3 shadow-2xl backdrop-blur-xl z-50 text-foreground animate-in fade-in zoom-in-95 duration-150">
+        <div className="absolute right-0 top-full mt-2 w-64 rounded-2xl border border-white/10 bg-card/95 p-3 shadow-2xl backdrop-blur-2xl z-50 text-foreground animate-in fade-in zoom-in-95 duration-150">
           {/* User Info Header */}
           <div className="px-2 py-2 border-b border-border/70 mb-2">
             <p className="font-semibold text-xs text-foreground truncate">{displayName}</p>
@@ -88,8 +92,8 @@ export default function UserMenu({ onOpenAuth }) {
           </div>
 
           {/* Quota Progress Bar */}
-          <div className="px-2 py-2 bg-muted/40 rounded-xl border border-border/60 mb-2">
-            <div className="flex items-center justify-between text-[11px] mb-1">
+          <div className="px-2.5 py-2 bg-muted/40 rounded-xl border border-border/60 mb-2">
+            <div className="flex items-center justify-between text-[11px] mb-1.5">
               <span className="text-muted-foreground font-medium flex items-center gap-1">
                 <Layers size={12} className="text-primary" />
                 Study Courses
@@ -98,7 +102,7 @@ export default function UserMenu({ onOpenAuth }) {
             </div>
             <div className="w-full bg-border/60 rounded-full h-1.5 overflow-hidden">
               <div
-                className="bg-primary h-full transition-all duration-300"
+                className="bg-gradient-to-r from-primary to-indigo-500 h-full transition-all duration-300"
                 style={{ width: `${Math.min(100, (activeCount / maxLimit) * 100)}%` }}
               />
             </div>

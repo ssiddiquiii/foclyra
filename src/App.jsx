@@ -187,7 +187,7 @@ function AppContent() {
       </header>
 
       {/* Desktop Floating Vertical Glass Navigation Dock */}
-      <aside data-testid="desktop-navigation" aria-label="Primary navigation" className="fixed left-3.5 top-1/2 z-50 hidden -translate-y-1/2 flex-col items-center space-y-3 rounded-2xl border border-border bg-card/95 p-2 shadow-xl backdrop-blur-md lg:flex">
+      <aside data-testid="desktop-navigation" aria-label="Primary navigation" className="fixed left-3.5 top-1/2 z-50 hidden -translate-y-1/2 flex-col items-center space-y-3 rounded-2xl border border-white/10 bg-card/85 p-2.5 shadow-2xl backdrop-blur-2xl lg:flex">
         {/* Brand Logo Icon */}
         <Link 
           to="/" 
@@ -247,11 +247,6 @@ function AppContent() {
         })}
 
         {/* Subtle Divider */}
-        <div className="w-5 h-[1px] bg-border my-0.5" />
-
-        {/* User Account / Auth */}
-        <UserMenu />
-
         <div className="w-5 h-[1px] bg-border my-0.5" />
 
         {/* Desktop Theme Switcher Button */}
@@ -353,6 +348,51 @@ function AppContent() {
           : 'safe-area-main pt-16 lg:pt-5 lg:pl-20 xl:pl-22 px-3.5 sm:px-6 justify-between'
       }`}>
         <div className={`w-full min-w-0 flex flex-col ${isWatchPage ? 'h-full overflow-hidden' : 'flex-1'}`}>
+        {/* Desktop Top Header Bar (Search & Sign In / Profile) */}
+        {!isWatchPage && (
+          <header className="hidden lg:flex items-center justify-between py-3 mb-2 max-w-5xl w-full mx-auto border-b border-border/40 px-2">
+            <div className="flex items-center gap-3">
+              <span className="font-bold text-foreground text-sm tracking-tight">Foclyra Studio</span>
+              <button
+                type="button"
+                onClick={openBetaModal}
+                className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25 text-[10px] font-bold uppercase tracking-wider transition cursor-pointer"
+                title="Public Beta v1.0 • Stable & Offline Ready"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span>Beta</span>
+              </button>
+            </div>
+
+            {/* Right Side Navigation: Search + Theme Toggle + User Sign In */}
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => openCommandPalette()}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-border/80 bg-card/70 hover:bg-muted/70 text-muted-foreground hover:text-foreground text-xs font-medium transition cursor-pointer shadow-xs backdrop-blur-md"
+              >
+                <Search size={14} />
+                <span>Quick search...</span>
+                <kbd className="px-1.5 py-0.5 rounded bg-muted text-[10px] text-muted-foreground font-mono border border-border/60">⌘K</kbd>
+              </button>
+
+              <button
+                type="button"
+                onClick={toggleTheme}
+                aria-label={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+                className="p-2 rounded-xl border border-border/80 bg-card/70 hover:bg-muted text-muted-foreground hover:text-foreground transition cursor-pointer"
+                title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+              >
+                {isDark ? <Sun size={15} className="text-amber-400" /> : <Moon size={15} className="text-indigo-600" />}
+              </button>
+
+              {/* User Menu / Sign In */}
+              <UserMenu />
+            </div>
+          </header>
+        )}
+
+        
           <ErrorBoundary>
             <Suspense fallback={
               <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">

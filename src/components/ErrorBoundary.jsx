@@ -33,7 +33,7 @@ export default class ErrorBoundary extends React.Component {
     if (this.state.hasError) {
       return (
         <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center space-y-6 animate-in fade-in duration-300">
-          <div className="w-16 h-16 rounded-2xl bg-red-500/15 border border-red-500/30 text-red-400 flex items-center justify-center shadow-xl">
+          <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/25 text-primary flex items-center justify-center shadow-xl">
             <AlertTriangle size={32} />
           </div>
 
@@ -45,7 +45,7 @@ export default class ErrorBoundary extends React.Component {
           </div>
 
           {this.state.error?.message && (
-            <div className="p-3.5 rounded-xl bg-zinc-900/90 border border-zinc-800 text-left font-mono text-[11px] text-zinc-400 max-w-lg overflow-x-auto truncate">
+            <div className="p-3.5 rounded-xl bg-card/90 border border-border text-left font-mono text-[11px] text-muted-foreground max-w-lg overflow-x-auto truncate">
               {this.state.error.toString()}
             </div>
           )}
@@ -60,7 +60,7 @@ export default class ErrorBoundary extends React.Component {
             </button>
             <button
               onClick={this.handleGoHome}
-              className="px-4 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-zinc-300 font-bold text-xs flex items-center gap-2 transition cursor-pointer"
+              className="px-4 py-2.5 rounded-xl bg-card hover:bg-muted border border-border text-foreground font-bold text-xs flex items-center gap-2 transition cursor-pointer"
             >
               <Home size={14} />
               <span>Return Dashboard</span>
