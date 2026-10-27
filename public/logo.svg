@@ -1,30 +1,29 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <defs>
     <linearGradient id="logoBg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#181920"/>
-      <stop offset="100%" stop-color="#0D0E12"/>
+      <stop offset="0%" stop-color="#1A1C24"/>
+      <stop offset="100%" stop-color="#111216"/>
     </linearGradient>
-    <linearGradient id="mintAcc" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#5BF5DE"/>
+    <linearGradient id="logoMint" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#46FCE0"/>
       <stop offset="100%" stop-color="#00F5D4"/>
     </linearGradient>
-    <filter id="glowAcc" x="-25%" y="-25%" width="150%" height="150%">
-      <feDropShadow dx="0" dy="0" stdDeviation="2" flood-color="#00F5D4" flood-opacity="0.65"/>
+    <filter id="logoGlow" x="-25%" y="-25%" width="150%" height="150%">
+      <feDropShadow dx="0" dy="1.5" stdDeviation="2.5" flood-color="#00F5D4" flood-opacity="0.55"/>
     </filter>
   </defs>
 
-  <!-- Deep Charcoal Squircle -->
-  <rect width="48" height="48" rx="13" fill="url(#logoBg)" stroke="#2A2E39" stroke-width="1.5"/>
+  <!-- Deep Matte Charcoal Rounded Squircle (All 4 corners smoothly rounded) -->
+  <rect width="64" height="64" rx="16" fill="url(#logoBg)" stroke="#2A2E39" stroke-width="1.8"/>
 
-  <!-- Outer Focal Brackets (Focus Reticle) -->
-  <path d="M12 18 L12 12 L18 12" fill="none" stroke="#00F5D4" stroke-width="1.8" stroke-linecap="round" opacity="0.45"/>
-  <path d="M36 18 L36 12 L30 12" fill="none" stroke="#00F5D4" stroke-width="1.8" stroke-linecap="round" opacity="0.45"/>
-  <path d="M12 30 L12 36 L18 36" fill="none" stroke="#00F5D4" stroke-width="1.8" stroke-linecap="round" opacity="0.45"/>
-  <path d="M36 30 L36 36 L30 36" fill="none" stroke="#00F5D4" stroke-width="1.8" stroke-linecap="round" opacity="0.45"/>
+  <!-- Centered Perfectly Balanced Rounded Play Triangle -->
+  <path
+    d="M 24,18.5 A 3.5 3.5 0 0 1 27.5,15.5 L 43.5,25.5 A 3.5 3.5 0 0 1 43.5,30.5 L 27.5,40.5 A 3.5 3.5 0 0 1 24,37.5 Z"
+    fill="url(#logoMint)"
+    filter="url(#logoGlow)"
+  />
 
-  <!-- High-Precision Play / Focus Arrow -->
-  <path d="M19 14.5 L34.5 24 L19 33.5 Z" fill="url(#mintAcc)" filter="url(#glowAcc)"/>
-
-  <!-- Core Laser Precision Focal Dot -->
-  <circle cx="24" cy="24" r="2" fill="#FFFFFF" opacity="0.95"/>
+  <!-- Bottom Rounded Accent Bar (Smooth pill ends) -->
+  <rect x="9" y="49" width="46" height="7" rx="3.5" fill="url(#logoMint)" opacity="0.18"/>
+  <rect x="11" y="50" width="42" height="5" rx="2.5" fill="url(#logoMint)" opacity="0.95"/>
 </svg>
