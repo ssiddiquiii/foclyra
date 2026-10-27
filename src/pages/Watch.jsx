@@ -109,6 +109,12 @@ export default function Watch() {
         controller={player}
         isUdemyCompleted={isCompleted}
         onUdemyToggle={handleToggleComplete}
+        prevLessonId={prevLesson?.id}
+        nextLessonId={nextLesson?.id}
+        onNavigate={handleNavigate}
+        isPlaylistCollapsed={isPlaylistCollapsed}
+        onTogglePlaylist={handleTogglePlaylistCollapse}
+        lessonsCount={courseLessons.length}
       />
       <WatchDetails
         course={course}
