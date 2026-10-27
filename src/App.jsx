@@ -7,6 +7,9 @@ import ErrorBoundary from './components/ErrorBoundary';
 import CommandPalette from './components/CommandPalette';
 import FeedbackModal from './components/FeedbackModal';
 import BetaModal from './components/BetaModal';
+import UserMenu from './components/UserMenu';
+import AuthModal from './components/AuthModal';
+import { useAuth } from './hooks/useAuth';
 import { MessageSquarePlus } from 'lucide-react';
 import { useUIStore } from './hooks/useUIStore';
 import { useTheme } from './hooks/useTheme';
@@ -27,6 +30,10 @@ const FOCUSABLE_SELECTOR = 'a[href], button:not([disabled]), [tabindex]:not([tab
 function AppContent() {
   const { commandPaletteOpen, openCommandPalette, closeCommandPalette, feedbackModalOpen, openFeedbackModal, closeFeedbackModal, betaModalOpen, openBetaModal, closeBetaModal } = useUIStore();
   const { isDark, toggleTheme } = useTheme();
+  const { initAuth } = useAuth();
+  useEffect(() => {
+    initAuth();
+  }, [initAuth]);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const menuButtonRef = useRef(null);
   const commandPaletteReturnFocusRef = useRef(null);
@@ -242,6 +249,11 @@ function AppContent() {
         {/* Subtle Divider */}
         <div className="w-5 h-[1px] bg-border my-0.5" />
 
+        {/* User Account / Auth */}
+        <UserMenu />
+
+        <div className="w-5 h-[1px] bg-border my-0.5" />
+
         {/* Desktop Theme Switcher Button */}
         <button
           onClick={toggleTheme}
@@ -417,6 +429,9 @@ function AppContent() {
         isOpen={betaModalOpen}
         onClose={closeBetaModal}
       />
+
+      {/* Global Auth Modal */}
+      <AuthModal />
 
       {/* Floating Feedback Trigger Button (Mobile & Desktop) */}
       {!location.pathname.includes('/lessons/') && (

@@ -20,6 +20,12 @@ export const useUIStore = create((set, get) => ({
   openFeedbackModal: () => set({ feedbackModalOpen: true }),
   closeFeedbackModal: () => set({ feedbackModalOpen: false }),
 
+  // Auth Modal global state
+  authModalOpen: false,
+  authModalContext: 'default',
+  openAuthModal: (context = 'default') => set({ authModalOpen: true, authModalContext: context }),
+  closeAuthModal: () => set({ authModalOpen: false }),
+
   // Command Palette global state
   commandPaletteOpen: false,
   openCommandPalette: () => set({ commandPaletteOpen: true }),

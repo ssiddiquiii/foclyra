@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useDashboardData } from '../hooks/useDashboardData';
-import { useUIStore } from '../hooks/useUIStore';
 import { 
   Play, 
   Clock, 
@@ -20,6 +19,8 @@ import { exportNotesToMarkdown } from '../utils/exportUtils';
 import { calculateStreak, getActiveDateSet } from '../utils/streakUtils';
 import { fetchYouTubePlaylistData } from '../services/youtubeApi';
 import { deleteCourse, exportNotes, importCourse } from '../services/dataCommands';
+import { checkPlaylistImportQuota, trackCourseImport, trackCourseRemoval } from '../services/quotaService';
+import { useAuth } from '../hooks/useAuth';
 import { DeleteCourseDialog } from '../features/dashboard/DashboardSections';
 
 const STARTER_COURSES = [
@@ -54,6 +55,8 @@ const STARTER_COURSES = [
  * - Full Light Mode & Dark Mode seamless synchronization.
  */
 export default function Dashboard() {
+  const { user } = useAuth();
+  const { openAuthModal } = useUIStore();
   const navigate = useNavigate();
   const { openCommandPalette } = useUIStore();
   const {
@@ -108,12 +111,40 @@ export default function Dashboard() {
     const urlToUse = (overrideUrl || directUrl).trim();
     if (!urlToUse) return;
 
+    // Enforce playlist import quota before querying
+    try {
+      const quota = await checkPlaylistImportQuota({ user, playlistId: urlToUse });
+      if (!quota.allowed) {
+        if (quota.reason === 'GUEST_LIMIT_REACHED') {
+          openAuthModal('guest_limit');
+          setActionMsg({ 
+            text: 'Guest trial complete (1/1 playlist). Sign in with Google to unlock 5 courses & cloud backup!', 
+            type: 'info' 
+          });
+          setTimeout(() => setActionMsg(null), 6000);
+          return;
+        }
+        if (quota.reason === 'REGISTERED_LIMIT_REACHED') {
+          openAuthModal('registered_limit');
+          setActionMsg({ 
+            text: 'You have reached your limit of 5 study playlists. Re-importing existing courses is always free!', 
+            type: 'error' 
+          });
+          setTimeout(() => setActionMsg(null), 6000);
+          return;
+        }
+      }
+    } catch (quotaErr) {
+      console.warn('Quota check fallback:', quotaErr);
+    }
+
     setIsDirectImporting(true);
     setActionMsg({ text: 'Connecting to YouTube and importing course...', type: 'info' });
 
     try {
       const { course, lessons } = await fetchYouTubePlaylistData(urlToUse);
       await importCourse(course, lessons);
+      await trackCourseImport({ user, course, lessonCount: lessons.length });
       setDirectUrl('');
       setNewlyImportedCourse({ course, firstLessonId: lessons[0]?.id });
       setActionMsg({ 
@@ -140,6 +171,7 @@ export default function Dashboard() {
     setIsDeleting(true);
     try {
       await deleteCourse(courseToDelete.id);
+      await trackCourseRemoval({ user, courseId: courseToDelete.id });
       setActionMsg({ text: `Course "${courseToDelete.title}" deleted successfully.`, type: 'info' });
       setTimeout(() => setActionMsg(null), 3500);
       setCourseToDelete(null);
