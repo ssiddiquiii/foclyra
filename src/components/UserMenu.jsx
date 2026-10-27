@@ -44,7 +44,7 @@ export default function UserMenu({ onOpenAuth }) {
         )}
         <button
           onClick={handleOpenAuth}
-          className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-primary to-indigo-600 hover:from-primary/90 hover:to-indigo-500 text-primary-foreground text-xs font-semibold shadow-[0_0_15px_rgba(99,102,241,0.25)] hover:shadow-[0_0_20px_rgba(99,102,241,0.4)] transition hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+          className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold shadow-[0_0_15px_rgba(0,245,212,0.3)] hover:shadow-[0_0_22px_rgba(0,245,212,0.5)] transition hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
           title="Sign in with Google or Email to unlock 5 courses & cloud backup"
         >
           <Sparkles size={13} />
@@ -102,7 +102,7 @@ export default function UserMenu({ onOpenAuth }) {
             </div>
             <div className="w-full bg-border/60 rounded-full h-1.5 overflow-hidden">
               <div
-                className="bg-gradient-to-r from-primary to-indigo-500 h-full transition-all duration-300"
+                className="bg-primary h-full transition-all duration-300"
                 style={{ width: `${Math.min(100, (activeCount / maxLimit) * 100)}%` }}
               />
             </div>

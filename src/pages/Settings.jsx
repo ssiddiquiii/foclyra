@@ -141,7 +141,7 @@ export default function Settings() {
             <div>
               <h2 className="text-base font-semibold text-foreground tracking-normal">Interface Theme</h2>
               <p className="text-muted-foreground text-xs leading-relaxed">
-                Choose between Cosmic Obsidian dark mode and Porcelain Studio light mode.
+                Choose between Deep Matte Charcoal dark mode and Porcelain Studio light mode.
               </p>
             </div>
           </div>
@@ -175,7 +175,7 @@ export default function Settings() {
           >
             <div className="flex items-center gap-2">
               <Moon size={16} className="text-primary" />
-              <span>Dark Mode (Cosmic Obsidian)</span>
+              <span>Dark Mode (Matte Charcoal)</span>
             </div>
             {isDark && <CheckCircle2 size={16} className="text-primary" />}
           </button>

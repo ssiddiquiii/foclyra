@@ -60,93 +60,92 @@
 
 :root {
   /* ==========================================================================
-     Light Mode ("Porcelain & Indigo Studio" / Clean Minimalist)
+     Light Mode: Clean Minimalist Studio
      ========================================================================== */
   --background: #f8fafc;
-  --foreground: #090d16;
+  --foreground: #0f172a;
   
   --card: #ffffff;
-  --card-foreground: #090d16;
+  --card-foreground: #0f172a;
   
   --popover: #ffffff;
-  --popover-foreground: #090d16;
+  --popover-foreground: #0f172a;
   
-  --primary: #4f46e5;
+  --primary: #059669;
   --primary-foreground: #ffffff;
   
-  --secondary: #eef2ff;
-  --secondary-foreground: #312e81;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
   
   --muted: #f1f5f9;
   --muted-foreground: #64748b;
   
-  --accent: #e0e7ff;
-  --accent-foreground: #3730a3;
+  --accent: #ecfdf5;
+  --accent-foreground: #065f46;
   
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
   
   --border: #e2e8f0;
   --input: #e2e8f0;
-  --ring: #4f46e5;
+  --ring: #059669;
   
   --radius: 12px;
 
   --sidebar: #f8fafc;
   --sidebar-foreground: #64748b;
-  --sidebar-primary: #4f46e5;
+  --sidebar-primary: #059669;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #eef2ff;
-  --sidebar-accent-foreground: #312e81;
+  --sidebar-accent: #ecfdf5;
+  --sidebar-accent-foreground: #065f46;
   --sidebar-border: #e2e8f0;
-  --sidebar-ring: #4f46e5;
+  --sidebar-ring: #059669;
   --safe-area-top: env(safe-area-inset-top);
 }
 
 .dark {
   /* ==========================================================================
-     Cosmic Obsidian & Electric Indigo (Linear & Raycast Aesthetic)
-     Deep midnight obsidian (#090a0f), frosted glass cards (#11131c), 
-     luminous indigo/violet accent (#6366f1), ultra-subtle 1px glass borders.
+     Deep Matte Charcoal & Neon Mint (Hyper-Minimalist Focus Studio)
+     Canvas: #111216 | Text: #E4E6EB | Cards: #181920 | Accent: #00F5D4
      ========================================================================== */
-  --background: #090a0f;
-  --foreground: #f1f3f9;
+  --background: #111216;
+  --foreground: #E4E6EB;
   
-  --card: #11131c;
-  --card-foreground: #f1f3f9;
+  --card: #181920;
+  --card-foreground: #E4E6EB;
   
-  --popover: #11131c;
-  --popover-foreground: #f1f3f9;
+  --popover: #181920;
+  --popover-foreground: #E4E6EB;
   
-  --primary: #6366f1;
-  --primary-foreground: #ffffff;
+  --primary: #00F5D4;
+  --primary-foreground: #061814;
   
-  --secondary: #171a26;
-  --secondary-foreground: #d5dbf0;
+  --secondary: #1F212B;
+  --secondary-foreground: #E4E6EB;
   
-  --muted: #151722;
-  --muted-foreground: #8a92a6;
+  --muted: #1A1C24;
+  --muted-foreground: #8A8F9E;
   
-  --accent: #1e2235;
-  --accent-foreground: #ffffff;
+  --accent: #232733;
+  --accent-foreground: #00F5D4;
   
   --destructive: #f43f5e;
   --destructive-foreground: #ffffff;
   
-  --border: rgba(255, 255, 255, 0.08);
-  --input: rgba(255, 255, 255, 0.1);
-  --ring: #6366f1;
+  --border: #2A2E39;
+  --input: #252833;
+  --ring: #00F5D4;
   
   --radius: 12px;
 
-  --sidebar: #0b0d14;
-  --sidebar-foreground: #8a92a6;
-  --sidebar-primary: #6366f1;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #171a26;
-  --sidebar-accent-foreground: #f1f3f9;
-  --sidebar-border: rgba(255, 255, 255, 0.07);
-  --sidebar-ring: #6366f1;
+  --sidebar: #0D0E12;
+  --sidebar-foreground: #8A8F9E;
+  --sidebar-primary: #00F5D4;
+  --sidebar-primary-foreground: #061814;
+  --sidebar-accent: #181920;
+  --sidebar-accent-foreground: #E4E6EB;
+  --sidebar-border: #22252F;
+  --sidebar-ring: #00F5D4;
 }
 
 body {
@@ -161,34 +160,22 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* Subtle Cosmic Ambient Mesh Glow for Dark Mode */
-.dark body {
-  background-image: 
-    radial-gradient(at 15% 10%, rgba(99, 102, 241, 0.07) 0px, transparent 55%),
-    radial-gradient(at 85% 85%, rgba(139, 92, 246, 0.05) 0px, transparent 55%);
-  background-attachment: fixed;
-}
-
 code, pre, kbd, samp, .font-mono {
   font-family: var(--font-mono);
   letter-spacing: -0.01em;
 }
 
-/* Modern Frosted Glass Card Utility */
+/* Matte Studio Glass Panel Utility */
 .glass-panel {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: var(--card);
   border: 1px solid var(--border);
-  box-shadow: 0 2px 12px -2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4);
 }
 
 .dark .glass-panel {
-  background: #11131c !important;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  box-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.05) !important;
+  background: #181920 !important;
+  border: 1px solid #2A2E39 !important;
+  box-shadow: 0 4px 24px -2px rgba(0, 0, 0, 0.5) !important;
 }
 
 /* Custom Scrollbars */
@@ -200,14 +187,14 @@ code, pre, kbd, samp, .font-mono {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.12);
+  background: #2A2E39;
   border-radius: 9999px;
 }
 :not(.dark) ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.15);
+  background: #cbd5e1;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(99, 102, 241, 0.5);
+  background: #00F5D4;
 }
 
 @layer base {
