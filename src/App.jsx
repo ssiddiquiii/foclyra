@@ -479,7 +479,7 @@ function AppContent() {
           type="button"
           onClick={openFeedbackModal}
           aria-label="Send Feedback or Report Bug"
-          className="fixed bottom-5 right-5 z-40 hidden sm:flex items-center gap-2 px-3.5 py-2 rounded border border-border/80 bg-card/90 text-foreground hover:text-primary hover:border-primary/50 text-xs font-semibold shadow-lg backdrop-blur-md transition-all hover:scale-105 active:scale-95 cursor-pointer"
+          className="fixed bottom-3.5 right-36 sm:right-40 z-40 hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border/80 bg-card/85 text-muted-foreground hover:text-primary hover:border-primary/50 text-xs font-medium shadow-lg backdrop-blur-md transition-all hover:scale-105 active:scale-95 cursor-pointer"
           title="Found a bug or have an idea? Click to send feedback!"
         >
           <MessageSquarePlus size={15} className="text-primary" />
