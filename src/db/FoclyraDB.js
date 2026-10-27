@@ -2,12 +2,12 @@ import Dexie from 'dexie';
 import { BackupSchema, parseBackupForImport } from '../types/schemas';
 
 /**
- * FocusFlow Local-First Browser Database
+ * Foclyra Local-First Browser Database
  * Manages IndexedDB tables using Dexie wrapper.
  */
-class FocusFlowDB extends Dexie {
+class FoclyraDB extends Dexie {
   constructor() {
-    super('FocusFlowDB');
+    super('FoclyraDB');
     
     // Define database tables and index keys
     this.version(1).stores({
@@ -133,4 +133,4 @@ class FocusFlowDB extends Dexie {
 }
 
 // Instantiate and export a single global database instance
-export const db = new FocusFlowDB();
+export const db = new FoclyraDB();

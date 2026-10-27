@@ -13,7 +13,7 @@ import { useUIStore } from '../hooks/useUIStore';
 
 /**
  * Beta Status Modal
- * Explains that FocusFlow is in an active Public Beta development phase,
+ * Explains that Foclyra is in an active Public Beta development phase,
  * while assuring the user that core features (local storage, notes, video)
  * are rock-solid, production-ready, and safe for daily learning.
  */

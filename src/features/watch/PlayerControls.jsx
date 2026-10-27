@@ -6,7 +6,7 @@ import { usePlayerTime } from './playerTimeStore';
 const controlClass = 'flex h-11 w-11 items-center justify-center rounded text-zinc-200 transition hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary';
 
 export function PlayerControls({ controller, chapters }) {
-  globalThis.__focusFlowRenderProbe?.('PlayerControls');
+  globalThis.__foclyraRenderProbe?.('PlayerControls');
   const { currentTime, duration } = usePlayerTime(controller.timeStore);
   const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
   const handleTimelineKeyDown = event => {

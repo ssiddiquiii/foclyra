@@ -9,7 +9,7 @@ import {
   selectSortedCourses
 } from '../../../src/utils/selectors.js';
 
-const BASE_URL = process.env.FOCUSFLOW_TEST_BASE_URL || 'http://127.0.0.1:4173';
+const BASE_URL = process.env.FOCLYRA_TEST_BASE_URL || 'http://127.0.0.1:4173';
 
 let passed = 0;
 let failed = 0;
@@ -97,7 +97,7 @@ async function run() {
     'src/components/ImportPlaylistModal.jsx'
   ];
   const consumerSources = await Promise.all(consumerFiles.map(file => readFile(file, 'utf8')));
-  assert(consumerSources.every(source => !source.includes('useFocusFlow')), 'zero application consumers reference useFocusFlow');
+  assert(consumerSources.every(source => !source.includes('useFoclyra')), 'zero application consumers reference useFoclyra');
 
   const courseDetailSource = await readFile('src/hooks/useCourseDetail.js', 'utf8');
   const watchSource = await readFile('src/hooks/useWatchData.js', 'utf8');
@@ -116,7 +116,7 @@ async function run() {
   try {
     await page.goto(`${BASE_URL}/`, { waitUntil: 'networkidle' });
     const isolation = await page.evaluate(async () => {
-      const { db } = await import('/src/db/FocusFlowDB.js');
+      const { db } = await import('/src/db/FoclyraDB.js');
       const { liveQuery } = await import('/node_modules/.vite/deps/dexie.js');
       const tables = [db.courses, db.lessons, db.progress, db.notes, db.practiceProgress];
       await db.transaction('rw', tables, async () => {
@@ -167,7 +167,7 @@ async function run() {
     );
 
     const catalog = await page.evaluate(async () => {
-      const { db } = await import('/src/db/FocusFlowDB.js');
+      const { db } = await import('/src/db/FoclyraDB.js');
       const course = await db.courses.orderBy('title').first();
       const lesson = course
         ? await db.lessons.where('courseId').equals(course.id).sortBy('index')

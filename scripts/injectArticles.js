@@ -11,7 +11,7 @@ const articles = {
       'Uses console.log() to print outputs to developer tools.'
     ],
     codeSnippet: `// Hello World & Basic Console Output
-console.log("Hello FocusFlow!");
+console.log("Hello Foclyra!");
 console.table([{ name: "Sameed", role: "JS Developer" }]);`,
     pitfalls: 'JS is case-sensitive! Console.log or CONSOLE.log will throw a ReferenceError.'
   },
@@ -43,7 +43,7 @@ user.name = "Developer"; // ✅ Allowed!
       'typeof null is historically "object" — a famous JS design flaw!'
     ],
     codeSnippet: `const count = 42;             // Number
-const name = "FocusFlow";      // String
+const name = "Foclyra";      // String
 const isActive = true;        // Boolean
 const empty = null;           // Null (typeof returns "object")
 let unassigned;               // Undefined

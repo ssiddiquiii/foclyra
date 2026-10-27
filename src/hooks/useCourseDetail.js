@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db } from '../db/FocusFlowDB';
+import { db } from '../db/FoclyraDB';
 import { selectCourseDetailModel } from '../utils/selectors';
 
 const EMPTY_LIST = Object.freeze([]);

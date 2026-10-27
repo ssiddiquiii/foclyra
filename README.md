@@ -1,138 +1,191 @@
-# FocusFlow...
+# Foclyra
 
-> A distraction-free, local-first learning workspace for YouTube developer courses, playlists, and tutorials.
+> **The Distraction-Free, Local-First Study Studio for YouTube Developer Courses & Playlists.**
 
-**Live Demo**: [https://focus-flow-puce.vercel.app/](https://focus-flow-puce.vercel.app/)  
-**Source Code**: [https://github.com/ssiddiquiii/FocusFlow](https://github.com/ssiddiquiii/FocusFlow)
+[![React 19](https://img.shields.io/badge/React-19.2-61dafb?style=flat-square&logo=react)](https://react.dev/)
+[![Vite 8](https://img.shields.io/badge/Vite-8.1-646cff?style=flat-square&logo=vite)](https://vitejs.dev/)
+[![Tailwind CSS v4](https://img.shields.io/badge/Tailwind-4.3-38bdf8?style=flat-square&logo=tailwindcss)](https://tailwindcss.com/)
+[![Dexie.js](https://img.shields.io/badge/Dexie.js-IndexedDB-22c55e?style=flat-square)](https://dexie.org/)
+[![Supabase](https://img.shields.io/badge/Supabase-Cloud_Sync-3ecf8e?style=flat-square&logo=supabase)](https://supabase.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
+
+**Live Demo**: [https://foclyra.vercel.app/](https://foclyra.vercel.app/)  
+**Source Code**: [https://github.com/ssiddiquiii/foclyra](https://github.com/ssiddiquiii/foclyra)
 
 ---
 
 ## Overview
 
-YouTube is one of the richest free resources for software engineering tutorials, but it is built for engagement and algorithmic consumption. Autoplay feeds, recommendation rabbit holes, clickbait thumbnails, and distracting comment sections disrupt focused study.
+YouTube is home to the world's highest-quality software engineering tutorials, but it is architected for algorithmic engagement: autoplay feeds, recommendation rabbit holes, sensational thumbnails, and distracting comment threads derail deep focus.
 
-FocusFlow bridges this gap by transforming public YouTube playlists and single-video crash courses into a focused learning environment with zero ads, timestamped markdown notes, and local progress tracking.
+**Foclyra** transforms any public YouTube playlist or single-video crash course into a professional, distraction-free study environment: zero ads, zero algorithmic feeds, rich timestamped notes, dynamic Pomodoro focus intervals, and instant local-first persistence.
+
+---
+
+## Key Features
+
+### 🎬 Udemy-Style Cinema Watch Stage
+- **Edge-to-Edge Theater Mode**: Ultra-clean black stage with strict vertical viewport fitting (`calc(100vh - 170px)`) that ensures the video player and syllabus fit neatly on your screen without awkward page overflows.
+- **Collapsible Syllabus Drawer**: Hide the playlist for pure full-screen immersion; reopen it anytime with the floating `[< Lectures]` indicator or keyboard shortcut (`S`).
+- **Floating Lecture Controls**: Jump seamlessly to the previous or next lecture with floating quick-nav buttons and keyboard shortcuts (`P` / `N`).
+- **Resilient Playback Persistence**: Remembers your exact second, speed, and caption preferences across sessions.
+
+### 📝 Timestamped Notes Engine
+- **Live Video Sync**: Capture Markdown notes while watching; clicking any timestamp instantly seeks the video to that exact concept.
+- **Debounced Auto-Save**: Real-time persistence into local IndexedDB without frame drops.
+- **One-Click Export**: Export notes to structured Markdown (`.md`) or full JSON course backups at any time.
+
+### ⏱️ Persistent Pomodoro Focus System
+- **Always With You**: Floating timer widget that remains synchronized across all route navigations.
+- **Browser Tab Countdown**: Live countdown indicator directly in your browser tab title (e.g., `(24:50) 🎯 Focus | Foclyra`).
+- **Synthesized Web Audio**: Soothing, built-in chime alerts when transitions occur without external audio asset dependencies.
+
+### ⚡ Local-First Speed + Optional Cloud Sync
+- **100% Client Ownership**: Works entirely offline with zero server database requirements via IndexedDB (Dexie.js).
+- **Supabase Cloud Sync**: Log in to sync playlists, progress, and study notes across multiple devices with row-level security (RLS).
+- **Multi-Tier Quotas**: Seamless guest usage (up to 5 saved courses) and generous registered tiers (up to 15 active courses).
+
+### 🎨 State-of-the-Art Aesthetic
+- **Neon Mint & Charcoal Palette**: Signature `#00F5D4` accent theme with deep charcoal surfaces (`#111216`), clean contrast ratios, and modern glassmorphism.
+- **Vector Rounded Play Iconography**: Tailored SVG branding and favicons with geometric balance.
+- **Unified Controls**: Symmetrical floating feedback reporting, clean navigation dock, and responsive mobile drawers.
 
 ---
 
 ## System Architecture
 
-FocusFlow combines a **Local-First client storage model** with a **protected edge serverless proxy** to ensure speed, privacy, and zero server infrastructure costs.
-
-### Architecture Diagram
-
 ```mermaid
 graph TD
     User([User Browser])
     
-    subgraph Client Application [Local-First Client / PWA]
+    subgraph Client Application [Foclyra Local-First Client / PWA]
         UI[React 19 + Tailwind UI]
-        DB[(IndexedDB / Dexie.js)]
-        Player[Theater Video Workspace]
+        DB[(IndexedDB / Dexie.js - FoclyraDB)]
+        Stage[Cinema Watch Stage]
         Notes[Timestamped Notes Engine]
         Timer[Web Audio Pomodoro Timer]
+        SyncMgr[Cloud Sync Manager]
         
-        UI --> Player
+        UI --> Stage
         UI --> Notes
         UI --> Timer
-        Player <--> DB
+        Stage <--> DB
         Notes <--> DB
         Timer <--> DB
+        SyncMgr <--> DB
     end
 
-    subgraph Edge Layer [Vercel Edge & Serverless]
-        Proxy[Serverless Proxy: /api/youtube]
-        RateLimit[IP Rate Limiter: 15 req/min]
-        Cache[Edge CDN Cache: 24h TTL]
-        CircuitBreaker[Circuit Breaker]
+    subgraph Cloud Layer [Supabase & Edge Functions]
+        Auth[Supabase Auth]
+        RemoteDB[(Supabase Postgres + RLS)]
+        EdgeProxy[Vercel Serverless /api/youtube]
+        FeedbackAPI[Serverless /api/feedback]
     end
 
-    subgraph Upstream Services [External APIs]
-        GoogleAPI[Google Cloud YouTube Data API v3]
-        PublicRSS[YouTube Public Atom RSS & oEmbed Feeds]
+    subgraph External APIs [Upstream Services]
+        GoogleAPI[Google Cloud YouTube API v3]
+        PublicRSS[YouTube Atom RSS / oEmbed Feeds]
     end
 
-    User -->|Paste Playlist / Video Link| UI
-    UI -->|Import Request| Proxy
-    Proxy --> RateLimit
-    RateLimit --> Cache
-    Cache -->|Cache Hit: 15ms| UI
-    Cache -->|Cache Miss| CircuitBreaker
-    CircuitBreaker -->|Active Key| GoogleAPI
-    CircuitBreaker -->|Quota Exceeded / Keyless Fallback| PublicRSS
-    GoogleAPI -->|Course Metadata| Proxy
-    PublicRSS -->|Course Metadata| Proxy
-    Proxy -->|Save to Cache & Return| UI
-    UI -->|Persist Locally| DB
+    User -->|Paste Playlist URL| UI
+    UI -->|Metadata Request| EdgeProxy
+    EdgeProxy -->|Cached Hit / Quota Active| GoogleAPI
+    EdgeProxy -->|Circuit Breaker Fallback| PublicRSS
+    EdgeProxy -->|Course Metadata| UI
+    UI -->|Store Locally| DB
+    SyncMgr <-->|Bidirectional Sync| RemoteDB
+    User -->|Submit Feedback| FeedbackAPI
 ```
 
 ---
 
-
 ## Architectural Principles
 
-### 1. Local-First Client Architecture
-- **Complete Data Ownership**: All notes, course catalogs, timestamps, and activity streaks are stored directly on the user's device using browser IndexedDB (Dexie.js).
-- **Zero Server Database Costs**: No remote PostgreSQL/MongoDB servers required. The application scales to tens of thousands of users at zero database hosting cost.
-- **Privacy by Default**: User study habits, notes, and progress are never tracked or transmitted to external servers.
-- **Data Portability**: Full JSON backup export/import and Markdown note exports are built directly into the client.
-
-### 2. Edge API Proxy and Defense
-- **API Key Isolation**: The Google Cloud YouTube API key is stored strictly within serverless environment variables and is never exposed in client bundles.
-- **Edge CDN & Memory Caching**: Popular courses are cached at the edge for 24 hours (s-maxage=86400, stale-while-revalidate=604800). Subsequent imports for the same course resolve in ~15ms without consuming YouTube API quotas.
-- **IP Rate Limiting**: An in-memory sliding window rate limiter restricts each IP address to 15 requests per minute, preventing Denial of Service (DoS) attacks and scraper abuse.
-- **Circuit Breaker & Zero-Key Fallback**: If upstream Google API quotas are exceeded, the system automatically trips a circuit breaker and routes requests to YouTube's public Atom/RSS and oEmbed feeds, allowing course imports to continue with zero API key dependency.
-
----
-
-## Core Features
-
-- **Direct Course Importer**: Import any YouTube playlist or single-video crash course with automated metadata extraction.
-- **Clean Slate Onboarding**: New users start with a clean workspace and clear guidance to import their own learning materials.
-- **Distraction-Free Video Workspace**: Theater-style player with keyboard shortcuts, auto-fading controls, and playback memory.
-- **Timestamped Note Taking**: Take markdown notes while watching; click timestamps to seek the video to specific concepts.
-- **Pomodoro Timer**: Synchronized study timer with rest intervals, browser tab countdown sync, and Web Audio alerts.
-- **Activity Streak Heatmap**: 30-day activity heatmap tracking daily learning consistency.
-- **Command Palette (Ctrl + K)**: Keyboard-driven navigation across courses, settings, and search.
-- **Installable PWA**: Offline-capable Progressive Web Application across mobile, tablet, and desktop.
+1. **Local-First Client Storage**: All user data (progress, notes, courses, streaks) resides locally in IndexedDB (`FoclyraDB`). The app boots instantly and functions completely offline.
+2. **Serverless Edge Defense**: YouTube API requests route through a protected Vercel serverless proxy with IP rate-limiting (15 req/min) and edge caching (24h TTL) to prevent API key exposure and eliminate quota exhaustion.
+3. **Resilient Circuit Breaker**: If upstream API quotas deplete, the engine automatically falls back to YouTube's public Atom RSS and oEmbed feeds, guaranteeing zero import interruptions.
+4. **Data Portability**: Full JSON backup import/export complies with open data standards—your notes and progress are never locked in.
 
 ---
 
 ## Tech Stack
 
-| Layer | Technology | Purpose |
-|---|---|---|
-| **Frontend Framework** | React 19, React Router v7 | UI rendering and routing |
-| **Build Tool** | Vite 8 | Development server and production bundling |
-| **Styling** | Tailwind CSS v4, Lucide Icons | Responsive modern design system |
-| **Local Database** | Dexie.js (IndexedDB wrapper) | Client-side persistent storage |
-| **Data Validation** | Zod | Runtime schema validation for courses and backups |
-| **State Management** | Zustand | Global UI and player state |
-| **PWA** | Vite PWA / Workbox | Service worker caching and installability |
-| **Edge Proxy** | Vercel Serverless Functions | Secure API gateway, rate limiting, and caching |
+| Layer | Technologies |
+|---|---|
+| **Frontend Framework** | React 19, React Router v7 |
+| **Build & Tooling** | Vite 8, Oxlint |
+| **Styling & Icons** | Tailwind CSS v4, Lucide React |
+| **Local Database** | Dexie.js (IndexedDB wrapper) |
+| **Cloud & Auth** | Supabase JS (Auth, PostgreSQL, Row-Level Security) |
+| **State Management** | Zustand (Global UI, Watch Player Controller) |
+| **Data Validation** | Zod (Backup schemas & runtime data validation) |
+| **Offline & PWA** | Vite PWA Plugin, Service Worker (Workbox) |
+| **Edge Serverless** | Vercel Serverless Functions (`/api/youtube`, `/api/feedback`) |
 
 ---
 
-## Quick Start
+## Getting Started
 
 ### Prerequisites
-- Node.js (v18 or higher recommended)
-- npm or pnpm
+- **Node.js**: v18+ (Node.js 20 recommended)
+- **npm** or **pnpm**
 
-### Setup
+### Installation
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/ssiddiquiii/FocusFlow.git
-cd focus-flow
+git clone https://github.com/ssiddiquiii/foclyra.git
+cd foclyra
 
 # 2. Install dependencies
 npm install
 
-# 3. Start local development server
+# 3. Configure environment variables (optional)
+cp .env.example .env
+
+# 4. Start local development server
 npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173) in your browser.
+Visit [http://localhost:5173](http://localhost:5173) in your browser.
 
 ---
+
+## Verification & Testing
+
+Foclyra features a multi-phase verification suite ensuring data safety, scoped reads, UI responsiveness, and player persistence:
+
+```bash
+# Run unit & headless verification suites
+npm test
+
+# Run individual verification phases
+npm run test:unit
+npm run test:security
+npm run test:phase4
+npm run test:phase5
+npm run test:phase6a
+npm run test:phase6c
+```
+
+---
+
+## Keyboard Shortcuts
+
+| Shortcut | Action |
+|---|---|
+| `Space` / `K` | Play / Pause video |
+| `J` / `L` | Seek -10s / +10s |
+| `M` | Mute / Unmute audio |
+| `F` | Toggle Fullscreen |
+| `N` | Next lecture in playlist |
+| `P` | Previous lecture in playlist |
+| `S` | Toggle Syllabus playlist drawer |
+| `Ctrl + K` / `Cmd + K` | Open Command Palette |
+| `Esc` | Close drawers, modals, or fullscreen |
+
+---
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).

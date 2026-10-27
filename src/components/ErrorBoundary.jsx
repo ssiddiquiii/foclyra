@@ -17,7 +17,7 @@ export default class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error('[FocusFlow ErrorBoundary caught an unhandled exception]:', error, errorInfo);
+    console.error('[Foclyra ErrorBoundary caught an unhandled exception]:', error, errorInfo);
     this.setState({ errorInfo });
   }
 

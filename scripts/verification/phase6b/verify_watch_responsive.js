@@ -1,7 +1,7 @@
 import { mkdir } from 'node:fs/promises';
 import { chromium } from 'playwright';
 
-const BASE_URL = process.env.FOCUSFLOW_TEST_BASE_URL || 'http://127.0.0.1:4173';
+const BASE_URL = process.env.FOCLYRA_TEST_BASE_URL || 'http://127.0.0.1:4173';
 const SCREENSHOT_DIR = 'docs/evidence/phase6b/screenshots';
 const VIEWPORTS = [
   ['small-phone', 320, 568],
@@ -64,7 +64,7 @@ async function installFakePlayer(context) {
 async function seed(page) {
   await page.goto(`${BASE_URL}/`, { waitUntil: 'networkidle' });
   await page.evaluate(async () => {
-    const { db } = await import('/src/db/FocusFlowDB.js');
+    const { db } = await import('/src/db/FoclyraDB.js');
     const tables = [db.courses, db.lessons, db.progress, db.notes, db.practiceProgress];
     await db.transaction('rw', tables, async () => {
       await Promise.all(tables.map(table => table.clear()));

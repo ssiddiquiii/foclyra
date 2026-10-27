@@ -1,6 +1,6 @@
 ﻿import { useState, useEffect, useCallback } from 'react';
 
-const STORAGE_KEY = 'focusflow_theme';
+const STORAGE_KEY = 'foclyra_theme';
 
 export function getInitialTheme() {
   if (typeof window === 'undefined') return 'dark';

@@ -1,5 +1,5 @@
 import { supabase, isSupabaseConfigured } from './supabaseClient';
-import { db } from '../db/FocusFlowDB';
+import { db } from '../db/FoclyraDB';
 
 /**
  * Background Cloud Synchronization Engine.

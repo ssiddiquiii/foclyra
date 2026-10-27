@@ -1,5 +1,5 @@
 /**
- * FocusFlow Resilient YouTube Integration Service.
+ * Foclyra Resilient YouTube Integration Service.
  * Supports:
  * - Full Playlist URLs & IDs (e.g. https://www.youtube.com/playlist?list=...)
  * - Single Video Crash Courses (e.g. https://www.youtube.com/watch?v=... or https://youtu.be/...)
@@ -20,13 +20,13 @@ const DEFAULT_API_KEY = import.meta.env?.VITE_YOUTUBE_API_KEY && !EXPIRED_KEYS.h
 export function getActiveApiKey() {
   try {
     const customKey = typeof localStorage !== 'undefined' && typeof localStorage.getItem === 'function' 
-      ? localStorage.getItem('focusflow_custom_youtube_api_key') 
+      ? localStorage.getItem('foclyra_custom_youtube_api_key') 
       : null;
     if (customKey) {
       const trimmed = customKey.trim();
       if (EXPIRED_KEYS.has(trimmed)) {
         // Auto-purge known expired key from browser storage
-        localStorage.removeItem('focusflow_custom_youtube_api_key');
+        localStorage.removeItem('foclyra_custom_youtube_api_key');
         return DEFAULT_API_KEY;
       }
       if (trimmed.length > 10) {

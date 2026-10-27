@@ -1,4 +1,4 @@
-import { db } from './FocusFlowDB';
+import { db } from './FoclyraDB';
 
 export function createBootstrapController({ openDatabase, seedDatabase }) {
   let bootstrapPromise = null;

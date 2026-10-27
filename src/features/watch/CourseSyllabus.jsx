@@ -2,7 +2,7 @@ import React from 'react';
 import { BookOpen, CheckCircle2, Circle, Clock } from 'lucide-react';
 
 export function CourseSyllabus({ courseId, lessonId, lessons, progressList, onNavigate }) {
-  globalThis.__focusFlowRenderProbe?.('CourseSyllabus');
+  globalThis.__foclyraRenderProbe?.('CourseSyllabus');
   const completedCount = lessons.filter(item => progressList.some(progress => progress.id === `${courseId}_${item.id}` && progress.completed)).length;
   return (
     <div className="px-6 py-6 max-w-7xl w-full mx-auto space-y-4">

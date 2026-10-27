@@ -5,7 +5,7 @@ import { QUALITY_OPTIONS, SPEED_OPTIONS } from './watchConstants';
 import { createPlaybackPersistenceSession, getBoundedResumeSeconds, PROGRESS_SAVE_INTERVAL_MS } from './playbackPersistence';
 import { createPlayerTimeStore } from './playerTimeStore';
 
-const CAPTION_PREFERENCE_KEY = 'focusflow:watch:captions-enabled';
+const CAPTION_PREFERENCE_KEY = 'foclyra:watch:captions-enabled';
 
 function readCaptionPreference() {
   try {

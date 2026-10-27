@@ -1,6 +1,6 @@
 import { chromium } from 'playwright';
 
-const BASE_URL = process.env.FOCUSFLOW_TEST_BASE_URL || 'http://127.0.0.1:4173';
+const BASE_URL = process.env.FOCLYRA_TEST_BASE_URL || 'http://127.0.0.1:4173';
 import path from 'path';
 import fs from 'fs';
 
@@ -32,7 +32,7 @@ async function runE2ETests() {
     const noteCountBefore = await page.evaluate(async () => {
       const indexedDB = window.indexedDB;
       return new Promise((resolve) => {
-        const req = indexedDB.open('FocusFlowDB');
+        const req = indexedDB.open('FoclyraDB');
         req.onsuccess = (e) => {
           const db = e.target.result;
           const tx = db.transaction('notes', 'readonly');
@@ -144,7 +144,7 @@ async function runE2ETests() {
     const restoredCounts = await page.evaluate(async () => {
       const indexedDB = window.indexedDB;
       return new Promise((resolve) => {
-        const req = indexedDB.open('FocusFlowDB');
+        const req = indexedDB.open('FoclyraDB');
         req.onsuccess = (e) => {
           const db = e.target.result;
           const res = {};

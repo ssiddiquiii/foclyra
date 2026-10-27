@@ -10,7 +10,7 @@ const DEFAULT_FALLBACK_STORE = {
 };
 
 export function NotesPanel({ notes = [], noteState, onSeek, timeStore }) {
-  globalThis.__focusFlowRenderProbe?.('NotesPanel');
+  globalThis.__foclyraRenderProbe?.('NotesPanel');
   const isSaving = noteState.status === 'saving';
 
   // Live dynamic timestamp subscription from player

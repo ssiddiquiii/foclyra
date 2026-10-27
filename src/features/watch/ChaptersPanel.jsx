@@ -2,7 +2,7 @@ import React from 'react';
 import { Clock, Play } from 'lucide-react';
 
 export function ChaptersPanel({ chapters, onSelect }) {
-  globalThis.__focusFlowRenderProbe?.('ChaptersPanel');
+  globalThis.__foclyraRenderProbe?.('ChaptersPanel');
   
   // If there are no chapters, do not render anything to avoid empty boxes and massive whitespace gaps
   if (!chapters || chapters.length === 0) {

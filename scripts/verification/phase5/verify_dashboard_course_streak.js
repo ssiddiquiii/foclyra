@@ -13,7 +13,7 @@ import {
   getActiveDateSet
 } from '../../../src/utils/streakUtils.js';
 
-const BASE_URL = process.env.FOCUSFLOW_TEST_BASE_URL || 'http://127.0.0.1:4173';
+const BASE_URL = process.env.FOCLYRA_TEST_BASE_URL || 'http://127.0.0.1:4173';
 const SCREENSHOTS = path.resolve('docs/evidence/phase5/screenshots');
 const VIEWPORTS = [
   ['small-phone-320x568', 320, 568],

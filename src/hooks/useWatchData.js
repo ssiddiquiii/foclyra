@@ -1,5 +1,5 @@
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db } from '../db/FocusFlowDB';
+import { db } from '../db/FoclyraDB';
 
 const EMPTY_LIST = Object.freeze([]);
 

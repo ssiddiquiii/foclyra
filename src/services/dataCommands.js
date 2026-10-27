@@ -1,4 +1,4 @@
-import { db } from '../db/FocusFlowDB';
+import { db } from '../db/FoclyraDB';
 import { CourseSchema, LessonSchema } from '../types/schemas';
 
 export async function saveProgress(courseId, lessonId, seconds, completed = false) {

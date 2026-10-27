@@ -82,33 +82,33 @@ export async function runSuite(suite) {
   }
   if (suite === 'browser' || suite === 'all') {
     await withTestServer(() =>
-      runScripts(browserScripts, { FOCUSFLOW_TEST_BASE_URL: TEST_BASE_URL })
+      runScripts(browserScripts, { FOCLYRA_TEST_BASE_URL: TEST_BASE_URL })
     );
   }
   if (suite === 'phase4') {
     await withTestServer(() =>
       runScripts(
         ['scripts/verification/phase4/verify_responsive_shell.js'],
-        { FOCUSFLOW_TEST_BASE_URL: TEST_BASE_URL }
+        { FOCLYRA_TEST_BASE_URL: TEST_BASE_URL }
       )
     );
   }
   if (suite === 'phase5') {
     await withTestServer(() => runScripts(
       ['scripts/verification/phase5/verify_dashboard_course_streak.js'],
-      { FOCUSFLOW_TEST_BASE_URL: TEST_BASE_URL }
+      { FOCLYRA_TEST_BASE_URL: TEST_BASE_URL }
     ));
   }
   if (suite === 'phase6a') {
     await withTestServer(() => runScripts(
       ['scripts/verification/phase6a/verify_watch_decomposition.js'],
-      { FOCUSFLOW_TEST_BASE_URL: TEST_BASE_URL }
+      { FOCLYRA_TEST_BASE_URL: TEST_BASE_URL }
     ));
   }
   if (suite === 'phase6b') {
     await withTestServer(() => runScripts(
       ['scripts/verification/phase6a/verify_watch_decomposition.js', 'scripts/verification/phase6b/verify_watch_responsive.js'],
-      { FOCUSFLOW_TEST_BASE_URL: TEST_BASE_URL }
+      { FOCLYRA_TEST_BASE_URL: TEST_BASE_URL }
     ));
   }
   if (suite === 'phase6c') {
@@ -118,7 +118,7 @@ export async function runSuite(suite) {
         'scripts/verification/phase6b/verify_watch_responsive.js',
         'scripts/verification/phase6c/verify_watch_persistence_captions.js'
       ],
-      { FOCUSFLOW_TEST_BASE_URL: TEST_BASE_URL }
+      { FOCLYRA_TEST_BASE_URL: TEST_BASE_URL }
     ));
   }
   if (suite === 'phase6d') {
@@ -129,14 +129,14 @@ export async function runSuite(suite) {
         'scripts/verification/phase6c/verify_watch_persistence_captions.js',
         'scripts/verification/phase6d/verify_watch_workspace_interactions.js'
       ],
-      { FOCUSFLOW_TEST_BASE_URL: TEST_BASE_URL }
+      { FOCLYRA_TEST_BASE_URL: TEST_BASE_URL }
     ));
   }
   if (suite === 'phase7a') {
     await runScripts(['scripts/verification/phase7a/verify_practice_identity.js']);
     await withTestServer(() => runScripts(
       ['scripts/verification/phase7a/verify_practice_identity_browser.js'],
-      { FOCUSFLOW_TEST_BASE_URL: TEST_BASE_URL }
+      { FOCLYRA_TEST_BASE_URL: TEST_BASE_URL }
     ));
   }
   if (!['unit', 'browser', 'phase4', 'phase5', 'phase6a', 'phase6b', 'phase6c', 'phase6d', 'phase7a', 'all'].includes(suite)) {

@@ -57,7 +57,7 @@
         "Can run both in the browser (DOM manipulation) and server-side (Node.js).",
         "Uses console.log() to print outputs to developer tools."
       ],
-      "codeSnippet": "// Hello World & Basic Console Output\nconsole.log(\"Hello FocusFlow!\");\nconsole.table([{ name: \"Sameed\", role: \"JS Developer\" }]);",
+      "codeSnippet": "// Hello World & Basic Console Output\nconsole.log(\"Hello Foclyra!\");\nconsole.table([{ name: \"Sameed\", role: \"JS Developer\" }]);",
       "pitfalls": "JS is case-sensitive! Console.log or CONSOLE.log will throw a ReferenceError."
     }
   },
@@ -285,7 +285,7 @@
         "Reference: Object, Array, Function (Passed by Reference).",
         "typeof null is historically \"object\" — a famous JS design flaw!"
       ],
-      "codeSnippet": "const count = 42;             // Number\nconst name = \"FocusFlow\";      // String\nconst isActive = true;        // Boolean\nconst empty = null;           // Null (typeof returns \"object\")\nlet unassigned;               // Undefined\nconst id = Symbol(\"id\");      // Symbol (Unique value)",
+      "codeSnippet": "const count = 42;             // Number\nconst name = \"Foclyra\";      // String\nconst isActive = true;        // Boolean\nconst empty = null;           // Null (typeof returns \"object\")\nlet unassigned;               // Undefined\nconst id = Symbol(\"id\");      // Symbol (Unique value)",
       "pitfalls": "typeof null === \"object\" returns true due to legacy 32-bit type tag representations in early V8 versions."
     }
   },

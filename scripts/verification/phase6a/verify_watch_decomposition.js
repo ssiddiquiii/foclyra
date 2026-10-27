@@ -1,7 +1,7 @@
 import { readFile, readdir } from 'node:fs/promises';
 import { chromium } from 'playwright';
 
-const BASE_URL = process.env.FOCUSFLOW_TEST_BASE_URL || 'http://127.0.0.1:4173';
+const BASE_URL = process.env.FOCLYRA_TEST_BASE_URL || 'http://127.0.0.1:4173';
 let passed = 0;
 let failed = 0;
 
@@ -71,7 +71,7 @@ async function run() {
     await page.setViewportSize({ width: 800, height: 900 });
     await page.goto(`${BASE_URL}/`, { waitUntil: 'networkidle' });
     await page.evaluate(async () => {
-      const { db } = await import('/src/db/FocusFlowDB.js');
+      const { db } = await import('/src/db/FoclyraDB.js');
       const tables = [db.courses, db.lessons, db.progress, db.notes, db.practiceProgress];
       await db.transaction('rw', tables, async () => {
         await Promise.all(tables.map(table => table.clear()));
@@ -113,15 +113,15 @@ async function run() {
     await page.getByPlaceholder(/timestamped note/).first().fill('Phase 6A note');
     await page.getByRole('button', { name: /Save Note/ }).first().click();
     await page.getByText('Phase 6A note').first().waitFor();
-    const note = await page.evaluate(async () => (await (await import('/src/db/FocusFlowDB.js')).db.notes.toArray())[0]);
+    const note = await page.evaluate(async () => (await (await import('/src/db/FoclyraDB.js')).db.notes.toArray())[0]);
     assert(note.content === 'Phase 6A note' && note.timestamp === 55, 'note creation preserves content and player timestamp');
     await page.getByTitle('Delete note').first().click({ force: true });
     await page.getByRole('dialog').getByRole('button', { name: 'Delete note' }).click();
-    await page.waitForFunction(async () => (await (await import('/src/db/FocusFlowDB.js')).db.notes.count()) === 0);
+    await page.waitForFunction(async () => (await (await import('/src/db/FoclyraDB.js')).db.notes.count()) === 0);
     assert(true, 'note deletion removes the selected note');
 
     await page.evaluate(() => { window.__watchPlayers.at(-1).time = 95; window.__watchPlayers.at(-1).pauseVideo(); });
-    await page.waitForFunction(async () => (await (await import('/src/db/FocusFlowDB.js')).db.progress.get('watch-course_watch-a'))?.completed === true);
+    await page.waitForFunction(async () => (await (await import('/src/db/FoclyraDB.js')).db.progress.get('watch-course_watch-a'))?.completed === true);
     assert(true, 'pause persistence marks ninety-percent playback complete');
 
     await page.getByRole('button', { name: /Lesson B/ }).click();

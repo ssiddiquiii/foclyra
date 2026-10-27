@@ -11,7 +11,7 @@ export default function BootstrapGate({ children }) {
       await (retry ? retryBootstrap() : bootstrapApp());
       setStatus('ready');
     } catch (error) {
-      console.error('[FocusFlow bootstrap failed]:', error);
+      console.error('[Foclyra bootstrap failed]:', error);
       setStatus('failed');
     }
   }, []);
@@ -24,7 +24,7 @@ export default function BootstrapGate({ children }) {
         await bootstrapApp();
         if (active) setStatus('ready');
       } catch (error) {
-        console.error('[FocusFlow bootstrap failed]:', error);
+        console.error('[Foclyra bootstrap failed]:', error);
         if (active) setStatus('failed');
       }
     };
@@ -39,7 +39,7 @@ export default function BootstrapGate({ children }) {
       <div className="min-h-screen bg-background text-foreground flex flex-col items-center justify-center p-6 space-y-4">
         <div className="animate-spin w-10 h-10 border-4 border-primary border-t-transparent rounded-full" />
         <span className="text-sm text-zinc-500 uppercase tracking-widest font-semibold">
-          Initializing FocusFlow Database...
+          Initializing Foclyra Database...
         </span>
       </div>
     );
@@ -52,7 +52,7 @@ export default function BootstrapGate({ children }) {
           <AlertTriangle size={28} />
         </div>
         <div className="space-y-2 max-w-md">
-          <h1 className="text-xl font-extrabold text-white">FocusFlow could not open local storage</h1>
+          <h1 className="text-xl font-extrabold text-white">Foclyra could not open local storage</h1>
           <p className="text-sm text-zinc-400">
             Your existing learning data has not been changed. Retry the local database connection to continue.
           </p>

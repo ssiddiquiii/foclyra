@@ -8,7 +8,7 @@ import {
   PROGRESS_SAVE_INTERVAL_MS
 } from '../../../src/features/watch/playbackPersistence.js';
 
-const BASE_URL = process.env.FOCUSFLOW_TEST_BASE_URL || 'http://127.0.0.1:4173';
+const BASE_URL = process.env.FOCLYRA_TEST_BASE_URL || 'http://127.0.0.1:4173';
 let passed = 0;
 let failed = 0;
 const evidence = {
@@ -29,7 +29,7 @@ function assert(condition, description) {
 
 async function waitForProgress(page, id, predicate) {
   await page.waitForFunction(async ({ progressId, predicateSource }) => {
-    const record = await (await import('/src/db/FocusFlowDB.js')).db.progress.get(progressId);
+    const record = await (await import('/src/db/FoclyraDB.js')).db.progress.get(progressId);
     return Function('record', `return (${predicateSource})(record)`)(record);
   }, { progressId: id, predicateSource: predicate.toString() });
 }
@@ -60,7 +60,7 @@ async function runPurePersistenceChecks() {
 async function installPlayerProbe(context) {
   await context.addInitScript(() => {
     window.__renderCounts = {};
-    window.__focusFlowRenderProbe = name => {
+    window.__foclyraRenderProbe = name => {
       window.__renderCounts[name] = (window.__renderCounts[name] || 0) + 1;
     };
     window.__watchPlayers = [];
@@ -100,8 +100,8 @@ async function installPlayerProbe(context) {
 async function seed(page) {
   await page.goto(`${BASE_URL}/`, { waitUntil: 'networkidle' });
   await page.evaluate(async () => {
-    localStorage.setItem('focusflow:watch:captions-enabled', 'true');
-    const { db } = await import('/src/db/FocusFlowDB.js');
+    localStorage.setItem('foclyra:watch:captions-enabled', 'true');
+    const { db } = await import('/src/db/FoclyraDB.js');
     const tables = [db.courses, db.lessons, db.progress, db.notes, db.practiceProgress];
     await db.transaction('rw', tables, async () => {
       await Promise.all(tables.map(table => table.clear()));
@@ -163,9 +163,9 @@ async function runBrowserChecks() {
 
     await page.getByLabel('Player settings').click();
     await page.getByTitle('Toggle Captions (CC)').click();
-    assert(await page.evaluate(() => localStorage.getItem('focusflow:watch:captions-enabled') === 'false'), 'caption preference can be disabled explicitly');
+    assert(await page.evaluate(() => localStorage.getItem('foclyra:watch:captions-enabled') === 'false'), 'caption preference can be disabled explicitly');
     await page.getByTitle('Toggle Captions (CC)').click();
-    assert(await page.evaluate(() => localStorage.getItem('focusflow:watch:captions-enabled') === 'true'), 'caption preference is persisted');
+    assert(await page.evaluate(() => localStorage.getItem('foclyra:watch:captions-enabled') === 'true'), 'caption preference is persisted');
     assert(await page.evaluate(() => window.__watchPlayerLog.loads > 0), 'caption preference is applied to the active player');
     const explicitUnloadCount = await page.evaluate(() => window.__watchPlayerLog.unloads);
 
@@ -201,7 +201,7 @@ async function runBrowserChecks() {
     await waitForProgress(page, 'phase6c-course_phase6c-b', record => record?.watchTime === 100 && record?.completed === true);
     assert(true, 'video end persists duration and completion');
 
-    const preserved = await page.evaluate(async () => (await (await import('/src/db/FocusFlowDB.js')).db.progress.get('phase6c-course_phase6c-a')));
+    const preserved = await page.evaluate(async () => (await (await import('/src/db/FoclyraDB.js')).db.progress.get('phase6c-course_phase6c-a')));
     assert(preserved.currentTime === 150 && preserved.legacyMarker === 'preserve-me', 'watchTime saves preserve legacy currentTime and unknown fields');
   } finally {
     await context.close();

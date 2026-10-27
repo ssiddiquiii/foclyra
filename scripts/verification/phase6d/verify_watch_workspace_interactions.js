@@ -1,7 +1,7 @@
 import { chromium } from 'playwright';
 import { mkdir, writeFile } from 'node:fs/promises';
 
-const BASE_URL = process.env.FOCUSFLOW_TEST_BASE_URL || 'http://127.0.0.1:4173';
+const BASE_URL = process.env.FOCLYRA_TEST_BASE_URL || 'http://127.0.0.1:4173';
 const EVIDENCE_DIR = 'docs/evidence/phase6d';
 let passed = 0;
 let failed = 0;
@@ -54,7 +54,7 @@ async function installPlayerProbe(context) {
 async function seed(page) {
   await page.goto(`${BASE_URL}/`, { waitUntil: 'networkidle' });
   await page.evaluate(async () => {
-    const { db } = await import('/src/db/FocusFlowDB.js');
+    const { db } = await import('/src/db/FoclyraDB.js');
     const tables = [db.courses, db.lessons, db.progress, db.notes, db.practiceProgress];
     await db.transaction('rw', tables, async () => {
       await Promise.all(tables.map(table => table.clear()));
@@ -81,7 +81,7 @@ async function seed(page) {
 }
 
 async function readNote(page, id) {
-  return page.evaluate(async noteId => (await import('/src/db/FocusFlowDB.js')).db.notes.get(noteId), id);
+  return page.evaluate(async noteId => (await import('/src/db/FoclyraDB.js')).db.notes.get(noteId), id);
 }
 
 async function run() {
@@ -95,25 +95,25 @@ async function run() {
     await page.goto(`${BASE_URL}/courses/phase6d-course/lessons/Hr5iLG7sUa0`, { waitUntil: 'networkidle' });
     assert(await page.locator('[data-testid="notes-workspace"]').count() === 1, 'one Notes implementation is mounted at the phone layout');
 
-    const writesBeforeTyping = await page.evaluate(async () => (await (await import('/src/db/FocusFlowDB.js')).db.notes.count()));
+    const writesBeforeTyping = await page.evaluate(async () => (await (await import('/src/db/FoclyraDB.js')).db.notes.count()));
     await page.getByLabel('New timestamped note').fill('Captured note');
     await page.waitForTimeout(100);
-    const writesAfterTyping = await page.evaluate(async () => (await (await import('/src/db/FocusFlowDB.js')).db.notes.count()));
+    const writesAfterTyping = await page.evaluate(async () => (await (await import('/src/db/FoclyraDB.js')).db.notes.count()));
     assert(writesAfterTyping === writesBeforeTyping, 'typing a note performs no database write');
 
     await page.getByRole('button', { name: 'Play Workspace interactions' }).click();
     await page.waitForFunction(() => window.__watchPlayerLog.created === 1);
     await page.evaluate(() => { window.__watchPlayers.at(-1).time = 23.4; });
     await page.getByRole('button', { name: /Save Note at current time/ }).dblclick();
-    await page.waitForFunction(async () => (await (await import('/src/db/FocusFlowDB.js')).db.notes.count()) === 2);
-    const created = await page.evaluate(async () => (await (await import('/src/db/FocusFlowDB.js')).db.notes.toArray()).find(note => note.content === 'Captured note'));
+    await page.waitForFunction(async () => (await (await import('/src/db/FoclyraDB.js')).db.notes.count()) === 2);
+    const created = await page.evaluate(async () => (await (await import('/src/db/FoclyraDB.js')).db.notes.toArray()).find(note => note.content === 'Captured note'));
     assert(created.courseId === 'phase6d-course' && created.lessonId === 'Hr5iLG7sUa0', 'created note retains course and lesson ownership');
     assert(created.timestamp === 23, 'note creation captures the active player timestamp');
-    const duplicateCount = await page.evaluate(async () => (await (await import('/src/db/FocusFlowDB.js')).db.notes.toArray()).filter(note => note.content === 'Captured note').length);
+    const duplicateCount = await page.evaluate(async () => (await (await import('/src/db/FoclyraDB.js')).db.notes.toArray()).filter(note => note.content === 'Captured note').length);
     assert(duplicateCount === 1, 'rapid duplicate submit creates only one note');
 
     await page.evaluate(async () => {
-      const { db } = await import('/src/db/FocusFlowDB.js');
+      const { db } = await import('/src/db/FoclyraDB.js');
       window.__originalNoteAdd = db.notes.add;
       db.notes.add = async () => { throw new Error('Simulated note failure'); };
     });
@@ -122,7 +122,7 @@ async function run() {
     await page.getByRole('alert').waitFor();
     assert(await page.getByLabel('New timestamped note').inputValue() === 'Keep this failed draft', 'save failure preserves the user draft');
     await page.evaluate(async () => {
-      const { db } = await import('/src/db/FocusFlowDB.js');
+      const { db } = await import('/src/db/FoclyraDB.js');
       db.notes.add = window.__originalNoteAdd;
     });
     await page.getByLabel('New timestamped note').fill('');
@@ -130,7 +130,7 @@ async function run() {
     await page.getByRole('button', { name: 'Edit note at 0:12' }).click();
     await page.getByRole('textbox', { name: 'Edit note' }).fill('Edited existing note');
     await page.getByRole('button', { name: 'Save changes' }).click();
-    await page.waitForFunction(async () => (await (await import('/src/db/FocusFlowDB.js')).db.notes.get(6001))?.content === 'Edited existing note');
+    await page.waitForFunction(async () => (await (await import('/src/db/FoclyraDB.js')).db.notes.get(6001))?.content === 'Edited existing note');
     const edited = await readNote(page, 6001);
     assert(edited.id === 6001 && edited.timestamp === 12 && edited.createdAt === 100, 'editing preserves the note ID, timestamp and creation time');
 
@@ -139,7 +139,7 @@ async function run() {
     assert(Boolean(await readNote(page, 6001)), 'delete cancellation preserves the note');
     await page.getByRole('button', { name: 'Delete note at 0:12' }).click();
     await page.getByRole('dialog').getByRole('button', { name: 'Delete note' }).click();
-    await page.waitForFunction(async () => !(await (await import('/src/db/FocusFlowDB.js')).db.notes.get(6001)));
+    await page.waitForFunction(async () => !(await (await import('/src/db/FoclyraDB.js')).db.notes.get(6001)));
     assert(!(await readNote(page, 6001)), 'confirmed delete removes only the selected note');
 
     await page.getByRole('button', { name: /Seek to note at 0:23/ }).focus();

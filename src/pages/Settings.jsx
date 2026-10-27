@@ -20,9 +20,9 @@ export default function Settings() {
 
   // Custom YouTube API Key state
   const [customKey, setCustomKey] = useState(() => {
-    const stored = localStorage.getItem('focusflow_custom_youtube_api_key') || '';
+    const stored = localStorage.getItem('foclyra_custom_youtube_api_key') || '';
     if (stored.trim() === 'AIzaSyAExIAyfPvaaNixl5cz7HZJfNwQdniXP_o') {
-      localStorage.removeItem('focusflow_custom_youtube_api_key');
+      localStorage.removeItem('foclyra_custom_youtube_api_key');
       return '';
     }
     return stored;
@@ -33,9 +33,9 @@ export default function Settings() {
     e.preventDefault();
     const trimmed = customKey.trim();
     if (trimmed) {
-      localStorage.setItem('focusflow_custom_youtube_api_key', trimmed);
+      localStorage.setItem('foclyra_custom_youtube_api_key', trimmed);
     } else {
-      localStorage.removeItem('focusflow_custom_youtube_api_key');
+      localStorage.removeItem('foclyra_custom_youtube_api_key');
     }
     setKeySaved(true);
     setStatusMsg({ text: trimmed ? 'Custom YouTube API key saved successfully.' : 'Reverted to default built-in YouTube API key.', type: 'success' });
@@ -172,7 +172,7 @@ export default function Settings() {
                 type="button"
                 onClick={() => {
                   setCustomKey('');
-                  localStorage.removeItem('focusflow_custom_youtube_api_key');
+                  localStorage.removeItem('foclyra_custom_youtube_api_key');
                   setStatusMsg({ text: 'Reverted to default built-in proxy.', type: 'info' });
                 }}
                 className="text-muted-foreground hover:text-destructive transition underline cursor-pointer"

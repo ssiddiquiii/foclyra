@@ -1,6 +1,6 @@
 import { chromium } from 'playwright';
 
-const BASE_URL = process.env.FOCUSFLOW_TEST_BASE_URL || 'http://127.0.0.1:4173';
+const BASE_URL = process.env.FOCLYRA_TEST_BASE_URL || 'http://127.0.0.1:4173';
 
 let passed = 0;
 let failed = 0;
@@ -28,7 +28,7 @@ async function runNonZeroNotesTest() {
     const count1 = await page.evaluate(async () => {
       const indexedDB = window.indexedDB;
       return new Promise((resolve, reject) => {
-        const req = indexedDB.open('FocusFlowDB');
+        const req = indexedDB.open('FoclyraDB');
         req.onsuccess = (e) => {
           const db = e.target.result;
           const tx = db.transaction('notes', 'readwrite');
@@ -65,7 +65,7 @@ async function runNonZeroNotesTest() {
     const count2 = await page.evaluate(async () => {
       const indexedDB = window.indexedDB;
       return new Promise((resolve, reject) => {
-        const req = indexedDB.open('FocusFlowDB');
+        const req = indexedDB.open('FoclyraDB');
         req.onsuccess = (e) => {
           const db = e.target.result;
           const tx = db.transaction('notes', 'readwrite');
@@ -101,7 +101,7 @@ async function runNonZeroNotesTest() {
     await page.evaluate(async () => {
       const indexedDB = window.indexedDB;
       return new Promise((resolve) => {
-        const req = indexedDB.open('FocusFlowDB');
+        const req = indexedDB.open('FoclyraDB');
         req.onsuccess = (e) => {
           const db = e.target.result;
           const tx = db.transaction('notes', 'readwrite');

@@ -3,7 +3,7 @@ import { LogIn, LogOut, Cloud, ChevronDown, Layers, Sparkles } from 'lucide-reac
 import { useAuth } from '../hooks/useAuth';
 import { useUIStore } from '../hooks/useUIStore';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db } from '../db/FocusFlowDB';
+import { db } from '../db/FoclyraDB';
 import { REGISTERED_MAX_PLAYLISTS, GUEST_MAX_PLAYLISTS, getGuestImportHistory } from '../services/quotaService';
 
 export default function UserMenu({ onOpenAuth }) {

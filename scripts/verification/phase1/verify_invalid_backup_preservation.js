@@ -1,6 +1,6 @@
 import { chromium } from 'playwright';
 
-const BASE_URL = process.env.FOCUSFLOW_TEST_BASE_URL || 'http://127.0.0.1:4173';
+const BASE_URL = process.env.FOCLYRA_TEST_BASE_URL || 'http://127.0.0.1:4173';
 import path from 'path';
 import fs from 'fs';
 
@@ -30,7 +30,7 @@ async function runSentinelTest() {
     const sentinelSummary = await page.evaluate(async () => {
       const indexedDB = window.indexedDB;
       return new Promise((resolve, reject) => {
-        const req = indexedDB.open('FocusFlowDB');
+        const req = indexedDB.open('FoclyraDB');
         req.onsuccess = async (e) => {
           const db = e.target.result;
           
@@ -114,7 +114,7 @@ async function runSentinelTest() {
       return await page.evaluate(async () => {
         const indexedDB = window.indexedDB;
         return new Promise((resolve) => {
-          const req = indexedDB.open('FocusFlowDB');
+          const req = indexedDB.open('FoclyraDB');
           req.onsuccess = (e) => {
             const db = e.target.result;
             const stores = ['courses', 'lessons', 'progress', 'notes', 'practiceProgress'];

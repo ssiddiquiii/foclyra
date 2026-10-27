@@ -52,7 +52,7 @@ export function getActiveDateSet(progressList = [], practiceProgressList = []) {
 }
 
 /**
- * FocusFlow Real-Time Dynamic Streak Calculator
+ * Foclyra Real-Time Dynamic Streak Calculator
  * Calculates active consecutive daily streak ending today or yesterday.
  * @param {Array<object>} progressList
  * @param {Array<object>} practiceProgressList

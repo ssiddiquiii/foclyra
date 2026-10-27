@@ -1,6 +1,6 @@
 import { chromium } from 'playwright';
 
-const BASE_URL = process.env.FOCUSFLOW_TEST_BASE_URL || 'http://127.0.0.1:4173';
+const BASE_URL = process.env.FOCLYRA_TEST_BASE_URL || 'http://127.0.0.1:4173';
 
 let passed = 0;
 let failed = 0;
@@ -25,7 +25,7 @@ async function run() {
 
     const result = await page.evaluate(async () => {
       const { createBootstrapController } = await import('/src/db/bootstrap.js');
-      const { db } = await import('/src/db/FocusFlowDB.js');
+      const { db } = await import('/src/db/FoclyraDB.js');
       const commands = await import('/src/services/dataCommands.js');
 
       let openCalls = 0;

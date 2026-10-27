@@ -15,20 +15,20 @@ import {
 import { useUIStore } from '../hooks/useUIStore';
 
 const STORAGE_KEYS = {
-  END_TIME: 'focusflow_pomo_end_time',
-  MODE: 'focusflow_pomo_mode',
-  RUNNING: 'focusflow_pomo_running',
-  REMAINING: 'focusflow_pomo_remaining',
-  SESSIONS: 'focusflow_pomo_sessions',
-  CUSTOM_FOCUS: 'focusflow_pomo_custom_focus',
-  CUSTOM_BREAK: 'focusflow_pomo_custom_break'
+  END_TIME: 'foclyra_pomo_end_time',
+  MODE: 'foclyra_pomo_mode',
+  RUNNING: 'foclyra_pomo_running',
+  REMAINING: 'foclyra_pomo_remaining',
+  SESSIONS: 'foclyra_pomo_sessions',
+  CUSTOM_FOCUS: 'foclyra_pomo_custom_focus',
+  CUSTOM_BREAK: 'foclyra_pomo_custom_break'
 };
 
 /**
  * Ultra-Smooth Lightweight Pomodoro Focus & Recovery System.
  * - Accurate timestamp-based timing resilient to tab sleep and page navigation.
  * - Automatic real-time countdown during rest breaks with zero freeze.
- * - Live browser tab title indicator: (24:50) 🎯 Focus | FocusFlow
+ * - Live browser tab title indicator: (24:50) 🎯 Focus | Foclyra
  * - Soothing Web Audio synthesizer chimes.
  * - Non-intrusive floating pill with full customizable durations.
  */
@@ -139,13 +139,13 @@ export default function PomodoroTimer() {
   useEffect(() => {
     if (isRunning) {
       const icon = mode === 'focus' ? '🎯 Focus' : '☕ Break';
-      document.title = `(${formatTime(timeLeft)}) ${icon} | FocusFlow`;
+      document.title = `(${formatTime(timeLeft)}) ${icon} | Foclyra`;
     } else {
-      document.title = 'FocusFlow — Personal Learning';
+      document.title = 'Foclyra — Distraction-Free Study Studio';
     }
 
     return () => {
-      document.title = 'FocusFlow — Personal Learning';
+      document.title = 'Foclyra — Distraction-Free Study Studio';
     };
   }, [isRunning, timeLeft, mode]);
 

@@ -3,7 +3,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { isNavigationActive } from '../../../src/components/shell/navigation.js';
 
-const BASE_URL = process.env.FOCUSFLOW_TEST_BASE_URL || 'http://127.0.0.1:4173';
+const BASE_URL = process.env.FOCLYRA_TEST_BASE_URL || 'http://127.0.0.1:4173';
 const SCREENSHOT_DIRECTORY = path.resolve('docs/evidence/phase4/screenshots');
 const VIEWPORTS = [
   ['phone-portrait-320x568', 320, 568],

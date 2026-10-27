@@ -1,5 +1,5 @@
 /**
- * FocusFlow Production Feedback & Bug Report Serverless Endpoint.
+ * Foclyra Production Feedback & Bug Report Serverless Endpoint.
  * Supports:
  * - Resend API (3,000 free emails/month, base64 image attachments)
  * - Web3Forms API (Unlimited free submissions)
@@ -28,7 +28,7 @@ export default async function handler(request, response) {
     }
 
     const cleanName = (name || 'Anonymous User').trim();
-    const cleanEmail = (email || 'noreply@focusflow.app').trim();
+    const cleanEmail = (email || 'noreply@foclyra.com').trim();
     const cleanCategory = category.toUpperCase();
     const recipientEmail = process.env.FEEDBACK_RECIPIENT_EMAIL || 'sameedsiddiqui9@gmail.com';
 
@@ -63,7 +63,7 @@ export default async function handler(request, response) {
         ` : ''}
 
         <div style="margin-top: 30px; padding-top: 16px; border-top: 1px solid #e2e8f0; font-size: 11px; color: #94a3b8; text-align: center;">
-          Sent via FocusFlow Automated Feedback Telemetry
+          Sent via Foclyra Automated Feedback Telemetry
         </div>
       </div>
     `;
@@ -91,8 +91,8 @@ export default async function handler(request, response) {
         body: JSON.stringify({
           from: 'Foclyra Feedback <onboarding@resend.dev>',
           to: [recipientEmail],
-          reply_to: cleanEmail !== 'noreply@focusflow.app' ? cleanEmail : undefined,
-          subject: `[FocusFlow ${cleanCategory}] from ${cleanName}`,
+          reply_to: cleanEmail !== 'noreply@foclyra.com' ? cleanEmail : undefined,
+          subject: `[Foclyra ${cleanCategory}] from ${cleanName}`,
           html: htmlContent,
           attachments: attachments.length > 0 ? attachments : undefined
         })
@@ -113,9 +113,9 @@ export default async function handler(request, response) {
           access_key: web3formsKey,
           name: cleanName,
           email: cleanEmail,
-          subject: `[FocusFlow ${cleanCategory}] from ${cleanName}`,
+          subject: `[Foclyra ${cleanCategory}] from ${cleanName}`,
           message: `${message}\n\n--- Telemetry ---\n${JSON.stringify(telemetry || {}, null, 2)}`,
-          from_name: 'FocusFlow User'
+          from_name: 'Foclyra User'
         })
       });
 
@@ -125,7 +125,7 @@ export default async function handler(request, response) {
     }
 
     // 3. Fallback: Return successful payload with ready-to-use mailto URL so user is never blocked
-    const subject = encodeURIComponent(`[FocusFlow ${cleanCategory}] from ${cleanName}`);
+    const subject = encodeURIComponent(`[Foclyra ${cleanCategory}] from ${cleanName}`);
     const body = encodeURIComponent(`Name: ${cleanName}\nEmail: ${cleanEmail}\n\nMessage:\n${message}\n\n--- Diagnostic Info ---\nURL: ${telemetry?.url || ''}\nBrowser: ${telemetry?.userAgent || ''}\nScreen: ${telemetry?.screenSize || ''}`);
     const mailtoUrl = `mailto:${recipientEmail}?subject=${subject}&body=${body}`;
 

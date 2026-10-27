@@ -1,5 +1,5 @@
 /**
- * FocusFlow Note Export Utility
+ * Foclyra Note Export Utility
  * Converts user's Dexie database notes into clean Markdown (.md) documents
  * for offline revision, Notion, or Obsidian imports.
  */

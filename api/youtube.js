@@ -1,5 +1,5 @@
 /**
- * FocusFlow Production-Grade YouTube Serverless Proxy.
+ * Foclyra Production-Grade YouTube Serverless Proxy.
  * 
  * System Design Protections:
  * 1. API Key Isolation: Server-side environment variables only (never sent to client).
