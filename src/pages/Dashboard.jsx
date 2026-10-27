@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useDashboardData } from '../hooks/useDashboardData';
+import { useUIStore } from '../hooks/useUIStore';
 import { 
   Play, 
   Clock, 
