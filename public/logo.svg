@@ -1,22 +1,30 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
   <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#1a1a1a"/>
-      <stop offset="100%" stop-color="#111111"/>
+    <linearGradient id="logoBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#181920"/>
+      <stop offset="100%" stop-color="#0D0E12"/>
     </linearGradient>
-    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#e8903a"/>
-      <stop offset="100%" stop-color="#d97736"/>
+    <linearGradient id="mintAcc" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#5BF5DE"/>
+      <stop offset="100%" stop-color="#00F5D4"/>
     </linearGradient>
+    <filter id="glowAcc" x="-25%" y="-25%" width="150%" height="150%">
+      <feDropShadow dx="0" dy="0" stdDeviation="2" flood-color="#00F5D4" flood-opacity="0.65"/>
+    </filter>
   </defs>
 
-  <!-- Background: top corners rounded, bottom corners sharp -->
-  <path d="M8,0 L24,0 Q32,0 32,8 L32,32 L0,32 L0,8 Q0,0 8,0 Z" fill="url(#bg)"/>
+  <!-- Deep Charcoal Squircle -->
+  <rect width="48" height="48" rx="13" fill="url(#logoBg)" stroke="#2A2E39" stroke-width="1.5"/>
 
-  <!-- Bottom accent bar (sharp corners, flush to bottom) -->
-  <rect x="0" y="28" width="32" height="4" fill="url(#accent)" opacity="0.9"/>
-  <rect x="0" y="25" width="32" height="7" fill="url(#accent)" opacity="0.12"/>
+  <!-- Outer Focal Brackets (Focus Reticle) -->
+  <path d="M12 18 L12 12 L18 12" fill="none" stroke="#00F5D4" stroke-width="1.8" stroke-linecap="round" opacity="0.45"/>
+  <path d="M36 18 L36 12 L30 12" fill="none" stroke="#00F5D4" stroke-width="1.8" stroke-linecap="round" opacity="0.45"/>
+  <path d="M12 30 L12 36 L18 36" fill="none" stroke="#00F5D4" stroke-width="1.8" stroke-linecap="round" opacity="0.45"/>
+  <path d="M36 30 L36 36 L30 36" fill="none" stroke="#00F5D4" stroke-width="1.8" stroke-linecap="round" opacity="0.45"/>
 
-  <!-- Play triangle — centered -->
-  <polygon points="12,9 12,23 24,16" fill="url(#accent)"/>
+  <!-- High-Precision Play / Focus Arrow -->
+  <path d="M19 14.5 L34.5 24 L19 33.5 Z" fill="url(#mintAcc)" filter="url(#glowAcc)"/>
+
+  <!-- Core Laser Precision Focal Dot -->
+  <circle cx="24" cy="24" r="2" fill="#FFFFFF" opacity="0.95"/>
 </svg>

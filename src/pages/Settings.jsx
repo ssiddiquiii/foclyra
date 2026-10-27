@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { Download, Upload, ShieldAlert, RotateCcw, Key, CheckCircle2, Sun, Moon } from 'lucide-react';
+import { Download, Upload, ShieldAlert, RotateCcw, Key, CheckCircle2 } from 'lucide-react';
 import { clearProgressAndNotes, exportBackup, importBackup } from '../services/dataCommands';
-import { useTheme } from '../hooks/useTheme';
 import { useUIStore } from '../hooks/useUIStore';
 import { MessageSquarePlus } from 'lucide-react';
 
@@ -14,8 +13,7 @@ import { MessageSquarePlus } from 'lucide-react';
  * - Watch progress and notes clearing
  */
 export default function Settings() {
-  const { isDark, setTheme } = useTheme();
-  const { openFeedbackModal, openBetaModal } = useUIStore();
+  const { openFeedbackModal } = useUIStore();
   const [statusMsg, setStatusMsg] = useState({ text: '', type: 'info' });
   const [showConfirmReset, setShowConfirmReset] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
@@ -118,7 +116,7 @@ export default function Settings() {
     <div className="p-4 sm:p-8 max-w-4xl mx-auto space-y-8 animate-page-entry">
       <div>
         <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-normal">Settings & Preferences</h1>
-        <p className="text-muted-foreground text-xs sm:text-sm mt-1 leading-relaxed">Customize your theme appearance, local database backups, and YouTube API configuration.</p>
+        <p className="text-muted-foreground text-xs sm:text-sm mt-1 leading-relaxed">Manage your local database backups, YouTube API configuration, and data preferences.</p>
       </div>
 
       {statusMsg.text && (
@@ -131,58 +129,7 @@ export default function Settings() {
         </div>
       )}
 
-      {/* Theme Appearance Selector */}
-      <div className="glass-panel rounded-2xl p-5 sm:p-6 space-y-4 bg-card border border-border shadow-sm">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center border border-primary/20 flex-shrink-0">
-              {isDark ? <Moon size={18} /> : <Sun size={18} />}
-            </div>
-            <div>
-              <h2 className="text-base font-semibold text-foreground tracking-normal">Interface Theme</h2>
-              <p className="text-muted-foreground text-xs leading-relaxed">
-                Choose between Deep Matte Charcoal dark mode and Porcelain Studio light mode.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-3 pt-1">
-          <button
-            type="button"
-            onClick={() => setTheme('light')}
-            className={`p-3.5 rounded-xl border flex items-center justify-between text-xs font-semibold transition cursor-pointer ${
-              !isDark
-                ? 'border-primary bg-primary/10 text-primary shadow-sm'
-                : 'border-border bg-muted/40 text-muted-foreground hover:bg-muted hover:text-foreground'
-            }`}
-          >
-            <div className="flex items-center gap-2">
-              <Sun size={16} className="text-amber-500" />
-              <span>Light Mode (Porcelain)</span>
-            </div>
-            {!isDark && <CheckCircle2 size={16} className="text-primary" />}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setTheme('dark')}
-            className={`p-3.5 rounded-xl border flex items-center justify-between text-xs font-semibold transition cursor-pointer ${
-              isDark
-                ? 'border-primary bg-primary/10 text-primary shadow-sm'
-                : 'border-border bg-muted/40 text-muted-foreground hover:bg-muted hover:text-foreground'
-            }`}
-          >
-            <div className="flex items-center gap-2">
-              <Moon size={16} className="text-primary" />
-              <span>Dark Mode (Matte Charcoal)</span>
-            </div>
-            {isDark && <CheckCircle2 size={16} className="text-primary" />}
-          </button>
-        </div>
-      </div>
-
-      {/* YouTube API Configuration */}
+            {/* YouTube API Configuration */}
       <div className="glass-panel rounded-2xl p-5 sm:p-6 space-y-4 bg-card border border-border shadow-sm">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center border border-primary/20 flex-shrink-0">
@@ -317,55 +264,7 @@ export default function Settings() {
         )}
       </div>
 
-      {/* System Status & Beta Architecture Section */}
-      <div className="glass-panel rounded-2xl p-5 sm:p-6 space-y-4 bg-card border border-border shadow-sm">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <h2 className="text-base font-semibold text-foreground tracking-normal">About Foclyra Studio</h2>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/25 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold uppercase tracking-wider">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                Public Beta v1.0
-              </span>
-            </div>
-            <p className="text-muted-foreground text-xs leading-relaxed">
-              Actively maintained learning environment. The core local storage, markdown notes, and distraction-free YouTube player are stable and reliable for daily use.
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={openBetaModal}
-            className="px-3.5 py-2 rounded-xl bg-muted/60 hover:bg-muted border border-border text-foreground text-xs font-semibold transition cursor-pointer flex-shrink-0 self-start sm:self-auto"
-          >
-            Beta Details & Architecture
-          </button>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
-          <div className="p-3 rounded-xl bg-muted/30 border border-border/70 space-y-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block">Storage Model</span>
-            <span className="text-xs font-semibold text-foreground block">Client-Side IndexedDB</span>
-            <span className="text-[11px] text-muted-foreground">100% private on your machine</span>
-          </div>
-
-          <div className="p-3 rounded-xl bg-muted/30 border border-border/70 space-y-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block">Core Stability</span>
-            <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              Stable & Battle-Tested
-            </span>
-            <span className="text-[11px] text-muted-foreground">Safe for continuous study</span>
-          </div>
-
-          <div className="p-3 rounded-xl bg-muted/30 border border-border/70 space-y-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block">Release Cycle</span>
-            <span className="text-xs font-semibold text-foreground block">Continuous Ship</span>
-            <span className="text-[11px] text-muted-foreground">Weekly improvements</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Community & Feedback Section */}
+            {/* Community & Feedback Section */}
       <div className="glass-panel rounded-2xl p-5 sm:p-6 space-y-4 bg-card border border-border shadow-sm">
         <div>
           <h2 className="text-base font-semibold text-foreground tracking-normal mb-1">Feedback & Error Reporting</h2>

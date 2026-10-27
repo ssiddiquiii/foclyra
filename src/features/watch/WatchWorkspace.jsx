@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { CheckCircle2, Circle, Clock, FileText, ListVideo, Search } from 'lucide-react';
+import { CheckCircle2, Circle, Clock, FileText, ListVideo, Search, ChevronRight } from 'lucide-react';
 import { NotesPanel } from './NotesPanel';
 
 /**
@@ -89,7 +89,7 @@ export function PlaylistSyllabusList({ courseId, lessonId, lessons, progressList
  * Desktop Watch Workspace: Dedicated Right Sidebar displaying the Course Playlist
  */
 export function DesktopWatchWorkspace(props) {
-  const { courseId, lessonId, lessons, progressList, onNavigate } = props;
+  const { courseId, lessonId, lessons, progressList, onNavigate, onToggleCollapse } = props;
   const completedCount = (lessons || []).filter(item => 
     progressList?.some(progress => progress.id === `${courseId}_${item.id}` && progress.completed)
   ).length;
@@ -100,15 +100,35 @@ export function DesktopWatchWorkspace(props) {
       {/* Sidebar Header */}
       <div className="p-4 border-b border-border bg-card/90 space-y-2 flex-shrink-0">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <ListVideo size={16} className="text-primary" />
-            <h2 className="text-xs font-bold uppercase tracking-wider text-foreground">
+          <button
+            type="button"
+            onClick={onToggleCollapse}
+            className="flex items-center gap-2 text-left group cursor-pointer hover:opacity-85 transition"
+            title="Click to collapse playlist & expand screen (Theater Mode)"
+            aria-label="Collapse course playlist"
+          >
+            <div className="p-1.5 rounded-lg bg-primary/10 text-primary group-hover:bg-primary/20 transition flex items-center justify-center">
+              <ListVideo size={16} className="text-primary group-hover:scale-110 transition-transform" />
+            </div>
+            <h2 className="text-xs font-bold uppercase tracking-wider text-foreground group-hover:text-primary transition">
               {lessons?.length === 1 ? 'Single Video Crash Course' : `Course Playlist (${lessons?.length || 0})`}
             </h2>
+          </button>
+
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-semibold text-muted-foreground">
+              {completedCount}/{lessons?.length || 0} Done ({percent}%)
+            </span>
+            <button
+              type="button"
+              onClick={onToggleCollapse}
+              className="p-1 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition cursor-pointer"
+              title="Collapse playlist to expand screen"
+              aria-label="Collapse playlist"
+            >
+              <ChevronRight size={16} />
+            </button>
           </div>
-          <span className="text-[11px] font-semibold text-muted-foreground">
-            {completedCount}/{lessons?.length || 0} Done ({percent}%)
-          </span>
         </div>
 
         {/* Visual Progress Bar */}

@@ -424,27 +424,9 @@ function AppContent() {
         {/* Minimal Studio Footer */}
         {!location.pathname.includes('/lessons/') && (
           <footer className="mt-6 py-4 border-t border-border/40 text-[11px] text-muted-foreground w-full text-center">
-            <button
-              type="button"
-              onClick={openBetaModal}
-              className="inline-flex items-center gap-1.5 hover:text-foreground transition cursor-pointer font-medium"
-              title="Click to view Public Beta details"
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Foclyra v1.0 <span className="text-emerald-600 dark:text-emerald-400 font-semibold">(Public Beta)</span></span>
-            </button>
-            <span className="mx-2 text-muted-foreground/40">•</span>
-            <span>Stable & Local-First</span>
+            <span>Foclyra Studio</span>
             <span className="mx-2 text-muted-foreground/40">•</span>
             <span>Built by <span className="font-semibold text-foreground">Sameed Siddiqui</span></span>
-            <span className="mx-2 text-muted-foreground/40">•</span>
-            <button 
-              type="button" 
-              onClick={openFeedbackModal} 
-              className="hover:text-primary transition underline cursor-pointer"
-            >
-              Feedback & Support
-            </button>
           </footer>
         )}
       </main>
@@ -473,18 +455,20 @@ function AppContent() {
       {/* Global Auth Modal */}
       <AuthModal />
 
-      {/* Floating Feedback Trigger Button (Mobile & Desktop) */}
+      {/* Floating Feedback Trigger Button (Positioned on Left, mirroring Timer on Right) */}
       {!location.pathname.includes('/lessons/') && (
-        <button
-          type="button"
-          onClick={openFeedbackModal}
-          aria-label="Send Feedback or Report Bug"
-          className="fixed bottom-3.5 right-36 sm:right-40 z-40 hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border/80 bg-card/85 text-muted-foreground hover:text-primary hover:border-primary/50 text-xs font-medium shadow-lg backdrop-blur-md transition-all hover:scale-105 active:scale-95 cursor-pointer"
-          title="Found a bug or have an idea? Click to send feedback!"
-        >
-          <MessageSquarePlus size={15} className="text-primary" />
-          <span>Feedback</span>
-        </button>
+        <aside aria-label="Feedback and suggestions" className="fixed bottom-3 left-3 sm:left-4 z-40 will-change-transform">
+          <button
+            type="button"
+            onClick={openFeedbackModal}
+            aria-label="Send Feedback or Report Bug"
+            className="flex items-center gap-2 px-3.5 py-2 rounded-full font-bold text-xs shadow-2xl border border-border bg-card/90 text-foreground hover:text-primary hover:border-primary/60 backdrop-blur-md transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer group"
+            title="Found a bug or have a suggestion? Click to send instant feedback!"
+          >
+            <MessageSquarePlus size={15} className="text-primary group-hover:scale-110 transition-transform" />
+            <span className="text-xs font-semibold">Feedback</span>
+          </button>
+        </aside>
       )}
     </div>
   );

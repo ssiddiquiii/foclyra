@@ -18,6 +18,23 @@ export default function Watch() {
   const navigate = useNavigate();
   const { isLoading, notFound, course, lesson, courseLessons, progressList, lessonNotes } = useWatchData(courseId, lessonId);
   const [activeTab, setActiveTab] = useState('notes');
+  const [isPlaylistCollapsed, setIsPlaylistCollapsed] = useState(() => {
+    try {
+      return localStorage.getItem('foclyra_watch_playlist_collapsed') === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  const handleTogglePlaylistCollapse = () => {
+    setIsPlaylistCollapsed(prev => {
+      const next = !prev;
+      try {
+        localStorage.setItem('foclyra_watch_playlist_collapsed', String(next));
+      } catch {}
+      return next;
+    });
+  };
   const isDesktopWorkspace = useDesktopWatchWorkspace();
   const player = useWatchPlayerController({ courseId, lessonId, lesson, progressList });
   const noteState = useLessonNotes({ courseId, lessonId, getTimestamp: player.getCurrentTime });
@@ -71,12 +88,20 @@ export default function Watch() {
     onNavigate: handleNavigate,
     notesProps,
     isDesktop: isDesktopWorkspace,
-    onTabChange: setActiveTab
+    onTabChange: setActiveTab,
+    onToggleCollapse: handleTogglePlaylistCollapse
   };
 
   const main = (
     <>
-      <WatchHeader courseId={courseId} courseTitle={course.title} lessonTitle={lesson.title} />
+      <WatchHeader 
+        courseId={courseId} 
+        courseTitle={course.title} 
+        lessonTitle={lesson.title} 
+        isPlaylistCollapsed={isPlaylistCollapsed}
+        onTogglePlaylist={handleTogglePlaylistCollapse}
+        lessonsCount={courseLessons.length}
+      />
       <PlayerSurface
         course={course}
         lesson={lesson}
@@ -124,5 +149,5 @@ export default function Watch() {
     </>
   );
 
-  return <WatchWorkspaceShell main={main} sidebar={<DesktopWatchWorkspace {...workspaceProps} />} />;
+  return <WatchWorkspaceShell main={main} sidebar={<DesktopWatchWorkspace {...workspaceProps} />} isCollapsed={isPlaylistCollapsed} />;
 }
