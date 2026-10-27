@@ -177,7 +177,7 @@ export default function FeedbackModal({ isOpen, onClose }) {
             Feedback & Bug Report
           </h2>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Help improve FocusFlow. Spotted an error or have an idea? Let us know!
+            Help improve Foclyra. Spotted an error or have an idea? Let us know!
           </p>
         </div>
         <button
@@ -278,7 +278,7 @@ export default function FeedbackModal({ isOpen, onClose }) {
             placeholder={
               category === 'bug'
                 ? "Describe what happened... Which lecture or button triggered the issue? What error message did you see?"
-                : "Tell us what you'd love to see in FocusFlow..."
+                : "Tell us what you'd love to see in Foclyra..."
             }
             className="w-full px-3.5 py-2.5 rounded-xl border border-border bg-muted/40 text-foreground text-xs focus:outline-none focus:border-primary placeholder:text-muted-foreground/70 transition leading-relaxed resize-none"
           />

@@ -36,7 +36,7 @@ export default async function handler(request, response) {
     const htmlContent = `
       <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
         <div style="border-bottom: 2px solid #6366f1; padding-bottom: 12px; margin-bottom: 20px;">
-          <h2 style="margin: 0; color: #1e293b; font-size: 20px;">[${cleanCategory}] FocusFlow Feedback</h2>
+          <h2 style="margin: 0; color: #1e293b; font-size: 20px;">[${cleanCategory}] Foclyra Feedback</h2>
           <p style="margin: 4px 0 0 0; color: #64748b; font-size: 13px;">Submitted by ${cleanName} (${cleanEmail})</p>
         </div>
 
@@ -89,7 +89,7 @@ export default async function handler(request, response) {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          from: 'FocusFlow Feedback <onboarding@resend.dev>',
+          from: 'Foclyra Feedback <onboarding@resend.dev>',
           to: [recipientEmail],
           reply_to: cleanEmail !== 'noreply@focusflow.app' ? cleanEmail : undefined,
           subject: `[FocusFlow ${cleanCategory}] from ${cleanName}`,

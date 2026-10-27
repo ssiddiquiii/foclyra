@@ -4,14 +4,14 @@
  * for offline revision, Notion, or Obsidian imports.
  */
 
-export function exportNotesToMarkdown(notesList = [], courseTitle = 'FocusFlow Course Notes') {
+export function exportNotesToMarkdown(notesList = [], courseTitle = 'Foclyra Course Notes') {
   if (!notesList || notesList.length === 0) {
     alert('No notes available to export yet. Write some notes during lectures first!');
     return;
   }
 
   let markdown = `# 📝 ${courseTitle}\n\n`;
-  markdown += `*Exported from FocusFlow OS on ${new Date().toLocaleDateString()}*\n\n---\n\n`;
+  markdown += `*Exported from Foclyra Studio on ${new Date().toLocaleDateString()}*\n\n---\n\n`;
 
   notesList.forEach((note, index) => {
     const timeStr = note.timestamp ? formatTime(note.timestamp) : 'General Note';

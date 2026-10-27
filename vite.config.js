@@ -51,9 +51,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'favicon.svg', 'apple-touch-icon.png', 'logo.png', 'logo.svg'],
       manifest: {
-        name: 'FocusFlow — Personal Learning',
-        short_name: 'FocusFlow',
-        description: 'Distraction-free, local-first personal learning dashboard',
+        name: 'Foclyra — Distraction-Free Study Studio',
+        short_name: 'Foclyra',
+        description: 'Distraction-free, local-first study studio with live timestamped notes',
         theme_color: '#d97736',
         background_color: '#09090b',
         display: 'standalone',

@@ -56,7 +56,7 @@ export default function Settings() {
       
       const link = document.createElement('a');
       link.href = url;
-      link.download = `focusflow-backup-${Date.now()}.json`;
+      link.download = `foclyra-backup-${Date.now()}.json`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -191,7 +191,7 @@ export default function Settings() {
           <div>
             <h2 className="text-base font-semibold text-foreground tracking-normal">YouTube API Configuration (Optional)</h2>
             <p className="text-muted-foreground text-xs leading-relaxed">
-              FocusFlow includes an automatic proxy with zero-key fallback. You can also provide a personal Google Cloud YouTube Data API v3 key.
+              Foclyra includes an automatic proxy with zero-key fallback. You can also provide a personal Google Cloud YouTube Data API v3 key.
             </p>
           </div>
         </div>
@@ -242,7 +242,7 @@ export default function Settings() {
         <div>
           <h2 className="text-base font-semibold text-foreground tracking-normal mb-1">Local Data Backups</h2>
           <p className="text-muted-foreground text-xs leading-relaxed">
-            FocusFlow is a local-first application. Your watch progress and notes are stored entirely in your browser.
+            Foclyra is a local-first application. Your watch progress and notes are stored entirely in your browser.
             We recommend exporting periodic backups to keep your data secure.
           </p>
         </div>
@@ -322,7 +322,7 @@ export default function Settings() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <h2 className="text-base font-semibold text-foreground tracking-normal">About FocusFlow OS</h2>
+              <h2 className="text-base font-semibold text-foreground tracking-normal">About Foclyra Studio</h2>
               <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/25 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold uppercase tracking-wider">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 Public Beta v1.0
@@ -370,7 +370,7 @@ export default function Settings() {
         <div>
           <h2 className="text-base font-semibold text-foreground tracking-normal mb-1">Feedback & Error Reporting</h2>
           <p className="text-muted-foreground text-xs leading-relaxed">
-            Spotted an issue, missing video duration, or have a suggestion to make FocusFlow better?
+            Spotted an issue, missing video duration, or have a suggestion to make Foclyra better?
             We read every single piece of feedback!
           </p>
         </div>

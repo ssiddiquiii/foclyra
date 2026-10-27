@@ -40,7 +40,7 @@ export default class ErrorBoundary extends React.Component {
           <div className="space-y-2 max-w-md">
             <h2 className="text-xl font-extrabold text-white tracking-tight">Something went unexpected</h2>
             <p className="text-xs text-zinc-400 leading-relaxed font-medium">
-              FocusFlow caught a minor UI exception. Don't worry, your course notes, and learning state are completely safe in local storage!
+              Foclyra caught a minor UI exception. Don't worry, your course notes, and learning state are completely safe in local storage!
             </p>
           </div>
 

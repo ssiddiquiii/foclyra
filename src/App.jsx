@@ -141,14 +141,14 @@ function AppContent() {
 
         <div className="flex items-center gap-2">
           <Link to="/" onMouseEnter={preloadDashboard} className="flex items-center gap-2">
-            <img src="/logo.svg" alt="FocusFlow" className="w-6 h-6 flex-shrink-0" />
-            <span className="font-bold text-foreground text-xs tracking-normal">FocusFlow OS</span>
+            <img src="/logo.svg" alt="Foclyra" className="w-6 h-6 flex-shrink-0" />
+            <span className="font-bold text-foreground text-xs tracking-normal">Foclyra Studio</span>
           </Link>
           <button
             type="button"
             onClick={openBetaModal}
             className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25 text-[9px] font-bold uppercase tracking-wider cursor-pointer transition"
-            title="FocusFlow is in Public Beta. Click for details."
+            title="Foclyra is in Public Beta. Click for details."
           >
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
             <span>Beta</span>
@@ -186,11 +186,11 @@ function AppContent() {
           to="/" 
           onMouseEnter={preloadDashboard}
           className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/25 flex items-center justify-center shadow-sm hover:scale-105 transition cursor-pointer group relative"
-          title="FocusFlow Home Dashboard"
+          title="Foclyra Home Dashboard"
         >
-          <img src="/logo.svg" alt="FocusFlow" className="w-5 h-5 flex-shrink-0 group-hover:scale-110 transition" />
+          <img src="/logo.svg" alt="Foclyra" className="w-5 h-5 flex-shrink-0 group-hover:scale-110 transition" />
           <span className="absolute left-full ml-3 px-2.5 py-1 rounded-lg bg-popover border border-border text-popover-foreground text-xs font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 transition pointer-events-none shadow-lg z-50">
-            FocusFlow Home
+            Foclyra Home
           </span>
         </Link>
 
@@ -199,7 +199,7 @@ function AppContent() {
           type="button"
           onClick={openBetaModal}
           className="px-1.5 py-0.5 rounded-md bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25 text-[8px] font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1 group relative"
-          title="FocusFlow is in Public Beta. Click for details."
+          title="Foclyra is in Public Beta. Click for details."
         >
           <span className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
           <span>Beta</span>
@@ -277,10 +277,10 @@ function AppContent() {
         <div className="space-y-6 pt-12">
           <div className="flex items-center justify-between px-2">
             <div className="flex items-center gap-3">
-              <img src="/logo.svg" alt="FocusFlow" className="w-7 h-7" />
+              <img src="/logo.svg" alt="Foclyra" className="w-7 h-7" />
               <div>
                 <div className="flex items-center gap-1.5">
-                  <span className="font-bold text-foreground text-base">FocusFlow</span>
+                  <span className="font-bold text-foreground text-base">Foclyra</span>
                   <button
                     type="button"
                     onClick={() => {
@@ -379,7 +379,7 @@ function AppContent() {
               title="Click to view Public Beta details"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span>FocusFlow v1.0 <span className="text-emerald-600 dark:text-emerald-400 font-semibold">(Public Beta)</span></span>
+              <span>Foclyra v1.0 <span className="text-emerald-600 dark:text-emerald-400 font-semibold">(Public Beta)</span></span>
             </button>
             <span className="mx-2 text-muted-foreground/40">•</span>
             <span>Stable & Local-First</span>

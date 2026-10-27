@@ -44,7 +44,7 @@ export default function BetaModal({ isOpen, onClose }) {
           <div>
             <div className="flex items-center gap-2">
               <h2 id="beta-modal-title" className="text-lg font-bold text-foreground tracking-tight">
-                FocusFlow OS
+                Foclyra Studio
               </h2>
               <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold uppercase tracking-wider">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -52,7 +52,7 @@ export default function BetaModal({ isOpen, onClose }) {
               </span>
             </div>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Version 1.0.0-beta • Local-First Learning Studio
+              Version 1.0.0-beta • Local-First Study Studio
             </p>
           </div>
         </div>
@@ -73,7 +73,7 @@ export default function BetaModal({ isOpen, onClose }) {
           <span>Active Development, Reliable for Daily Use</span>
         </div>
         <p className="text-xs text-muted-foreground leading-relaxed">
-          FocusFlow is currently in Public Beta. We are continuously adding refinements and new superpowers, but the core engine is <strong>rock-solid, tested, and safe for daily deep work</strong>.
+          Foclyra is currently in Public Beta. We are continuously adding refinements and new superpowers, but the core engine is <strong>rock-solid, tested, and safe for daily deep work</strong>.
         </p>
       </div>
 

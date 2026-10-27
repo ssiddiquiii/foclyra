@@ -100,7 +100,7 @@ export default function Dashboard() {
 
   const handleExportNotes = async () => {
     const notes = await exportNotes();
-    exportNotesToMarkdown(notes, 'FocusFlow_Mastery_Notes');
+    exportNotesToMarkdown(notes, 'Foclyra_Mastery_Notes');
   };
 
   const handleDirectImport = async (e, overrideUrl) => {
