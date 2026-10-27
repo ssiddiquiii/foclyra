@@ -186,39 +186,19 @@ function AppContent() {
         </div>
       </header>
 
-      {/* Desktop Floating Vertical Glass Navigation Dock */}
-      <aside data-testid="desktop-navigation" aria-label="Primary navigation" className="fixed left-3.5 top-1/2 z-50 hidden -translate-y-1/2 flex-col items-center space-y-3 rounded-2xl border border-white/10 bg-card/85 p-2.5 shadow-2xl backdrop-blur-2xl lg:flex">
+      {/* Desktop Floating Vertical Glass Navigation Dock (Evenly spaced, clean minimal dock) */}
+      <aside data-testid="desktop-navigation" aria-label="Primary navigation" className="fixed left-3.5 top-1/2 z-50 hidden -translate-y-1/2 flex-col items-center justify-center gap-3 rounded-2xl border border-border/80 bg-card/85 p-2 shadow-2xl backdrop-blur-2xl lg:flex">
         {/* Brand Logo Icon */}
         <Link 
           to="/" 
           onMouseEnter={preloadDashboard}
-          className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/25 flex items-center justify-center shadow-sm hover:scale-105 transition cursor-pointer group relative"
-          title="Foclyra Home Dashboard"
+          aria-label="Foclyra Home"
+          className="w-10 h-10 rounded-xl flex items-center justify-center transition duration-200 hover:scale-105 cursor-pointer"
         >
-          <img src="/logo.svg" alt="Foclyra" className="w-5 h-5 flex-shrink-0 group-hover:scale-110 transition" />
-          <span className="absolute left-full ml-3 px-2.5 py-1 rounded-lg bg-popover border border-border text-popover-foreground text-xs font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 transition pointer-events-none shadow-lg z-50">
-            Foclyra Home
-          </span>
+          <img src="/logo.svg" alt="Foclyra" className="w-7 h-7 flex-shrink-0" />
         </Link>
 
-        {/* Beta Version Badge */}
-        <button
-          type="button"
-          onClick={openBetaModal}
-          className="px-1.5 py-0.5 rounded-md bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25 text-[8px] font-bold uppercase tracking-wider transition cursor-pointer flex items-center gap-1 group relative"
-          title="Foclyra is in Public Beta. Click for details."
-        >
-          <span className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
-          <span>Beta</span>
-          <span className="absolute left-full ml-3 px-2.5 py-1 rounded-lg bg-popover border border-border text-popover-foreground text-xs font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 transition pointer-events-none shadow-lg z-50">
-            Public Beta v1.0 • Stable & Offline Ready
-          </span>
-        </button>
-
-        {/* Subtle Divider */}
-        <div className="w-5 h-[1px] bg-border my-0.5" />
-
-        {/* Navigation Dock Items */}
+        {/* Navigation Dock Items (Evenly distributed, no hover description popups) */}
         {navigationItems.map((item) => {
           const isActive = isNavigationActive(location.pathname, item.path);
           const Icon = item.icon;
@@ -232,39 +212,16 @@ function AppContent() {
               onMouseEnter={handleHover}
               aria-label={item.name}
               aria-current={isActive ? 'page' : undefined}
-              className={`relative w-10 h-10 rounded-xl transition duration-200 flex items-center justify-center cursor-pointer group ${
+              className={`w-10 h-10 rounded-xl transition duration-200 flex items-center justify-center cursor-pointer ${
                 isActive 
                   ? 'bg-primary/15 text-primary border border-primary/30 shadow-sm' 
                   : 'text-muted-foreground hover:text-foreground hover:bg-muted'
               }`}
             >
-              <Icon size={19} className={isActive ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'} />
-              <span className="absolute left-full ml-3 px-2.5 py-1 rounded-lg bg-popover border border-border text-popover-foreground text-xs font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 transition pointer-events-none shadow-lg z-50">
-                {item.name}
-              </span>
+              <Icon size={19} className={isActive ? 'text-primary' : 'text-muted-foreground'} />
             </Link>
           );
         })}
-
-        {/* Subtle Divider */}
-        <div className="w-5 h-[1px] bg-border my-0.5" />
-
-        {/* Desktop Theme Switcher Button */}
-        <button
-          onClick={toggleTheme}
-          aria-label={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-          className="relative w-10 h-10 rounded-xl transition duration-200 flex items-center justify-center cursor-pointer group text-muted-foreground hover:text-foreground hover:bg-muted"
-          title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
-        >
-          {isDark ? (
-            <Sun size={18} className="text-amber-400 group-hover:rotate-45 transition-transform" />
-          ) : (
-            <Moon size={18} className="text-zinc-700 group-hover:-rotate-12 transition-transform" />
-          )}
-          <span className="absolute left-full ml-3 px-2.5 py-1 rounded-lg bg-popover border border-border text-popover-foreground text-xs font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 transition pointer-events-none shadow-lg z-50">
-            {isDark ? 'Light Mode' : 'Dark Mode'}
-          </span>
-        </button>
       </aside>
 
       {/* Mobile Drawer Navigation (Slide-out) */}
