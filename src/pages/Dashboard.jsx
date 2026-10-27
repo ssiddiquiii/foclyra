@@ -12,7 +12,6 @@ import {
   Download, 
   RefreshCw, 
   Loader2, 
-  Search, 
   CheckCircle2 
 } from 'lucide-react';
 import StreakModal from '../components/StreakModal';
@@ -59,7 +58,6 @@ export default function Dashboard() {
   const { user } = useAuth();
   const { openAuthModal } = useUIStore();
   const navigate = useNavigate();
-  const { openCommandPalette } = useUIStore();
   const {
     isLoading,
     sortedCourses,
@@ -357,15 +355,6 @@ export default function Dashboard() {
             </div>
 
             <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={openCommandPalette}
-                className="flex items-center gap-2 px-3 py-2 rounded-xl bg-card border border-border text-muted-foreground text-xs hover:text-foreground hover:bg-muted transition cursor-pointer shadow-xs"
-              >
-                <Search size={14} />
-                <span className="hidden sm:inline">Search...</span>
-                <kbd className="px-1.5 py-0.5 rounded bg-muted text-[10px] font-mono border border-border">Ctrl K</kbd>
-              </button>
               <button
                 onClick={handleExportNotes}
                 className="px-3.5 py-2 rounded-xl bg-card hover:bg-muted border border-border text-foreground text-xs font-semibold transition flex items-center gap-1.5 cursor-pointer shadow-xs"
