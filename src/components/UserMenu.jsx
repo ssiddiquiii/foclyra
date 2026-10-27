@@ -44,7 +44,7 @@ export default function UserMenu({ onOpenAuth }) {
         )}
         <button
           onClick={handleOpenAuth}
-          className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold shadow-[0_0_15px_rgba(0,245,212,0.3)] hover:shadow-[0_0_22px_rgba(0,245,212,0.5)] transition hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+          className="h-9 flex items-center gap-2 px-4 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold shadow-xs transition hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
           title="Sign in with Google or Email to unlock 5 courses & cloud backup"
         >
           <Sparkles size={13} />
@@ -62,7 +62,7 @@ export default function UserMenu({ onOpenAuth }) {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setDropdownOpen(!dropdownOpen)}
-        className="flex items-center gap-2 p-1 sm:px-2.5 sm:py-1 rounded-full border border-white/10 bg-card/80 hover:bg-muted text-foreground text-xs font-semibold shadow-xs transition hover:scale-[1.01] cursor-pointer backdrop-blur-md"
+        className="h-9 flex items-center gap-2.5 px-3 rounded-full border border-border/80 bg-card/80 hover:bg-muted text-foreground text-xs font-semibold shadow-xs transition hover:scale-[1.01] cursor-pointer backdrop-blur-md"
         aria-expanded={dropdownOpen}
       >
         {avatarUrl ? (
