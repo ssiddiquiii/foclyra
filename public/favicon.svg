@@ -1,29 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
   <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#181920"/>
       <stop offset="100%" stop-color="#111216"/>
     </linearGradient>
-    <linearGradient id="mint" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#46FCE0"/>
+    <linearGradient id="mintGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4EECD3"/>
       <stop offset="100%" stop-color="#00F5D4"/>
     </linearGradient>
-    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="0.5" stdDeviation="1.2" flood-color="#00F5D4" flood-opacity="0.45"/>
-    </filter>
   </defs>
 
-  <!-- Deep Matte Charcoal Rounded Squircle (All 4 corners smoothly rounded) -->
-  <rect width="32" height="32" rx="8" fill="url(#bg)" stroke="#2A2E39" stroke-width="1"/>
+  <!-- Deep Matte Charcoal Rounded Squircle with 1.5px safe margin -->
+  <rect x="1.5" y="1.5" width="29" height="29" rx="8" fill="url(#bgGrad)" stroke="#2A2E39" stroke-width="1.2"/>
 
-  <!-- Centered Smooth Rounded Play Triangle -->
+  <!-- Pure, Centered, Beautifully Rounded Play Triangle -->
   <path
-    d="M 12,9.25 A 1.75 1.75 0 0 1 13.75,7.75 L 21.75,12.75 A 1.75 1.75 0 0 1 21.75,15.25 L 13.75,20.25 A 1.75 1.75 0 0 1 12,18.75 Z"
-    fill="url(#mint)"
-    filter="url(#glow)"
+    d="M 12.5,10.2 A 2 2 0 0 1 14.5,8.5 L 21.8,14.3 A 2 2 0 0 1 21.8,17.7 L 14.5,23.5 A 2 2 0 0 1 12.5,21.8 Z"
+    fill="url(#mintGrad)"
   />
-
-  <!-- Bottom Rounded Accent Bar (Smooth pill ends) -->
-  <rect x="4.5" y="24.5" width="23" height="3.5" rx="1.75" fill="url(#mint)" opacity="0.18"/>
-  <rect x="5.5" y="25" width="21" height="2.5" rx="1.25" fill="url(#mint)" opacity="0.95"/>
 </svg>
