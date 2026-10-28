@@ -186,9 +186,8 @@ function AppContent() {
         </div>
       </header>
 
-      {/* Desktop Floating Vertical Glass Navigation Dock (Hidden on Watch page for full-width cinema) */}
-      {!isWatchPage && (
-        <aside data-testid="desktop-navigation" aria-label="Primary navigation" className="fixed left-3.5 top-1/2 z-50 hidden -translate-y-1/2 flex-col items-center justify-center gap-3 rounded-2xl border border-border/80 bg-card/85 p-2 shadow-2xl backdrop-blur-2xl lg:flex">
+      {/* Desktop Floating Vertical Glass Navigation Dock */}
+      <aside data-testid="desktop-navigation" aria-label="Primary navigation" className="fixed left-3.5 top-1/2 z-50 hidden -translate-y-1/2 flex-col items-center justify-center gap-3 rounded-2xl border border-border/80 bg-card/85 p-2 shadow-2xl backdrop-blur-2xl lg:flex">
         {/* Brand Logo Icon */}
         <Link 
           to="/" 
@@ -224,7 +223,6 @@ function AppContent() {
           );
         })}
       </aside>
-      )}
 
       {/* Mobile Drawer Navigation (Slide-out) */}
       <aside
@@ -303,7 +301,7 @@ function AppContent() {
       {/* Main Content View Container */}
       <main className={`min-w-0 flex-1 flex flex-col ${
         isWatchPage 
-          ? 'p-0 h-full overflow-hidden'
+          ? 'p-0 h-full overflow-hidden lg:pl-20'
           : 'safe-area-main pt-16 lg:pt-5 lg:pl-20 xl:pl-22 px-3.5 sm:px-6 justify-between'
       }`}>
         <div className={`w-full min-w-0 flex flex-col ${isWatchPage ? 'h-full overflow-hidden' : 'flex-1'}`}>

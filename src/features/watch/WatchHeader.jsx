@@ -20,20 +20,23 @@ export function WatchHeader({ courseId, courseTitle, lessonTitle, isPlaylistColl
         </div>
       </div>
 
-      {/* Playlist Re-expand Button on Desktop when collapsed */}
-      {isPlaylistCollapsed && (
-        <div className="hidden xl:flex items-center gap-2 flex-shrink-0">
-          <button
-            type="button"
-            onClick={onTogglePlaylist}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-primary/30 bg-primary/10 hover:bg-primary/20 text-primary text-xs font-semibold shadow-xs transition cursor-pointer group active:scale-95"
-            title="Open course playlist drawer"
-          >
-            <ListVideo size={15} className="text-primary group-hover:scale-110 transition-transform" />
-            <span>Show Playlist ({lessonsCount || 0})</span>
-          </button>
-        </div>
-      )}
+      {/* Desktop Playlist Toggle (Theater vs Sidebar) */}
+      <div className="hidden xl:flex items-center gap-2 flex-shrink-0">
+        <button
+          type="button"
+          onClick={onTogglePlaylist}
+          className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-semibold shadow-xs transition cursor-pointer group active:scale-95 ${
+            isPlaylistCollapsed 
+              ? 'border-primary/30 bg-primary/10 hover:bg-primary/20 text-primary' 
+              : 'border-border bg-card hover:bg-muted text-muted-foreground hover:text-foreground'
+          }`}
+          title={isPlaylistCollapsed ? "Open course playlist drawer" : "Collapse playlist for full theater mode"}
+          aria-label={isPlaylistCollapsed ? "Open course playlist" : "Collapse playlist for theater mode"}
+        >
+          <ListVideo size={15} className={`transition-transform group-hover:scale-110 ${isPlaylistCollapsed ? 'text-primary' : 'text-muted-foreground'}`} />
+          <span>{isPlaylistCollapsed ? `Show Playlist (${lessonsCount || 0})` : 'Theater Mode'}</span>
+        </button>
+      </div>
     </div>
   );
 }

@@ -345,12 +345,14 @@ export function useWatchPlayerController({ courseId, lessonId, lesson, progressL
     if (mouseTimerRef.current) clearTimeout(mouseTimerRef.current);
     mouseTimerRef.current = setTimeout(() => {
       if (useUIStore.getState().isPlaying) setIsControlsVisible(false);
-    }, 800);
+    }, 2500);
   }, []);
 
   const handleMouseLeave = useCallback(() => {
     if (mouseTimerRef.current) clearTimeout(mouseTimerRef.current);
-    if (useUIStore.getState().isPlaying) setIsControlsVisible(false);
+    mouseTimerRef.current = setTimeout(() => {
+      if (useUIStore.getState().isPlaying) setIsControlsVisible(false);
+    }, 600);
   }, []);
 
   const handleProgressBarClick = useCallback(event => {

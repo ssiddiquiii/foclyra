@@ -18,13 +18,13 @@ export function PlayerSurface({
 }) {
   return (
     <div className="w-full bg-black relative flex items-center justify-center border-b border-border/50 flex-shrink-0 group/stage">
-      {/* Viewport-Fitted Cinema Video Container (Udemy-style, never over-scales) */}
+      {/* Viewport-Fitted Cinema Video Container (Clean 16:9 Aspect Ratio) */}
       <div 
         data-testid="watch-player" 
         ref={controller.playerContainerRef} 
         onMouseMove={controller.handleMouseMove} 
         onMouseLeave={controller.handleMouseLeave} 
-        className={`relative aspect-video w-full max-w-6xl h-[50vh] sm:h-[58vh] lg:h-[64vh] max-h-[calc(100vh-170px)] mx-auto overflow-hidden bg-black flex items-center justify-center ${!controller.isControlsVisible && controller.isPlaying ? 'cursor-none' : ''}`}
+        className={`relative aspect-video w-full ${isPlaylistCollapsed ? 'max-w-7xl' : 'max-w-6xl'} max-h-[calc(100vh-180px)] mx-auto overflow-hidden bg-black flex items-center justify-center ${!controller.isControlsVisible && controller.isPlaying ? 'cursor-none' : ''}`}
       >
         {lesson.type === 'youtube' ? (
           <div className="w-full h-full relative flex items-center justify-center">
@@ -97,22 +97,6 @@ export function PlayerSurface({
           </button>
         )}
       </div>
-
-      {/* Floating Edge Tab to Expand Course Content (Udemy-style tab on right edge) */}
-      {isPlaylistCollapsed && (
-        <button
-          type="button"
-          onClick={onTogglePlaylist}
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-30 hidden xl:flex items-center gap-1.5 py-4 px-2 rounded-l-xl bg-card/90 hover:bg-card border-l border-y border-border text-foreground shadow-2xl backdrop-blur-md transition-all cursor-pointer hover:px-3 group"
-          title="Expand Course Playlist (Lectures)"
-          aria-label="Expand Course Playlist"
-        >
-          <ChevronLeft size={16} className="text-primary group-hover:-translate-x-0.5 transition-transform" />
-          <span className="text-[10px] font-bold uppercase [writing-mode:vertical-lr] rotate-180 tracking-wider">
-            Lectures ({lessonsCount || 0})
-          </span>
-        </button>
-      )}
     </div>
   );
 }
