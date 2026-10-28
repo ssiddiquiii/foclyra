@@ -17,14 +17,50 @@ export function PlayerSurface({
   lessonsCount
 }) {
   return (
-    <div className="w-full bg-black relative flex items-center justify-center border-b border-border/50 flex-shrink-0 group/stage">
-      {/* Viewport-Fitted Cinema Video Container (Clean 16:9 Aspect Ratio) */}
+    <div className={`w-full bg-black relative flex items-center justify-center border-b border-border/50 flex-shrink-0 group/stage ${isPlaylistCollapsed ? 'py-1 sm:py-2' : ''}`}>
+      {/* Floating Left Prev Lecture Arrow (Positioned in side cinema stage) */}
+      {prevLessonId && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onNavigate(prevLessonId);
+          }}
+          className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-30 p-2 sm:p-2.5 rounded-full bg-black/80 hover:bg-zinc-900 text-white/80 hover:text-white border border-white/20 backdrop-blur-md opacity-0 group-hover/stage:opacity-100 transition-all cursor-pointer shadow-2xl hover:scale-110 active:scale-95"
+          title="Previous Lecture"
+          aria-label="Previous Lecture"
+        >
+          <ChevronLeft size={24} />
+        </button>
+      )}
+
+      {/* Floating Right Next Lecture Arrow (Positioned in side cinema stage) */}
+      {nextLessonId && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onNavigate(nextLessonId);
+          }}
+          className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-30 p-2 sm:p-2.5 rounded-full bg-black/80 hover:bg-zinc-900 text-white/80 hover:text-white border border-white/20 backdrop-blur-md opacity-0 group-hover/stage:opacity-100 transition-all cursor-pointer shadow-2xl hover:scale-110 active:scale-95"
+          title="Next Lecture"
+          aria-label="Next Lecture"
+        >
+          <ChevronRight size={24} />
+        </button>
+      )}
+
+      {/* Viewport-Fitted Cinema Video Container (Strict 16:9 Aspect Ratio - zero internal pillarboxes) */}
       <div 
         data-testid="watch-player" 
         ref={controller.playerContainerRef} 
         onMouseMove={controller.handleMouseMove} 
         onMouseLeave={controller.handleMouseLeave} 
-        className={`relative aspect-video w-full ${isPlaylistCollapsed ? 'max-w-7xl' : 'max-w-6xl'} max-h-[calc(100vh-180px)] mx-auto overflow-hidden bg-black flex items-center justify-center ${!controller.isControlsVisible && controller.isPlaying ? 'cursor-none' : ''}`}
+        className={`relative aspect-video w-full mx-auto overflow-hidden bg-black flex items-center justify-center shadow-2xl ${
+          isPlaylistCollapsed 
+            ? 'max-h-[calc(100vh-210px)] max-w-[calc((100vh-210px)*16/9)] 2xl:max-h-[calc(100vh-190px)] 2xl:max-w-[calc((100vh-190px)*16/9)]' 
+            : 'max-h-[calc(100vh-220px)] max-w-[calc((100vh-220px)*16/9)]'
+        } ${!controller.isControlsVisible && controller.isPlaying ? 'cursor-none' : ''}`}
       >
         {lesson.type === 'youtube' ? (
           <div className="w-full h-full relative flex items-center justify-center">
@@ -64,37 +100,6 @@ export function PlayerSurface({
             <a href={course.udemyUrl} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-lg bg-zinc-900 border border-border text-white hover:bg-zinc-800 transition font-medium">Open Course on Udemy</a>
             <button onClick={onUdemyToggle} className={`w-full py-4 rounded-xl font-bold transition duration-200 active:scale-98 ${isUdemyCompleted ? 'bg-emerald-600 text-white hover:bg-emerald-700' : 'bg-primary text-white hover:bg-primary/95 shadow-lg shadow-primary/20'}`}>{isUdemyCompleted ? '✓ Completed (Unmark)' : 'Mark as Completed'}</button>
           </div>
-        )}
-
-        {/* Floating Left/Right Prev/Next Lecture Arrows (Udemy-style) */}
-        {prevLessonId && (
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onNavigate(prevLessonId);
-            }}
-            className="absolute left-2.5 sm:left-4 top-1/2 -translate-y-1/2 z-25 p-2 sm:p-2.5 rounded-xl bg-black/75 hover:bg-black text-white/80 hover:text-white border border-white/10 backdrop-blur-md opacity-0 group-hover/stage:opacity-100 transition-all cursor-pointer shadow-xl hover:scale-105 active:scale-95"
-            title="Previous Lecture"
-            aria-label="Previous Lecture"
-          >
-            <ChevronLeft size={22} />
-          </button>
-        )}
-
-        {nextLessonId && (
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onNavigate(nextLessonId);
-            }}
-            className="absolute right-2.5 sm:right-4 top-1/2 -translate-y-1/2 z-25 p-2 sm:p-2.5 rounded-xl bg-black/75 hover:bg-black text-white/80 hover:text-white border border-white/10 backdrop-blur-md opacity-0 group-hover/stage:opacity-100 transition-all cursor-pointer shadow-xl hover:scale-105 active:scale-95"
-            title="Next Lecture"
-            aria-label="Next Lecture"
-          >
-            <ChevronRight size={22} />
-          </button>
         )}
       </div>
     </div>
