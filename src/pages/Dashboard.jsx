@@ -9,16 +9,15 @@ import {
   FileText, 
   Sparkles, 
   Flame, 
-  Download, 
   RefreshCw, 
   Loader2, 
   CheckCircle2 
 } from 'lucide-react';
 import StreakModal from '../components/StreakModal';
-import { exportNotesToMarkdown } from '../utils/exportUtils';
+import ExportNotesButton from '../components/ExportNotesButton';
 import { calculateStreak, getActiveDateSet } from '../utils/streakUtils';
 import { fetchYouTubePlaylistData } from '../services/youtubeApi';
-import { deleteCourse, exportNotes, importCourse } from '../services/dataCommands';
+import { deleteCourse, importCourse } from '../services/dataCommands';
 import { checkPlaylistImportQuota, trackCourseImport, trackCourseRemoval } from '../services/quotaService';
 import { useAuth } from '../hooks/useAuth';
 import { DeleteCourseDialog } from '../features/dashboard/DashboardSections';
@@ -98,11 +97,6 @@ export default function Dashboard() {
     if (continuePath) {
       navigate(`/courses/${continuePath.courseId}/lessons/${continuePath.lessonId}`);
     }
-  };
-
-  const handleExportNotes = async () => {
-    const notes = await exportNotes();
-    exportNotesToMarkdown(notes, 'Foclyra_Mastery_Notes');
   };
 
   const handleDirectImport = async (e, overrideUrl) => {
@@ -355,14 +349,11 @@ export default function Dashboard() {
             </div>
 
             <div className="flex items-center gap-2">
-              <button
-                onClick={handleExportNotes}
-                className="px-3.5 py-2 rounded-xl bg-card hover:bg-muted border border-border text-foreground text-xs font-semibold transition flex items-center gap-1.5 cursor-pointer shadow-xs"
-                title="Export Notes (.md)"
-              >
-                <Download size={14} className="text-muted-foreground" />
-                <span className="hidden sm:inline">Export Notes</span>
-              </button>
+              <ExportNotesButton
+                label="Export All Notes"
+                title="Export All Notes (.docx)"
+                className="px-4 py-2 text-xs sm:text-sm"
+              />
             </div>
           </div>
 

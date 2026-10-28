@@ -132,6 +132,29 @@ export async function updateLessonDuration(lessonId, seconds) {
   }
 }
 
+export async function getNotesExportBundle(courseId = null) {
+  if (courseId) {
+    const [course, lessons, notes] = await Promise.all([
+      db.courses.get(courseId),
+      db.lessons.where('courseId').equals(courseId).sortBy('index'),
+      db.notes.where('courseId').equals(courseId).toArray()
+    ]);
+    return {
+      courses: course ? [course] : [],
+      lessons,
+      notes
+    };
+  }
+
+  const [courses, lessons, notes] = await Promise.all([
+    db.courses.toArray(),
+    db.lessons.toArray(),
+    db.notes.toArray()
+  ]);
+
+  return { courses, lessons, notes };
+}
+
 export const exportNotes = () => db.notes.toArray();
 export const exportBackup = () => db.exportBackup();
 export const importBackup = backup => db.importBackup(backup);

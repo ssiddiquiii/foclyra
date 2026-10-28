@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { fetchYouTubePlaylistData } from '../services/youtubeApi';
 import { importCourse } from '../services/dataCommands';
+import ExportNotesButton from '../components/ExportNotesButton';
 
 /**
  * Modern Course Detail & Syllabus View.
@@ -207,9 +208,9 @@ export default function CourseDetail() {
               <span>Instructor: <span className="text-foreground font-semibold">{course.channelName}</span></span>
             </div>
 
-            {/* Action Button */}
-            {resumeTargetLesson && (
-              <div className="pt-2">
+            {/* Action Buttons */}
+            <div className="pt-2 flex flex-col sm:flex-row flex-wrap items-center gap-3">
+              {resumeTargetLesson && (
                 <button
                   onClick={() => navigate(`/courses/${courseId}/lessons/${resumeTargetLesson.id}`)}
                   className="w-full sm:w-auto px-5 py-2.5 rounded-xl font-semibold bg-primary hover:bg-primary/90 active:scale-98 transition-all text-primary-foreground text-sm shadow-xs flex items-center justify-center gap-2 cursor-pointer"
@@ -217,8 +218,15 @@ export default function CourseDetail() {
                   {lastWatched ? <RotateCcw size={15} /> : <Play size={15} fill="currentColor" />}
                   <span>{lastWatched ? 'Resume Last Video' : courseProgress > 0 ? 'Resume Course' : 'Start Course'}</span>
                 </button>
-              </div>
-            )}
+              )}
+              <ExportNotesButton
+                courseId={course.id}
+                courseTitle={course.title}
+                label="Download Notes"
+                title={`Download ${course.title} Notes (.docx)`}
+                className="w-full sm:w-auto px-5 py-2.5 text-sm"
+              />
+            </div>
           </div>
         </div>
       </div>
