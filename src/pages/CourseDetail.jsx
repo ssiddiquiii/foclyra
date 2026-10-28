@@ -1,14 +1,23 @@
-﻿import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useCourseDetail } from '../hooks/useCourseDetail';
-import { ArrowLeft, Play, CheckCircle2, Circle, Clock, RotateCcw, RefreshCw } from 'lucide-react';
+import {
+  ArrowLeft,
+  Play,
+  Clock,
+  RotateCcw,
+  RefreshCw,
+  Search,
+  BookOpen,
+  Sparkles,
+  Check
+} from 'lucide-react';
 import { fetchYouTubePlaylistData } from '../services/youtubeApi';
 import { importCourse } from '../services/dataCommands';
 
 /**
- * Course Detail & Syllabus View.
- * Displays course overview, progress bar, and list of lectures.
- * Fully theme-adaptive with clean typography and spacing.
+ * Modern Course Detail & Syllabus View.
+ * Sleek studio aesthetic with minimal borders, subtle shadows, and crisp typography.
  * @returns {React.JSX.Element}
  */
 export default function CourseDetail() {
@@ -24,9 +33,45 @@ export default function CourseDetail() {
     lastWatched,
     resumeLesson
   } = useCourseDetail(courseId);
+
   const [expandedDesc, setExpandedDesc] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncStatus, setSyncStatus] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [thumbError, setThumbError] = useState(false);
+
+  // Compute optimized thumbnail: Prefer 16:9 maxresdefault for crisp YouTube banners
+  const optimizedThumb = useMemo(() => {
+    if (!course?.thumbnailUrl) return '';
+    if (thumbError) return course.thumbnailUrl;
+    if (course.thumbnailUrl.includes('ytimg.com') && course.thumbnailUrl.includes('hqdefault.jpg')) {
+      return course.thumbnailUrl.replace('hqdefault.jpg', 'maxresdefault.jpg');
+    }
+    return course.thumbnailUrl;
+  }, [course?.thumbnailUrl, thumbError]);
+
+  // Compute stats
+  const completedCount = useMemo(() => {
+    return courseLessons.filter(l => progressByLessonId.get(l.id)?.completed).length;
+  }, [courseLessons, progressByLessonId]);
+
+  const totalDurationFormatted = useMemo(() => {
+    const totalSecs = courseLessons.reduce((acc, l) => acc + (l.durationSeconds || 0), 0);
+    if (!totalSecs || totalSecs <= 0) return null;
+    const hours = Math.floor(totalSecs / 3600);
+    const mins = Math.floor((totalSecs % 3600) / 60);
+    return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
+  }, [courseLessons]);
+
+  // Filter lessons by search query
+  const filteredLessons = useMemo(() => {
+    if (!searchQuery.trim()) return courseLessons;
+    const q = searchQuery.toLowerCase();
+    return courseLessons.filter(l => 
+      l.title.toLowerCase().includes(q) || 
+      String(l.index).includes(q)
+    );
+  }, [courseLessons, searchQuery]);
 
   const handleSyncPlaylist = async () => {
     if (course?.type !== 'youtube' || isSyncing) return;
@@ -49,7 +94,7 @@ export default function CourseDetail() {
   if (isLoading) {
     return (
       <div className="p-8 min-h-[60vh] flex items-center justify-center">
-        <div className="animate-spin w-9 h-9 border-3 border-primary border-t-transparent rounded-full" />
+        <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full" />
       </div>
     );
   }
@@ -63,109 +108,205 @@ export default function CourseDetail() {
     );
   }
 
+  const resumeTargetLesson = resumeLesson || courseLessons[0];
+
   return (
-    <div className="p-3.5 sm:p-8 max-w-5xl mx-auto space-y-7 animate-page-entry">
-      {/* Back button */}
-      <Link to="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition text-sm font-medium">
-        <ArrowLeft size={16} />
-        <span>Back to Dashboard</span>
-      </Link>
+    <div className="p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto space-y-6 animate-page-entry">
+      {/* Top Navigation Breadcrumbs */}
+      <div className="flex items-center justify-between">
+        <Link 
+          to="/" 
+          className="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-muted-foreground hover:text-foreground transition-colors group"
+        >
+          <ArrowLeft size={15} className="group-hover:-translate-x-0.5 transition-transform" />
+          <span>Back to Dashboard</span>
+        </Link>
 
-      {/* Course Banner Card */}
-      <div className="glass-panel rounded-2xl p-5 sm:p-8 flex flex-col lg:flex-row gap-6 lg:gap-8 items-start lg:items-center min-w-0 w-full bg-card border border-border shadow-sm">
-        <div className="w-full lg:w-64 h-48 sm:h-38 rounded-xl overflow-hidden bg-muted border border-border flex-shrink-0">
-          <img 
-            src={course.thumbnailUrl} 
-            alt={course.title} 
-            className="w-full h-full object-cover"
-          />
-        </div>
-        
-        <div className="flex-1 space-y-3 min-w-0">
-          <span className="inline-flex items-center px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded bg-primary/10 text-primary border border-primary/20 select-none">
-            {course.type === 'youtube' ? 'YouTube Course' : 'Udemy Manual'}
-          </span>
-          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground tracking-normal break-words">{course.title}</h1>
-          <div className="space-y-1.5 max-w-2xl">
-            <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed">
-              {expandedDesc ? course.description : `${course.description.slice(0, 180)}${course.description.length > 180 ? '...' : ''}`}
-            </p>
-            {course.description.length > 180 && (
-              <button
-                onClick={() => setExpandedDesc(!expandedDesc)}
-                className="text-primary hover:underline text-xs font-semibold focus:outline-none cursor-pointer"
-              >
-                {expandedDesc ? "Show Less" : "Read More"}
-              </button>
-            )}
-          </div>
-          <div className="text-xs text-muted-foreground font-medium">Instructor: {course.channelName}</div>
-        </div>
-
-        {/* Continue Learning Button */}
-        {resumeLesson && (
+        {course.type === 'youtube' && (
           <button
-            onClick={() => navigate(`/courses/${courseId}/lessons/${resumeLesson.id}`)}
-            className="w-full lg:w-auto px-6 py-3 rounded-xl font-semibold bg-primary hover:bg-primary/90 active:scale-95 transition text-primary-foreground shadow-sm shadow-primary/20 flex items-center justify-center gap-2.5 flex-shrink-0 cursor-pointer"
+            onClick={handleSyncPlaylist}
+            disabled={isSyncing}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border/70 bg-card hover:bg-muted/60 text-xs font-medium text-muted-foreground hover:text-foreground transition cursor-pointer disabled:opacity-50 shadow-xs"
+            title="Sync complete lecture catalog from YouTube"
           >
-            {lastWatched ? <RotateCcw size={17} /> : <Play size={17} fill="currentColor" />}
-            <span>{lastWatched ? 'Resume Last Video' : courseProgress > 0 ? 'Resume Course' : 'Start Course'}</span>
+            <RefreshCw size={13} className={isSyncing ? "animate-spin text-primary" : ""} />
+            <span>{isSyncing ? "Syncing..." : "Sync Lectures"}</span>
           </button>
         )}
       </div>
 
-      {/* Progress metrics */}
-      <div className="glass-panel rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-6 bg-card border border-border shadow-sm">
-        <div className="w-full sm:w-auto">
-          <span className="text-muted-foreground text-xs font-semibold uppercase tracking-wider block mb-1">Course Progress</span>
-          <div className="flex items-baseline gap-2">
-            <span className="text-3xl font-bold text-foreground">{courseProgress}%</span>
-            <span className="text-muted-foreground text-xs">completed</span>
-          </div>
-        </div>
+      {/* Course Hero Banner */}
+      <div className="rounded-2xl border border-border/60 bg-card p-5 sm:p-7 shadow-xs relative overflow-hidden">
+        {/* Subtle decorative background gradient */}
+        <div className="absolute -top-28 -right-28 w-80 h-80 bg-primary/[0.04] rounded-full blur-3xl pointer-events-none" />
 
-        {/* Animated Progress bar */}
-        <div className="flex-1 w-full bg-muted h-2 rounded-full overflow-hidden border border-border">
+        <div className="relative flex flex-col md:flex-row gap-6 lg:gap-8 items-start">
+          {/* 16:9 Thumbnail preview with play hover */}
           <div 
-            className="h-full bg-gradient-to-r from-primary to-orange-400 transition-all duration-500 ease-out" 
-            style={{ width: `${courseProgress}%` }}
-          />
-        </div>
+            onClick={() => resumeTargetLesson && navigate(`/courses/${courseId}/lessons/${resumeTargetLesson.id}`)}
+            className="relative w-full md:w-72 lg:w-80 aspect-video rounded-xl overflow-hidden border border-border/50 bg-zinc-950 flex-shrink-0 group cursor-pointer shadow-xs"
+          >
+            <img 
+              src={optimizedThumb} 
+              alt={course.title} 
+              onError={() => setThumbError(true)}
+              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+              <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
+                <Play size={20} fill="currentColor" className="ml-0.5" />
+              </div>
+            </div>
+            {/* Overlay badge with lecture count */}
+            <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded-md bg-black/80 backdrop-blur-xs text-[11px] font-mono text-zinc-200 font-medium flex items-center gap-1 border border-white/10">
+              <BookOpen size={11} />
+              <span>{courseLessons.length} lectures</span>
+            </div>
+          </div>
 
-        <div className="text-right w-full sm:w-auto">
-          <span className="text-muted-foreground text-xs font-semibold uppercase tracking-wider block mb-1">Total Lessons</span>
-          <span className="text-2xl font-bold text-foreground">{courseLessons.length} Lectures</span>
+          {/* Course Details Info */}
+          <div className="flex-1 min-w-0 space-y-3.5">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full bg-primary/10 text-primary border border-primary/20">
+                {course.type === 'youtube' ? 'YouTube Course' : 'Udemy Manual'}
+              </span>
+              {totalDurationFormatted && (
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 text-[11px] text-muted-foreground font-mono bg-muted/60 rounded-full border border-border/40">
+                  <Clock size={11} />
+                  <span>{totalDurationFormatted}</span>
+                </span>
+              )}
+            </div>
+
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-foreground tracking-tight leading-snug">
+              {course.title}
+            </h1>
+
+            {course.description && (
+              <div className="space-y-1 max-w-2xl">
+                <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed">
+                  {expandedDesc 
+                    ? course.description 
+                    : `${course.description.slice(0, 160)}${course.description.length > 160 ? '...' : ''}`}
+                </p>
+                {course.description.length > 160 && (
+                  <button
+                    onClick={() => setExpandedDesc(!expandedDesc)}
+                    className="text-primary hover:underline text-xs font-semibold focus:outline-none cursor-pointer"
+                  >
+                    {expandedDesc ? "Show Less" : "Read More"}
+                  </button>
+                )}
+              </div>
+            )}
+
+            <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium pt-1">
+              <span className="w-5 h-5 rounded-full bg-muted border border-border/60 flex items-center justify-center font-bold text-[10px] text-foreground uppercase">
+                {course.channelName?.charAt(0) || 'I'}
+              </span>
+              <span>Instructor: <span className="text-foreground font-semibold">{course.channelName}</span></span>
+            </div>
+
+            {/* Action Button */}
+            {resumeTargetLesson && (
+              <div className="pt-2">
+                <button
+                  onClick={() => navigate(`/courses/${courseId}/lessons/${resumeTargetLesson.id}`)}
+                  className="w-full sm:w-auto px-5 py-2.5 rounded-xl font-semibold bg-primary hover:bg-primary/90 active:scale-98 transition-all text-primary-foreground text-sm shadow-xs flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  {lastWatched ? <RotateCcw size={15} /> : <Play size={15} fill="currentColor" />}
+                  <span>{lastWatched ? 'Resume Last Video' : courseProgress > 0 ? 'Resume Course' : 'Start Course'}</span>
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Syllabus checklist */}
-      <div className="space-y-4 pt-2">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-bold text-foreground tracking-normal">Syllabus Curriculum</h2>
-          {course.type === 'youtube' && (
-            <button
-              onClick={handleSyncPlaylist}
-              disabled={isSyncing}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-border bg-card hover:bg-muted text-xs font-semibold text-foreground transition cursor-pointer disabled:opacity-50 shadow-xs"
-              title="Sync complete lecture catalog from YouTube"
-            >
-              <RefreshCw size={13} className={isSyncing ? "animate-spin text-primary" : "text-muted-foreground"} />
-              <span>{isSyncing ? "Syncing..." : "Sync Lectures"}</span>
-            </button>
-          )}
+      {/* Progress & Stats Bar */}
+      <div className="rounded-2xl border border-border/60 bg-card p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-5">
+        <div className="w-full sm:w-44 flex-shrink-0">
+          <span className="text-muted-foreground text-[10px] font-bold uppercase tracking-wider block mb-1">
+            Course Progress
+          </span>
+          <div className="flex items-baseline gap-2">
+            <span className="text-2xl sm:text-3xl font-extrabold text-foreground">{courseProgress}%</span>
+            <span className="text-muted-foreground text-xs font-medium">completed</span>
+          </div>
         </div>
+
+        {/* Minimalist Progress Track */}
+        <div className="flex-1 w-full space-y-1.5">
+          <div className="flex justify-between items-center text-[11px] text-muted-foreground">
+            <span>Progress Track</span>
+            <span className="font-medium font-mono">{completedCount} of {courseLessons.length} finished</span>
+          </div>
+          <div className="w-full bg-muted/80 h-2 rounded-full overflow-hidden border border-border/30">
+            <div 
+              className="h-full bg-gradient-to-r from-primary via-emerald-400 to-teal-400 transition-all duration-500 ease-out rounded-full" 
+              style={{ width: `${courseProgress}%` }}
+            />
+          </div>
+        </div>
+
+        <div className="w-full sm:w-auto text-left sm:text-right flex-shrink-0 border-t sm:border-t-0 sm:border-l border-border/40 pt-3 sm:pt-0 sm:pl-5">
+          <span className="text-muted-foreground text-[10px] font-bold uppercase tracking-wider block mb-1">
+            Total Lessons
+          </span>
+          <div className="flex items-baseline sm:justify-end gap-1.5">
+            <span className="text-xl sm:text-2xl font-extrabold text-foreground">{courseLessons.length}</span>
+            <span className="text-xs text-muted-foreground font-medium">Lectures</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Syllabus Curriculum Section */}
+      <div className="space-y-4 pt-1">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <h2 className="text-lg sm:text-xl font-bold text-foreground tracking-tight">Syllabus Curriculum</h2>
+            <span className="px-2 py-0.5 rounded-full bg-muted text-[11px] font-semibold text-muted-foreground font-mono">
+              {filteredLessons.length} {filteredLessons.length === 1 ? 'lesson' : 'lessons'}
+            </span>
+          </div>
+
+          {/* Quick search input */}
+          <div className="relative w-full sm:w-64">
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search lectures..."
+              className="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl border border-border/60 bg-muted/40 focus:bg-card focus:outline-none focus:ring-1 focus:ring-primary text-foreground placeholder:text-muted-foreground/70 transition"
+            />
+          </div>
+        </div>
+
         {syncStatus && (
-          <p className="text-xs text-primary font-medium animate-in fade-in">{syncStatus}</p>
+          <p className="text-xs text-primary font-medium animate-in fade-in flex items-center gap-1.5">
+            <Sparkles size={12} />
+            <span>{syncStatus}</span>
+          </p>
         )}
+
         {courseLessons.length === 0 && (
-          <div className="rounded-xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">This course does not contain any lessons yet.</div>
+          <div className="rounded-xl border border-dashed border-border/70 p-8 text-center text-sm text-muted-foreground">
+            This course does not contain any lessons yet.
+          </div>
         )}
-        
-        <div className="divide-y divide-border border-y border-border">
-          {courseLessons.map((lesson) => {
+
+        {courseLessons.length > 0 && filteredLessons.length === 0 && (
+          <div className="rounded-xl border border-dashed border-border/70 p-8 text-center text-xs text-muted-foreground">
+            No lessons matched "{searchQuery}".
+          </div>
+        )}
+
+        {/* Clean Modern Lecture Rows */}
+        <div className="space-y-2">
+          {filteredLessons.map((lesson) => {
             const progress = progressByLessonId.get(lesson.id);
             const isCompleted = progress ? progress.completed : false;
-
             const isLastWatched = lastWatched && lesson.id === lastWatched.lessonId;
             const watchTimePercent = isLastWatched && lesson.durationSeconds > 0
               ? Math.round((lastWatched.watchTime / lesson.durationSeconds) * 100)
@@ -175,38 +316,60 @@ export default function CourseDetail() {
               <Link 
                 key={lesson.id}
                 to={`/courses/${courseId}/lessons/${lesson.id}`}
-                className={`py-4 px-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-muted/50 transition group rounded-xl min-w-0 ${isLastWatched ? 'bg-primary/5 border border-primary/20' : ''}`}
+                className={`group flex items-center justify-between gap-3 p-3 sm:p-4 rounded-xl border transition-all duration-150 ${
+                  isLastWatched 
+                    ? 'border-primary/40 bg-primary/[0.04] shadow-xs' 
+                    : 'border-border/50 bg-card hover:bg-muted/40 hover:border-border/80'
+                }`}
               >
-                <div className="flex min-w-0 items-start gap-4">
+                {/* Left: Index badge + Completion Icon + Title */}
+                <div className="flex min-w-0 items-center gap-3 sm:gap-4 flex-1">
                   {/* Status Indicator */}
-                  {isCompleted ? (
-                    <CheckCircle2 className="text-emerald-500 flex-shrink-0" size={20} fill="currentColor" />
-                  ) : (
-                    <Circle className="text-muted-foreground/50 group-hover:text-muted-foreground flex-shrink-0" size={20} />
-                  )}
-                  
-                  <div>
-                    <span className="text-xs text-muted-foreground font-semibold uppercase tracking-wider block mb-0.5">
-                      Lecture {lesson.index}
-                    </span>
-                    <span className="block break-words text-sm font-medium text-foreground group-hover:text-primary transition">
-                      {lesson.title}
-                    </span>
-                    {/* In-progress mini progress bar */}
+                  <div className="flex-shrink-0">
+                    {isCompleted ? (
+                      <div className="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500">
+                        <Check size={14} strokeWidth={2.5} />
+                      </div>
+                    ) : isLastWatched ? (
+                      <div className="w-7 h-7 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-center text-primary">
+                        <Play size={12} fill="currentColor" className="ml-0.5" />
+                      </div>
+                    ) : (
+                      <div className="w-7 h-7 rounded-lg bg-muted/60 border border-border/40 flex items-center justify-center text-[11px] font-mono font-semibold text-muted-foreground group-hover:text-foreground group-hover:border-border transition-colors">
+                        {lesson.index < 10 ? `0${lesson.index}` : lesson.index}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="block truncate text-xs sm:text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
+                        {lesson.title}
+                      </span>
+                    </div>
+
+                    {/* In-progress mini watch time indicator */}
                     {isLastWatched && watchTimePercent !== null && (
-                      <div className="mt-1.5 w-32 h-1 bg-muted rounded-full overflow-hidden border border-border">
-                        <div className="h-full bg-primary rounded-full" style={{ width: `${watchTimePercent}%` }} />
+                      <div className="mt-1.5 flex items-center gap-2">
+                        <div className="w-24 sm:w-32 h-1 bg-muted rounded-full overflow-hidden border border-border/40">
+                          <div className="h-full bg-primary rounded-full" style={{ width: `${watchTimePercent}%` }} />
+                        </div>
+                        <span className="text-[10px] text-primary font-mono font-medium">{watchTimePercent}% watched</span>
                       </div>
                     )}
                   </div>
                 </div>
 
-                <div className="flex w-full sm:w-auto items-center justify-between sm:justify-end gap-4 text-muted-foreground text-xs">
+                {/* Right: Badges & Duration */}
+                <div className="flex items-center gap-3 flex-shrink-0">
                   {isLastWatched && (
-                    <span className="text-[10px] font-bold text-primary uppercase tracking-wider">In Progress</span>
+                    <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold text-primary bg-primary/10 border border-primary/20 uppercase tracking-wider">
+                      In Progress
+                    </span>
                   )}
+
                   {lesson.duration && lesson.duration !== '0:00' ? (
-                    <span className="flex items-center gap-1 font-mono">
+                    <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground font-mono bg-muted/40 px-2.5 py-1 rounded-md border border-border/30 group-hover:bg-muted/70 transition-colors">
                       <Clock size={12} />
                       <span>{lesson.duration}</span>
                     </span>
@@ -215,6 +378,10 @@ export default function CourseDetail() {
                       Lecture
                     </span>
                   )}
+
+                  <div className="w-7 h-7 rounded-lg bg-transparent group-hover:bg-primary/10 group-hover:text-primary text-muted-foreground/40 flex items-center justify-center transition-all">
+                    <Play size={12} fill="currentColor" className="ml-0.5" />
+                  </div>
                 </div>
               </Link>
             );

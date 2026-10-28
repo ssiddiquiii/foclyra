@@ -95,7 +95,7 @@ export function PlayerControls({ controller, chapters }) {
 
         <div className="flex flex-shrink-0 items-center gap-0.5 sm:gap-1">
           <details className="group/settings static">
-            <summary aria-label="Player settings" className={`${controlClass} cursor-pointer list-none [&::-webkit-details-marker]:hidden`}>
+            <summary aria-label="Player settings" className={`${controlClass} cursor-pointer list-none [&::-webkit-details-marker]:hidden focus:outline-none focus:ring-0 focus-visible:ring-1 focus-visible:ring-white/40`}>
               <Settings size={16} />
             </summary>
             <div className="absolute bottom-11 right-1.5 sm:right-2.5 z-40 grid w-[min(16rem,calc(100vw-1.5rem))] grid-cols-3 rounded-xl border border-zinc-700/80 bg-zinc-950/98 backdrop-blur-xl p-1.5 shadow-2xl">
