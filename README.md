@@ -185,7 +185,3 @@ npm run test:phase6c
 | `Esc` | Close drawers, modals, or fullscreen |
 
 ---
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
