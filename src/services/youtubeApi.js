@@ -12,10 +12,10 @@ const EXPIRED_KEYS = new Set([
   'AIzaSyAExIAyfPvaaNixl5cz7HZJfNwQdniXP_o'
 ]);
 
-// Fallback Google Cloud YouTube Data API v3 Key (verified active)
-const DEFAULT_API_KEY = import.meta.env?.VITE_YOUTUBE_API_KEY && !EXPIRED_KEYS.has(import.meta.env.VITE_YOUTUBE_API_KEY)
+// Client-side fallback key (optional, server proxy /api/youtube uses secret YOUTUBE_API_KEY)
+const DEFAULT_API_KEY = (import.meta.env?.VITE_YOUTUBE_API_KEY && !EXPIRED_KEYS.has(import.meta.env.VITE_YOUTUBE_API_KEY))
   ? import.meta.env.VITE_YOUTUBE_API_KEY
-  : 'AIzaSyD4eD8BPi4NPRemy4L9UwrXamaGiEHcN-U';
+  : '';
 
 export function getActiveApiKey() {
   try {

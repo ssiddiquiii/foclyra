@@ -1,6 +1,6 @@
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
@@ -42,7 +42,13 @@ function youtubeApiDevPlugin() {
   };
 }
 
-export default defineConfig({
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '');
+  if (env.YOUTUBE_API_KEY && !process.env.YOUTUBE_API_KEY) {
+    process.env.YOUTUBE_API_KEY = env.YOUTUBE_API_KEY;
+  }
+
+  return {
   plugins: [
     react(),
     tailwindcss(),
@@ -86,4 +92,5 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  };
 })
