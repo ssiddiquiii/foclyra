@@ -51,8 +51,12 @@ export default function AuthModal({ isOpen: propIsOpen, onClose: propOnClose, co
 
     try {
       if (mode === 'email_signup') {
-        await signUpWithEmail(email, password, fullName);
-        setSuccessMsg('Account created! Please check your email to confirm registration or sign in.');
+        const result = await signUpWithEmail(email, password, fullName);
+        if (result?.session) {
+          onClose();
+        } else {
+          setSuccessMsg('Account created! Please check your email to confirm registration or sign in.');
+        }
       } else {
         await signInWithEmail(email, password);
         onClose();
