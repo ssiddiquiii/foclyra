@@ -21,6 +21,7 @@ import { deleteCourse, importCourse } from '../services/dataCommands';
 import { checkPlaylistImportQuota, trackCourseImport, trackCourseRemoval } from '../services/quotaService';
 import { useAuth } from '../hooks/useAuth';
 import { DeleteCourseDialog } from '../features/dashboard/DashboardSections';
+import { toast } from '../components/ui/toast';
 
 const STARTER_COURSES = [
   {
@@ -69,14 +70,12 @@ export default function Dashboard() {
 
   const [isStreakModalOpen, setIsStreakModalOpen] = useState(false);
   const [syncingCourseId, setSyncingCourseId] = useState(null);
-  const [actionMsg, setActionMsg] = useState(null);
   const [courseToDelete, setCourseToDelete] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   // Direct Importer States
   const [directUrl, setDirectUrl] = useState('');
   const [isDirectImporting, setIsDirectImporting] = useState(false);
-  const [newlyImportedCourse, setNewlyImportedCourse] = useState(null);
 
   // Dynamic Real-Time Streak Calculation
   const streakCount = useMemo(() => {
@@ -110,20 +109,22 @@ export default function Dashboard() {
       if (!quota.allowed) {
         if (quota.reason === 'GUEST_LIMIT_REACHED') {
           openAuthModal('guest_limit');
-          setActionMsg({ 
-            text: 'Guest trial complete (1/1 playlist). Sign in with Google to unlock 5 courses & cloud backup!', 
-            type: 'info' 
+          toast.add({
+            title: 'Guest trial complete',
+            description: 'Guest trial complete (1/1 playlist). Sign in with Google to unlock 5 courses & cloud backup!',
+            type: 'info',
+            timeout: 6000,
           });
-          setTimeout(() => setActionMsg(null), 6000);
           return;
         }
         if (quota.reason === 'REGISTERED_LIMIT_REACHED') {
           openAuthModal('registered_limit');
-          setActionMsg({ 
-            text: 'You have reached your limit of 5 study playlists. Re-importing existing courses is always free!', 
-            type: 'error' 
+          toast.add({
+            title: 'Playlist limit reached',
+            description: 'You have reached your limit of 5 study playlists. Re-importing existing courses is always free!',
+            type: 'error',
+            timeout: 6000,
           });
-          setTimeout(() => setActionMsg(null), 6000);
           return;
         }
       }
@@ -132,23 +133,46 @@ export default function Dashboard() {
     }
 
     setIsDirectImporting(true);
-    setActionMsg({ text: 'Connecting to YouTube and importing course...', type: 'info' });
+    const loadingToastId = toast.add({
+      title: 'Importing course...',
+      description: 'Connecting to YouTube and importing course...',
+      type: 'loading',
+    });
 
     try {
       const { course, lessons } = await fetchYouTubePlaylistData(urlToUse);
       await importCourse(course, lessons);
       await trackCourseImport({ user, course, lessonCount: lessons.length });
       setDirectUrl('');
-      setNewlyImportedCourse({ course, firstLessonId: lessons[0]?.id });
-      setActionMsg({ 
-        text: `Successfully imported "${course.title}" with ${lessons.length} lectures!`, 
-        type: 'success' 
+      toast.update(loadingToastId, {
+        title: 'Course imported',
+        description: `Successfully imported "${course.title}" with ${lessons.length} lectures!`,
+        type: 'success',
+        timeout: 5000,
       });
-      setTimeout(() => setActionMsg(null), 5000);
+      if (lessons[0]?.id) {
+        const readyToastId = toast.add({
+          title: 'Ready to study',
+          description: course.title,
+          type: 'success',
+          timeout: 6000,
+          actionProps: {
+            children: 'Start Lesson 1 →',
+            onClick() {
+              toast.close(readyToastId);
+              navigate(`/courses/${course.id}/lessons/${lessons[0].id}`);
+            },
+          },
+        });
+      }
     } catch (err) {
       console.error(err);
-      setActionMsg({ text: `Import failed: ${err.message}`, type: 'error' });
-      setTimeout(() => setActionMsg(null), 5000);
+      toast.update(loadingToastId, {
+        title: 'Import failed',
+        description: `Import failed: ${err.message}`,
+        type: 'error',
+        timeout: 5000,
+      });
     } finally {
       setIsDirectImporting(false);
     }
@@ -165,12 +189,21 @@ export default function Dashboard() {
     try {
       await deleteCourse(courseToDelete.id);
       await trackCourseRemoval({ user, courseId: courseToDelete.id });
-      setActionMsg({ text: `Course "${courseToDelete.title}" deleted successfully.`, type: 'info' });
-      setTimeout(() => setActionMsg(null), 3500);
+      toast.add({
+        title: 'Course deleted',
+        description: `Course "${courseToDelete.title}" deleted successfully.`,
+        type: 'info',
+        timeout: 4000,
+      });
       setCourseToDelete(null);
     } catch (err) {
       console.error(err);
-      setActionMsg({ text: `Failed to delete course: ${err.message}`, type: 'error' });
+      toast.add({
+        title: 'Delete failed',
+        description: `Failed to delete course: ${err.message}`,
+        type: 'error',
+        timeout: 4000,
+      });
     } finally {
       setIsDeleting(false);
     }
@@ -178,22 +211,39 @@ export default function Dashboard() {
 
   const handleSyncCourse = async (course) => {
     if (course.type !== 'youtube') {
-      setActionMsg({ text: 'Udemy courses are manually tracked.', type: 'info' });
-      setTimeout(() => setActionMsg(null), 3000);
+      toast.add({
+        title: 'Manual tracking',
+        description: 'Udemy courses are manually tracked.',
+        type: 'info',
+        timeout: 4000,
+      });
       return;
     }
 
     setSyncingCourseId(course.id);
-    setActionMsg({ text: `Syncing playlist "${course.title}" with YouTube...`, type: 'info' });
+    const syncToastId = toast.add({
+      title: 'Syncing playlist...',
+      description: `Syncing playlist "${course.title}" with YouTube...`,
+      type: 'loading',
+    });
 
     try {
       const { course: updatedCourse, lessons: updatedLessons } = await fetchYouTubePlaylistData(course.id);
       await importCourse(updatedCourse, updatedLessons);
-      setActionMsg({ text: `Successfully synced "${course.title}"! (${updatedLessons.length} lectures updated)`, type: 'success' });
-      setTimeout(() => setActionMsg(null), 3500);
+      toast.update(syncToastId, {
+        title: 'Playlist synced',
+        description: `Successfully synced "${course.title}"! (${updatedLessons.length} lectures updated)`,
+        type: 'success',
+        timeout: 4000,
+      });
     } catch (err) {
       console.error(err);
-      setActionMsg({ text: `Sync failed: ${err.message}`, type: 'error' });
+      toast.update(syncToastId, {
+        title: 'Sync failed',
+        description: `Sync failed: ${err.message}`,
+        type: 'error',
+        timeout: 4000,
+      });
     } finally {
       setSyncingCourseId(null);
     }
@@ -201,35 +251,6 @@ export default function Dashboard() {
 
   return (
     <div aria-busy={isLoading} className="p-4 sm:p-6 lg:p-8 max-w-5xl w-full mx-auto animate-page-entry flex-1 flex flex-col">
-      {/* Status Action Banner */}
-      {actionMsg && (
-        <div className={`p-3.5 mb-5 rounded-xl text-xs font-semibold border flex items-center justify-between shadow-xs ${
-          actionMsg.type === 'success' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20' :
-          actionMsg.type === 'error' ? 'bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20' :
-          'bg-muted text-muted-foreground border-border'
-        }`}>
-          <span>{actionMsg.text}</span>
-          <button onClick={() => setActionMsg(null)} className="text-muted-foreground hover:text-foreground ml-4 cursor-pointer">&times;</button>
-        </div>
-      )}
-
-      {/* Newly Imported Course Quick Launch Banner */}
-      {newlyImportedCourse && (
-        <div className="p-3.5 mb-5 rounded-xl bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-between gap-3 animate-in fade-in shadow-xs">
-          <div className="flex items-center gap-2.5 min-w-0">
-            <CheckCircle2 size={16} className="text-emerald-500 flex-shrink-0" />
-            <span className="text-xs sm:text-sm font-semibold text-foreground truncate">
-              Ready to study: <span className="text-emerald-600 dark:text-emerald-400 font-bold">{newlyImportedCourse.course.title}</span>
-            </span>
-          </div>
-          <button
-            onClick={() => navigate(`/courses/${newlyImportedCourse.course.id}/lessons/${newlyImportedCourse.firstLessonId}`)}
-            className="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition cursor-pointer flex-shrink-0 shadow-xs"
-          >
-            Start Lesson 1 →
-          </button>
-        </div>
-      )}
 
       {/* CONDITIONAL RENDERING: ZERO COURSES vs ENROLLED CATALOG */}
       {sortedCourses.length === 0 ? (

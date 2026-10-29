@@ -14,6 +14,7 @@ import { MessageSquarePlus } from 'lucide-react';
 import { useUIStore } from './hooks/useUIStore';
 import { useTheme } from './hooks/useTheme';
 import { isNavigationActive, navigationItems } from './components/shell/navigation';
+import { Toaster } from './components/ui/toast';
 
 // Lazy-loaded page components with instant hover preloading
 const Dashboard = lazy(() => import('./pages/Dashboard'));
@@ -442,7 +443,9 @@ export default function App() {
   return (
     <ErrorBoundary>
       <Router>
-        <AppContent />
+        <Toaster>
+          <AppContent />
+        </Toaster>
       </Router>
     </ErrorBoundary>
   );

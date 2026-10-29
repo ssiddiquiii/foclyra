@@ -3,6 +3,7 @@ import { Download, Upload, ShieldAlert, RotateCcw, Key, CheckCircle2 } from 'luc
 import { clearProgressAndNotes, exportBackup, importBackup } from '../services/dataCommands';
 import { useUIStore } from '../hooks/useUIStore';
 import { MessageSquarePlus } from 'lucide-react';
+import { toast } from '../components/ui/toast';
 
 /**
  * Settings & Console Management Component.
@@ -14,7 +15,6 @@ import { MessageSquarePlus } from 'lucide-react';
  */
 export default function Settings() {
   const { openFeedbackModal } = useUIStore();
-  const [statusMsg, setStatusMsg] = useState({ text: '', type: 'info' });
   const [showConfirmReset, setShowConfirmReset] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
 
@@ -38,15 +38,23 @@ export default function Settings() {
       localStorage.removeItem('foclyra_custom_youtube_api_key');
     }
     setKeySaved(true);
-    setStatusMsg({ text: trimmed ? 'Custom YouTube API key saved successfully.' : 'Reverted to default built-in YouTube API key.', type: 'success' });
+    toast.add({
+      title: 'API Key updated',
+      description: trimmed ? 'Custom YouTube API key saved successfully.' : 'Reverted to default built-in YouTube API key.',
+      type: 'success',
+      timeout: 4000,
+    });
     setTimeout(() => {
       setKeySaved(false);
-      setStatusMsg({ text: '', type: 'info' });
-    }, 3000);
+    }, 4000);
   };
 
   const handleExport = async () => {
-    setStatusMsg({ text: 'Generating backup file...', type: 'info' });
+    const exportToastId = toast.add({
+      title: 'Exporting backup...',
+      description: 'Generating backup file...',
+      type: 'loading',
+    });
     try {
       const backupData = await exportBackup();
       const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
@@ -60,10 +68,20 @@ export default function Settings() {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
       
-      setStatusMsg({ text: 'Backup downloaded successfully.', type: 'success' });
+      toast.update(exportToastId, {
+        title: 'Backup exported',
+        description: 'Backup downloaded successfully.',
+        type: 'success',
+        timeout: 4000,
+      });
     } catch (err) {
       console.error(err);
-      setStatusMsg({ text: `Failed to export backup: ${err.message}`, type: 'error' });
+      toast.update(exportToastId, {
+        title: 'Export failed',
+        description: `Failed to export backup: ${err.message}`,
+        type: 'error',
+        timeout: 4000,
+      });
     }
   };
 
@@ -73,7 +91,11 @@ export default function Settings() {
     if (!file || isImporting) return;
 
     setIsImporting(true);
-    setStatusMsg({ text: 'Reading backup file...', type: 'info' });
+    const importToastId = toast.add({
+      title: 'Importing backup...',
+      description: 'Reading backup file...',
+      type: 'loading',
+    });
 
     try {
       const text = await file.text();
@@ -85,16 +107,28 @@ export default function Settings() {
       }
 
       await importBackup(parsedData);
-      setStatusMsg({ text: 'Backup restored successfully.', type: 'success' });
+      toast.update(importToastId, {
+        title: 'Backup restored',
+        description: 'Backup restored successfully.',
+        type: 'success',
+        timeout: 4000,
+      });
     } catch (err) {
       console.error(err);
+      let errorDescription;
       if (err instanceof SyntaxError) {
-        setStatusMsg({ text: err.message, type: 'error' });
+        errorDescription = err.message;
       } else if (err?.name === 'ZodError' || err?.issues) {
-        setStatusMsg({ text: 'Invalid backup schema structure. Schema validation failed.', type: 'error' });
+        errorDescription = 'Invalid backup schema structure. Schema validation failed.';
       } else {
-        setStatusMsg({ text: `Failed to restore backup: ${err.message || 'Database restoration error'}`, type: 'error' });
+        errorDescription = `Failed to restore backup: ${err.message || 'Database restoration error'}`;
       }
+      toast.update(importToastId, {
+        title: 'Restore failed',
+        description: errorDescription,
+        type: 'error',
+        timeout: 4500,
+      });
     } finally {
       input.value = '';
       setIsImporting(false);
@@ -104,11 +138,21 @@ export default function Settings() {
   const handleExecuteReset = async () => {
     try {
       await clearProgressAndNotes();
-      setStatusMsg({ text: 'Watch progress and timestamped notes cleared successfully. All course catalogs remain intact.', type: 'success' });
+      toast.add({
+        title: 'Progress & notes cleared',
+        description: 'Watch progress and timestamped notes cleared successfully. All course catalogs remain intact.',
+        type: 'success',
+        timeout: 4000,
+      });
       setShowConfirmReset(false);
     } catch (err) {
       console.error(err);
-      setStatusMsg({ text: `Reset failed: ${err.message}`, type: 'error' });
+      toast.add({
+        title: 'Reset failed',
+        description: `Reset failed: ${err.message}`,
+        type: 'error',
+        timeout: 4000,
+      });
     }
   };
 
@@ -118,16 +162,6 @@ export default function Settings() {
         <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-normal">Settings & Preferences</h1>
         <p className="text-muted-foreground text-xs sm:text-sm mt-1 leading-relaxed">Manage your local database backups, YouTube API configuration, and data preferences.</p>
       </div>
-
-      {statusMsg.text && (
-        <div className={`p-4 rounded-xl text-xs font-semibold border ${
-          statusMsg.type === 'success' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20' :
-          statusMsg.type === 'error' ? 'bg-destructive/10 text-destructive border-destructive/20' :
-          'bg-muted text-muted-foreground border-border'
-        }`}>
-          {statusMsg.text}
-        </div>
-      )}
 
             {/* YouTube API Configuration */}
       <div className="glass-panel rounded-2xl p-5 sm:p-6 space-y-4 bg-card border border-border shadow-sm">
@@ -173,7 +207,12 @@ export default function Settings() {
                 onClick={() => {
                   setCustomKey('');
                   localStorage.removeItem('foclyra_custom_youtube_api_key');
-                  setStatusMsg({ text: 'Reverted to default built-in proxy.', type: 'info' });
+                  toast.add({
+                    title: 'API Key reset',
+                    description: 'Reverted to default built-in proxy.',
+                    type: 'info',
+                    timeout: 4000,
+                  });
                 }}
                 className="text-muted-foreground hover:text-destructive transition underline cursor-pointer"
               >

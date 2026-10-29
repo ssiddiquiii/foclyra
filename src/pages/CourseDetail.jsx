@@ -9,12 +9,12 @@ import {
   RefreshCw,
   Search,
   BookOpen,
-  Sparkles,
   Check
 } from 'lucide-react';
 import { fetchYouTubePlaylistData } from '../services/youtubeApi';
 import { importCourse } from '../services/dataCommands';
 import ExportNotesButton from '../components/ExportNotesButton';
+import { toast } from '../components/ui/toast';
 
 /**
  * Modern Course Detail & Syllabus View.
@@ -37,7 +37,6 @@ export default function CourseDetail() {
 
   const [expandedDesc, setExpandedDesc] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
-  const [syncStatus, setSyncStatus] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [thumbError, setThumbError] = useState(false);
 
@@ -77,16 +76,28 @@ export default function CourseDetail() {
   const handleSyncPlaylist = async () => {
     if (course?.type !== 'youtube' || isSyncing) return;
     setIsSyncing(true);
-    setSyncStatus('Fetching all lectures from YouTube...');
+    const syncToastId = toast.add({
+      title: 'Syncing lectures...',
+      description: 'Fetching all lectures from YouTube...',
+      type: 'loading',
+    });
     try {
       const { course: updatedCourse, lessons: updatedLessons } = await fetchYouTubePlaylistData(course.id);
       await importCourse(updatedCourse, updatedLessons);
-      setSyncStatus(`Synced ${updatedLessons.length} lectures successfully!`);
-      setTimeout(() => setSyncStatus(null), 3500);
+      toast.update(syncToastId, {
+        title: 'Lectures synced',
+        description: `Synced ${updatedLessons.length} lectures successfully!`,
+        type: 'success',
+        timeout: 4000,
+      });
     } catch (err) {
       console.error(err);
-      setSyncStatus(`Sync failed: ${err.message}`);
-      setTimeout(() => setSyncStatus(null), 4000);
+      toast.update(syncToastId, {
+        title: 'Sync failed',
+        description: `Sync failed: ${err.message}`,
+        type: 'error',
+        timeout: 4000,
+      });
     } finally {
       setIsSyncing(false);
     }
@@ -290,13 +301,6 @@ export default function CourseDetail() {
             />
           </div>
         </div>
-
-        {syncStatus && (
-          <p className="text-xs text-primary font-medium animate-in fade-in flex items-center gap-1.5">
-            <Sparkles size={12} />
-            <span>{syncStatus}</span>
-          </p>
-        )}
 
         {courseLessons.length === 0 && (
           <div className="rounded-xl border border-dashed border-border/70 p-8 text-center text-sm text-muted-foreground">

@@ -8,6 +8,7 @@ export const unitScripts = [
   'scripts/verification/phase1/verify_youtube_api.js',
   'scripts/verification/phase1/verify_serverless_api_full.js',
   'scripts/verification/phase1/verify_live_smoke_test.js',
+  'scripts/verification/phase1/verify_toast_notifications.js',
 ];
 
 export const browserScripts = [
