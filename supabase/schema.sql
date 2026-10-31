@@ -154,3 +154,13 @@ CREATE POLICY "Users can delete own progress"
 CREATE INDEX IF NOT EXISTS idx_user_courses_user_id ON public.user_courses(user_id);
 CREATE INDEX IF NOT EXISTS idx_user_notes_user_course ON public.user_notes(user_id, course_id);
 CREATE INDEX IF NOT EXISTS idx_user_progress_user_course ON public.user_progress(user_id, course_id);
+
+-- 5. SECURE ACCOUNT DELETION (Self-service user deletion)
+-- Authenticated users can permanently delete their own account.
+-- ON DELETE CASCADE ensures profiles, user_courses, user_notes, and user_progress are wiped.
+CREATE OR REPLACE FUNCTION public.delete_user()
+RETURNS void AS $$
+BEGIN
+  DELETE FROM auth.users WHERE id = auth.uid();
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;

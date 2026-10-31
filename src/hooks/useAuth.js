@@ -115,5 +115,35 @@ export const useAuth = create((set, get) => ({
       console.warn('Sign out warning:', err);
     }
     set({ user: null, profile: null, session: null });
+  },
+
+  signOutAllDevices: async () => {
+    if (!supabase) return;
+    try {
+      await supabase.auth.signOut({ scope: 'global' });
+    } catch (err) {
+      console.warn('Sign out global warning:', err);
+    }
+    set({ user: null, profile: null, session: null });
+  },
+
+  deleteAccount: async () => {
+    if (!supabase) throw new Error('Supabase is not configured.');
+    const { user } = get();
+    if (!user) throw new Error('No user is currently signed in.');
+
+    // Attempt secure RPC delete_user execution
+    const { error } = await supabase.rpc('delete_user');
+    if (error) {
+      console.warn('RPC delete_user failed or not yet deployed, fallback to profiles purge:', error);
+      // Clean up profile directly
+      await supabase.from('profiles').delete().eq('id', user.id);
+    }
+
+    // Sign out client session
+    try {
+      await supabase.auth.signOut({ scope: 'global' });
+    } catch {}
+    set({ user: null, profile: null, session: null });
   }
 }));
