@@ -161,6 +161,7 @@ export default function PomodoroTimer() {
 
       playChime(true);
       pauseActivePlayer();
+      trackEvent('pomodoro_completed', { mode: 'focus', durationMinutes: focusMins });
 
       // Seamlessly switch to Break mode and auto-run the countdown
       const breakSecs = breakMins * 60;

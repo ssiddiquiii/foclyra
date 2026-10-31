@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { supabase, isSupabaseConfigured } from '../services/supabaseClient';
 import { hydrateFromCloud } from '../services/cloudSyncService';
+import { identifyUser, resetUser, trackEvent } from '../services/analytics';
 
 /**
  * Global Authentication Store with Supabase Auth & Google OAuth.
@@ -23,6 +24,10 @@ export const useAuth = create((set, get) => ({
       if (session?.user) {
         set({ session, user: session.user });
         await get().fetchProfile(session.user.id);
+        identifyUser(session.user.id, {
+          email: session.user.email,
+          provider: session.user.app_metadata?.provider || 'email'
+        });
         hydrateFromCloud(session.user).catch(() => {});
       } else {
         set({ session: null, user: null, profile: null });
@@ -38,6 +43,10 @@ export const useAuth = create((set, get) => ({
       if (session?.user) {
         set({ session, user: session.user, isLoading: false });
         await get().fetchProfile(session.user.id);
+        identifyUser(session.user.id, {
+          email: session.user.email,
+          provider: session.user.app_metadata?.provider || 'email'
+        });
         hydrateFromCloud(session.user).catch(() => {});
       } else {
         set({ session: null, user: null, profile: null, isLoading: false });
@@ -109,6 +118,8 @@ export const useAuth = create((set, get) => ({
 
   signOut: async () => {
     if (!supabase) return;
+    trackEvent('user_signed_out');
+    resetUser();
     try {
       await supabase.auth.signOut();
     } catch (err) {
@@ -140,6 +151,8 @@ export const useAuth = create((set, get) => ({
       await supabase.from('profiles').delete().eq('id', user.id);
     }
 
+    trackEvent('account_deleted');
+    resetUser();
     // Sign out client session
     try {
       await supabase.auth.signOut({ scope: 'global' });

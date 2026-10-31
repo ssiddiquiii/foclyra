@@ -22,6 +22,7 @@ import { checkPlaylistImportQuota, trackCourseImport, trackCourseRemoval } from 
 import { useAuth } from '../hooks/useAuth';
 import { DeleteCourseDialog } from '../features/dashboard/DashboardSections';
 import { toast } from '../components/ui/toast';
+import { trackEvent } from '../services/analytics';
 
 const STARTER_COURSES = [
   {
@@ -143,6 +144,12 @@ export default function Dashboard() {
       const { course, lessons } = await fetchYouTubePlaylistData(urlToUse);
       await importCourse(course, lessons);
       await trackCourseImport({ user, course, lessonCount: lessons.length });
+      trackEvent('course_imported', {
+        courseId: course.id,
+        title: course.title,
+        type: course.type,
+        lessonCount: lessons.length
+      });
       setDirectUrl('');
       toast.update(loadingToastId, {
         title: 'Course imported',
@@ -189,6 +196,10 @@ export default function Dashboard() {
     try {
       await deleteCourse(courseToDelete.id);
       await trackCourseRemoval({ user, courseId: courseToDelete.id });
+      trackEvent('course_deleted', {
+        courseId: courseToDelete.id,
+        title: courseToDelete.title
+      });
       toast.add({
         title: 'Course deleted',
         description: `Course "${courseToDelete.title}" deleted successfully.`,

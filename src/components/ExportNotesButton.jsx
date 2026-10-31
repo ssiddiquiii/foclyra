@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Download } from 'lucide-react';
 import { getNotesExportBundle } from '../services/dataCommands';
 import { exportNotesToWord } from '../utils/exportUtils';
+import { trackEvent } from '../services/analytics';
 
 export default function ExportNotesButton({
   courseId = null,
@@ -18,6 +19,11 @@ export default function ExportNotesButton({
     try {
       const { courses, lessons, notes } = await getNotesExportBundle(courseId);
       exportNotesToWord(notes, { courses, lessons, courseTitle });
+      trackEvent('notes_exported_word', {
+        courseId: courseId || 'all',
+        courseTitle: courseTitle || 'All Notes',
+        notesCount: notes.length
+      });
     } finally {
       setIsExporting(false);
     }

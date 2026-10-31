@@ -15,6 +15,7 @@ import { useUIStore } from './hooks/useUIStore';
 import { useTheme } from './hooks/useTheme';
 import { isNavigationActive, navigationItems } from './components/shell/navigation';
 import { Toaster } from './components/ui/toast';
+import { trackPageView } from './services/analytics';
 
 // Lazy-loaded page components with instant hover preloading
 const Dashboard = lazy(() => import('./pages/Dashboard'));
@@ -48,6 +49,7 @@ function AppContent() {
 
   useEffect(() => {
     closeMobileSidebar();
+    trackPageView(location.pathname);
   }, [location.pathname, closeMobileSidebar]);
 
   useEffect(() => {
