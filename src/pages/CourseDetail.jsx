@@ -15,6 +15,7 @@ import { fetchYouTubePlaylistData } from '../services/youtubeApi';
 import { importCourse } from '../services/dataCommands';
 import ExportNotesButton from '../components/ExportNotesButton';
 import { toast } from '../components/ui/toast';
+import { trackEvent } from '../services/analytics';
 
 /**
  * Modern Course Detail & Syllabus View.
@@ -223,7 +224,15 @@ export default function CourseDetail() {
             <div className="pt-2 flex flex-col sm:flex-row flex-wrap items-center gap-3">
               {resumeTargetLesson && (
                 <button
-                  onClick={() => navigate(`/courses/${courseId}/lessons/${resumeTargetLesson.id}`)}
+                  onClick={() => {
+                    trackEvent('course_session_resumed', {
+                      courseId,
+                      courseTitle: course.title,
+                      isResume: Boolean(lastWatched),
+                      progressPercent: courseProgress
+                    });
+                    navigate(`/courses/${courseId}/lessons/${resumeTargetLesson.id}`);
+                  }}
                   className="w-full sm:w-auto px-5 py-2.5 rounded-xl font-semibold bg-primary hover:bg-primary/90 active:scale-98 transition-all text-primary-foreground text-sm shadow-xs flex items-center justify-center gap-2 cursor-pointer"
                 >
                   {lastWatched ? <RotateCcw size={15} /> : <Play size={15} fill="currentColor" />}

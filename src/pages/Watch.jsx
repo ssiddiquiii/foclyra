@@ -12,6 +12,7 @@ import { useLessonNotes } from '../features/watch/useLessonNotes';
 import { useWatchPlayerController } from '../features/watch/useWatchPlayerController';
 import { NotesPanel } from '../features/watch/NotesPanel';
 import { FileText } from 'lucide-react';
+import { trackEvent } from '../services/analytics';
 
 export default function Watch() {
   const { courseId, lessonId } = useParams();
@@ -32,6 +33,11 @@ export default function Watch() {
       try {
         localStorage.setItem('foclyra_watch_playlist_collapsed', String(next));
       } catch {}
+      trackEvent('theater_mode_toggled', {
+        collapsed: next,
+        courseId,
+        lessonId
+      });
       return next;
     });
   };
@@ -63,7 +69,16 @@ export default function Watch() {
   const currentProgress = progressList.find(progress => progress.id === `${courseId}_${lessonId}`);
   const isCompleted = currentProgress ? currentProgress.completed : false;
   const handleToggleComplete = async () => {
-    await setLessonCompletion(courseId, lessonId, !isCompleted, isCompleted ? 0 : 2700);
+    const nextCompleted = !isCompleted;
+    await setLessonCompletion(courseId, lessonId, nextCompleted, isCompleted ? 0 : 2700);
+    if (nextCompleted) {
+      trackEvent('lecture_completed', {
+        courseId,
+        lessonId,
+        lessonTitle: lesson.title,
+        lessonIndex: currentIndex >= 0 ? currentIndex + 1 : 1
+      });
+    }
   };
 
   const handleNavigate = (nextId) => {

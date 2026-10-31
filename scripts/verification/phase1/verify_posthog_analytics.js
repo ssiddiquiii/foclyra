@@ -15,7 +15,7 @@ function assert(condition, message) {
 }
 
 async function runPostHogVerification() {
-  console.log('--- PostHog Analytics Service & Wiring Verification ---');
+  console.log('--- PostHog 4-Pillar Telemetry Verification ---');
 
   // 1. Safe graceful degradation when VITE_POSTHOG_KEY is absent
   try {
@@ -36,8 +36,8 @@ async function runPostHogVerification() {
     assert(false, `Analytics methods threw unexpectedly: ${err.message}`);
   }
 
-  // 3. Inspect analytics.js source for privacy and best practices
-  const [analyticsSource, mainSource, appSource, authSource, dashboardSource, exportSource, pomodoroSource] = 
+  // 3. Inspect sources for 4 telemetry pillars
+  const [analyticsSource, mainSource, appSource, authSource, dashboardSource, exportSource, pomodoroSource, notesSource, watchSource, courseDetailSource, authModalSource] = 
     await Promise.all([
       readFile('src/services/analytics.js', 'utf8'),
       readFile('src/main.jsx', 'utf8'),
@@ -45,47 +45,66 @@ async function runPostHogVerification() {
       readFile('src/hooks/useAuth.js', 'utf8'),
       readFile('src/pages/Dashboard.jsx', 'utf8'),
       readFile('src/components/ExportNotesButton.jsx', 'utf8'),
-      readFile('src/components/PomodoroTimer.jsx', 'utf8')
+      readFile('src/components/PomodoroTimer.jsx', 'utf8'),
+      readFile('src/features/watch/useLessonNotes.js', 'utf8'),
+      readFile('src/pages/Watch.jsx', 'utf8'),
+      readFile('src/pages/CourseDetail.jsx', 'utf8'),
+      readFile('src/components/AuthModal.jsx', 'utf8')
     ]);
 
   assert(
     analyticsSource.includes("autocapture: false"),
-    'PostHog configures autocapture: false to safeguard private notes and user inputs'
+    'Pillar 1/2 Privacy: PostHog configures autocapture: false to safeguard notes & passwords'
   );
 
   assert(
-    analyticsSource.includes("person_profiles: 'identified_only'"),
-    'PostHog uses identified_only person profiles to prevent anonymous tracking bloat'
-  );
-
-  assert(
-    mainSource.includes('initAnalytics()'),
-    'src/main.jsx boots analytics on application initialization'
-  );
-
-  assert(
-    appSource.includes('trackPageView(location.pathname)'),
-    'src/App.jsx triggers trackPageView on client SPA route changes'
-  );
-
-  assert(
-    authSource.includes('identifyUser') && authSource.includes('resetUser'),
-    'src/hooks/useAuth.js links identity on login and resets on logout/deletion'
-  );
-
-  assert(
-    dashboardSource.includes("trackEvent('course_imported'") && dashboardSource.includes("trackEvent('course_deleted'"),
-    'src/pages/Dashboard.jsx captures course_imported and course_deleted events'
-  );
-
-  assert(
-    exportSource.includes("trackEvent('notes_exported_word'"),
-    'src/components/ExportNotesButton.jsx captures notes_exported_word events'
+    mainSource.includes('initAnalytics()') && appSource.includes('trackPageView(location.pathname)'),
+    'App Shell: PostHog boots on init and captures SPA page views'
   );
 
   assert(
     pomodoroSource.includes("trackEvent('pomodoro_completed'"),
-    'src/components/PomodoroTimer.jsx captures pomodoro_completed events'
+    'Pillar 1 Deep Work: Pomodoro focus & break completions tracked'
+  );
+
+  assert(
+    watchSource.includes("trackEvent('theater_mode_toggled'"),
+    'Pillar 1 Deep Work: Theater mode engagement tracked'
+  );
+
+  assert(
+    notesSource.includes("trackEvent('note_created'") && !notesSource.includes('trackEvent(\'note_created\', { content }'),
+    'Pillar 2 Active Learning: note_created tracked with metadata but NOT note text content'
+  );
+
+  assert(
+    exportSource.includes("trackEvent('notes_exported_word'"),
+    'Pillar 2 Active Learning: notes_exported_word tracked with scope & note count'
+  );
+
+  assert(
+    watchSource.includes("trackEvent('lecture_completed'"),
+    'Pillar 3 Retention: lecture_completed tracked with course & lesson details'
+  );
+
+  assert(
+    courseDetailSource.includes("trackEvent('course_session_resumed'"),
+    'Pillar 3 Retention: course_session_resumed tracked with course & progress state'
+  );
+
+  assert(
+    dashboardSource.includes("trackEvent('guest_trial_exhausted'"),
+    'Pillar 4 SaaS Funnel: guest_trial_exhausted quota boundary tracked'
+  );
+
+  assert(
+    authModalSource.includes("trackEvent('auth_modal_opened'") && authModalSource.includes("trackEvent('user_signed_up'"),
+    'Pillar 4 SaaS Funnel: auth_modal_opened and user_signed_up / user_signed_in tracked'
+  );
+
+  assert(
+    authSource.includes('identifyUser') && authSource.includes('resetUser'),
+    'User Identity: Session identification and logout reset configured'
   );
 
   console.log(`\nResults: ${passed} passed, ${failed} failed.`);

@@ -109,6 +109,7 @@ export default function Dashboard() {
       const quota = await checkPlaylistImportQuota({ user, playlistId: urlToUse });
       if (!quota.allowed) {
         if (quota.reason === 'GUEST_LIMIT_REACHED') {
+          trackEvent('guest_trial_exhausted');
           openAuthModal('guest_limit');
           toast.add({
             title: 'Guest trial complete',
@@ -119,6 +120,7 @@ export default function Dashboard() {
           return;
         }
         if (quota.reason === 'REGISTERED_LIMIT_REACHED') {
+          trackEvent('registered_limit_hit');
           openAuthModal('registered_limit');
           toast.add({
             title: 'Playlist limit reached',

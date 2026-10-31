@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createNote, deleteNote, updateNote } from '../../services/dataCommands';
+import { trackEvent } from '../../services/analytics';
 
 export function useLessonNotes({ courseId, lessonId, getTimestamp }) {
   const [draft, setDraft] = useState('');
@@ -44,7 +45,15 @@ export function useLessonNotes({ courseId, lessonId, getTimestamp }) {
     if (!content) return;
     const timestamp = Math.max(0, Math.round(getTimestamp()));
     const saved = await runCommand(() => createNote({ courseId, lessonId, timestamp, content }));
-    if (saved) setDraft('');
+    if (saved) {
+      setDraft('');
+      trackEvent('note_created', {
+        courseId,
+        lessonId,
+        hasTimestamp: timestamp > 0,
+        characterLength: content.length
+      });
+    }
   }, [courseId, draft, getTimestamp, lessonId, runCommand]);
 
   const beginEdit = useCallback(note => {

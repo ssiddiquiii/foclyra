@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Sparkles, Cloud, ShieldCheck, Mail, ArrowRight, Lock, CheckCircle2, AlertCircle } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useUIStore } from '../hooks/useUIStore';
+import { trackEvent } from '../services/analytics';
+import { useEffect } from 'react';
 
 export default function AuthModal({ isOpen: propIsOpen, onClose: propOnClose, context: propContext }) {
   const { authModalOpen, closeAuthModal, authModalContext } = useUIStore();
@@ -18,6 +20,12 @@ export default function AuthModal({ isOpen: propIsOpen, onClose: propOnClose, co
   const [errorMsg, setErrorMsg] = useState(null);
   const [successMsg, setSuccessMsg] = useState(null);
 
+  useEffect(() => {
+    if (isOpen) {
+      trackEvent('auth_modal_opened', { context: context || 'default' });
+    }
+  }, [isOpen, context]);
+
   if (!isOpen) return null;
 
   const handleGoogleSignIn = async () => {
@@ -28,6 +36,7 @@ export default function AuthModal({ isOpen: propIsOpen, onClose: propOnClose, co
     setLoading(true);
     setErrorMsg(null);
     try {
+      trackEvent('auth_attempt', { method: 'google', context });
       await signInWithGoogle();
     } catch (err) {
       setErrorMsg(err.message || 'Google sign-in failed. Please try again.');
@@ -52,6 +61,7 @@ export default function AuthModal({ isOpen: propIsOpen, onClose: propOnClose, co
     try {
       if (mode === 'email_signup') {
         const result = await signUpWithEmail(email, password, fullName);
+        trackEvent('user_signed_up', { method: 'email', context });
         if (result?.session) {
           onClose();
         } else {
@@ -59,6 +69,7 @@ export default function AuthModal({ isOpen: propIsOpen, onClose: propOnClose, co
         }
       } else {
         await signInWithEmail(email, password);
+        trackEvent('user_signed_in', { method: 'email', context });
         onClose();
       }
     } catch (err) {
