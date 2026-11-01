@@ -20,36 +20,65 @@ import {
   Moon,
   ExternalLink,
   Volume2,
-  Maximize2
+  Maximize2,
+  GraduationCap,
+  Code,
+  Terminal,
+  Coffee,
+  Sliders,
+  EyeOff,
+  Eye,
+  Check
 } from 'lucide-react';
 import { useTheme } from '../hooks/useTheme';
 import { useAuth } from '../hooks/useAuth';
 import { trackEvent } from '../services/analytics';
+
+// Rotating headline badges (Vidyst Signature Feature)
+const TICKER_ITEMS = [
+  { text: 'YouTube', icon: Play, color: 'text-rose-500 bg-rose-500/10 border-rose-500/30' },
+  { text: 'Harvard CS50', icon: GraduationCap, color: 'text-red-500 bg-red-500/10 border-red-500/30' },
+  { text: 'MIT OpenCourseWare', icon: Terminal, color: 'text-sky-500 bg-sky-500/10 border-sky-500/30' },
+  { text: 'Chai aur Code', icon: Coffee, color: 'text-amber-500 bg-amber-500/10 border-amber-500/30' },
+  { text: 'FreeCodeCamp', icon: Code, color: 'text-emerald-500 bg-emerald-500/10 border-emerald-500/30' }
+];
 
 export default function LandingPage() {
   const { isDark, toggleTheme } = useTheme();
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // Interactive Live Motion State (Vidyst simulation)
+  // Vidyst-style Headline Rotating Ticker Index
+  const [tickerIndex, setTickerIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTickerIndex((prev) => (prev + 1) % TICKER_ITEMS.length);
+    }, 2400);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Vidyst-style Live Interactive Mode Switcher ("Foclyra Studio" vs "YouTube Chaos")
+  const [viewMode, setViewMode] = useState('foclyra'); // 'foclyra' | 'youtube'
+
+  // Live video player simulation state
   const [isPlaying, setIsPlaying] = useState(true);
-  const [activeTab, setActiveTab] = useState('notes');
+  const [progressSec, setProgressSec] = useState(252); // 04:12
   const [selectedTimestamp, setSelectedTimestamp] = useState('04:12');
-  const [typedNoteIndex, setTypedNoteIndex] = useState(0);
   const [activeFaq, setActiveFaq] = useState(null);
 
-  // Live video simulation counter
-  const [progressSec, setProgressSec] = useState(252); // 04:12
+  // Live clock ticker for the studio titlebar
+  const [studyElapsedSec, setStudyElapsedSec] = useState(1455); // 24m 15s
 
   useEffect(() => {
     if (!isPlaying) return undefined;
     const interval = setInterval(() => {
       setProgressSec((prev) => (prev >= 600 ? 250 : prev + 1));
+      setStudyElapsedSec((prev) => prev + 1);
     }, 1000);
     return () => clearInterval(interval);
   }, [isPlaying]);
 
-  // Format seconds to mm:ss
   const formatTime = (secs) => {
     const m = Math.floor(secs / 60).toString().padStart(2, '0');
     const s = (secs % 60).toString().padStart(2, '0');
@@ -65,6 +94,9 @@ export default function LandingPage() {
     setActiveFaq(activeFaq === index ? null : index);
     trackEvent('landing_faq_toggle', { faq_index: index });
   };
+
+  const currentTicker = TICKER_ITEMS[tickerIndex];
+  const TickerIcon = currentTicker.icon;
 
   const FAQS = [
     {
@@ -90,11 +122,11 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col selection:bg-amber-400 selection:text-black">
+    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans selection:bg-amber-400 selection:text-black">
       {/* =========================================================================
-          1. Sleek Minimalist Header (Vidyst Style)
+          1. Vidyst Minimalist Glass Navigation
          ========================================================================= */}
-      <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/85 backdrop-blur-2xl">
+      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-2xl">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           {/* Logo & Brand */}
           <Link to="/" className="flex items-center gap-2.5 group">
@@ -109,9 +141,9 @@ export default function LandingPage() {
 
           {/* Quick Nav Anchor Links */}
           <nav className="hidden md:flex items-center gap-8 text-xs font-medium text-muted-foreground">
-            <a href="#demo" className="hover:text-foreground transition-colors">Live Demo</a>
-            <a href="#bento" className="hover:text-foreground transition-colors">Features</a>
-            <a href="#workflow" className="hover:text-foreground transition-colors">How It Works</a>
+            <a href="#studio" className="hover:text-foreground transition-colors">Live Studio</a>
+            <a href="#features" className="hover:text-foreground transition-colors">Features</a>
+            <a href="#bento" className="hover:text-foreground transition-colors">Why Foclyra</a>
             <a href="#faq" className="hover:text-foreground transition-colors">FAQ</a>
           </nav>
 
@@ -126,7 +158,7 @@ export default function LandingPage() {
               {isDark ? <Sun size={15} /> : <Moon size={15} />}
             </button>
 
-            {/* Vidyst Style Pill Button */}
+            {/* Apple/Vidyst-style Black/White Pill Button */}
             <button
               type="button"
               onClick={() => handleLaunchApp('nav_cta')}
@@ -140,44 +172,62 @@ export default function LandingPage() {
       </header>
 
       {/* =========================================================================
-          2. Hero Section (80% Vidyst Scale + 20% Odoo Hand-Drawn Charm)
+          2. Hero Section (80% Vidyst Scale + 20% Odoo Hand-Drawn Elements)
          ========================================================================= */}
-      <section className="relative pt-16 sm:pt-24 pb-16 overflow-hidden">
+      <section className="relative pt-16 sm:pt-28 pb-16 overflow-hidden">
         {/* Subtle Ambient Radial Glow */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-primary/10 rounded-full blur-[140px] pointer-events-none -z-10" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[450px] bg-primary/10 rounded-full blur-[150px] pointer-events-none -z-10" />
 
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center space-y-6">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center space-y-7">
           {/* Subtle Live Badge */}
           <motion.div 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-muted/80 border border-border/80 text-foreground text-xs font-semibold shadow-xs"
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-muted/80 border border-border/80 text-foreground text-xs font-semibold shadow-xs"
           >
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <span>The High-Retention YouTube Study Studio</span>
           </motion.div>
 
-          {/* Massive Vidyst-Scale Typography with Odoo Hand-Drawn Highlights */}
+          {/* Massive Vidyst-Scale Typography with Animated Ticker & Odoo Highlighter */}
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-4xl sm:text-6xl md:text-7xl lg:text-[76px] font-black tracking-tight leading-[1.08] text-center max-w-4xl mx-auto"
+            className="text-4xl sm:text-6xl md:text-7xl lg:text-[84px] font-black tracking-tight leading-[1.04] text-center max-w-4xl mx-auto"
           >
             <span className="block bg-gradient-to-b from-foreground via-foreground to-foreground/50 bg-clip-text text-transparent">
-              Master any skill on YouTube.
+              Master any skill on
             </span>
-            <span className="inline-block mt-2">
-              With{' '}
+
+            {/* Vidyst-Style Animated Rotating Ticker Badge in the Center of Heading */}
+            <span className="inline-flex items-center justify-center my-1.5 align-middle mx-2">
+              <AnimatePresence mode="wait">
+                <motion.span
+                  key={currentTicker.text}
+                  initial={{ y: 20, opacity: 0, scale: 0.9 }}
+                  animate={{ y: 0, opacity: 1, scale: 1 }}
+                  exit={{ y: -20, opacity: 0, scale: 0.9 }}
+                  transition={{ duration: 0.35, ease: "easeOut" }}
+                  className={`inline-flex items-center gap-2.5 px-4 sm:px-5 py-1.5 sm:py-2 rounded-2xl border ${currentTicker.color} shadow-sm text-2xl sm:text-4xl lg:text-5xl font-black`}
+                >
+                  <TickerIcon className="w-6 h-6 sm:w-8 sm:h-8" />
+                  <span>{currentTicker.text}</span>
+                </motion.span>
+              </AnimatePresence>
+            </span>
+
+            <span className="block mt-1">
+              with{' '}
               {/* Odoo Style Marker Highlighter Effect */}
               <span className="relative inline-block mx-1">
-                <span className="absolute -inset-1 sm:-inset-1.5 bg-amber-300 dark:bg-amber-400/35 rounded-md -rotate-1 -skew-x-2 -z-10 shadow-xs" />
+                <span className="absolute -inset-1 sm:-inset-2 bg-amber-300 dark:bg-amber-400/35 rounded-md -rotate-1 -skew-x-2 -z-10 shadow-xs" />
                 <span className="text-slate-950 dark:text-amber-200 relative font-black">
-                  zero rabbit holes.
+                  zero algorithm traps.
                 </span>
-                {/* Odoo Style Hand-Drawn Underline SVG */}
-                <svg className="absolute -bottom-2.5 left-0 w-full h-3 text-sky-500 dark:text-sky-400 overflow-visible" viewBox="0 0 100 10" preserveAspectRatio="none">
-                  <path d="M2 7 C 25 2, 65 3, 98 6" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" fill="none" />
+                {/* Odoo Style Hand-Drawn Squiggle Underline */}
+                <svg className="absolute -bottom-3 left-0 w-full h-3.5 text-sky-500 dark:text-sky-400 overflow-visible" viewBox="0 0 100 10" preserveAspectRatio="none">
+                  <path d="M2 7 C 25 2, 65 3, 98 6" stroke="currentColor" strokeWidth="4" strokeLinecap="round" fill="none" />
                 </svg>
               </span>
             </span>
@@ -190,17 +240,17 @@ export default function LandingPage() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="max-w-2xl mx-auto text-sm sm:text-base text-muted-foreground leading-relaxed pt-2"
           >
-            Streamline video lectures into deep focus. Take synchronized timestamped notes, sprint with built-in Pomodoro cycles, and export complete Word (.docx) study syllabi in one click.
+            Streamline YouTube playlists into a focused studio. Take synchronized timestamped notes, sprint with built-in Pomodoro cycles, and export complete Word (.docx) syllabi with zero friction.
           </motion.p>
 
-          {/* Primary CTA + Odoo Hand-Drawn Doodle Arrow & Price Note */}
+          {/* Primary CTA + Odoo Hand-Drawn Curved Arrow & Price Note */}
           <motion.div 
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
             className="relative pt-4 flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            {/* Vidyst Style Massive Pill Button */}
+            {/* Vidyst Style Big Pill Button */}
             <button
               type="button"
               onClick={() => handleLaunchApp('hero_main_pill')}
@@ -219,30 +269,61 @@ export default function LandingPage() {
               </svg>
               <div className="font-handwriting text-2xl text-primary font-bold -rotate-6 leading-tight">
                 <span>US$ 0 / forever</span>
-                <span className="block text-sm text-muted-foreground">no credit card needed!</span>
+                <span className="block text-sm text-muted-foreground font-sans font-semibold">no credit card needed!</span>
               </div>
             </div>
           </motion.div>
 
-          {/* Small Vidyst-Style Trust Badge */}
+          {/* Small Trust Line */}
           <div className="text-[11px] text-muted-foreground pt-1">
             <span>Free for everyone • Works 100% offline via IndexedDB • No registration barrier</span>
           </div>
         </div>
 
         {/* =========================================================================
-            3. Live Motion Product Stage (Vidyst's Signature Video / App Simulation)
+            3. The Vidyst Live Studio Surface (Interactive Motion Centerpiece)
            ========================================================================= */}
-        <div id="demo" className="max-w-5xl mx-auto px-4 sm:px-6 pt-12">
+        <div id="studio" className="max-w-5xl mx-auto px-4 sm:px-6 pt-16">
+          {/* Mode Switcher (Vidyst style: Horizontal vs Vertical -> Here: Foclyra vs YouTube) */}
+          <div className="flex items-center justify-center mb-6">
+            <div className="inline-flex p-1 rounded-full bg-muted/80 border border-border/80 shadow-xs">
+              <button
+                type="button"
+                onClick={() => setViewMode('foclyra')}
+                className={`px-4 py-2 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                  viewMode === 'foclyra'
+                    ? 'bg-foreground text-background shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                <ShieldCheck size={14} className={viewMode === 'foclyra' ? 'text-emerald-400' : ''} />
+                <span>Foclyra Studio (Clean)</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setViewMode('youtube')}
+                className={`px-4 py-2 rounded-full text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
+                  viewMode === 'youtube'
+                    ? 'bg-rose-500 text-white shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                <EyeOff size={14} />
+                <span>YouTube Feed (Distracted)</span>
+              </button>
+            </div>
+          </div>
+
           <motion.div 
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.35 }}
-            className="rounded-3xl border border-border/80 bg-card shadow-[0_25px_60px_-15px_rgba(0,0,0,0.35)] overflow-hidden transition-all duration-300 hover:border-primary/50"
+            className="rounded-3xl border border-border/80 bg-card shadow-[0_30px_70px_-15px_rgba(0,0,0,0.4)] overflow-hidden transition-all duration-300 hover:border-primary/50"
           >
             {/* macOS Title Bar */}
-            <div className="h-11 px-5 bg-muted/60 border-b border-border/80 flex items-center justify-between">
-              {/* Traffic Light Dots */}
+            <div className="h-11 px-5 bg-muted/70 border-b border-border/80 flex items-center justify-between">
+              {/* Traffic Lights */}
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-rose-500/80 cursor-pointer" />
                 <div className="w-3 h-3 rounded-full bg-amber-500/80 cursor-pointer" />
@@ -252,9 +333,9 @@ export default function LandingPage() {
               {/* Center App Pill (Vidyst Live Status Indicator) */}
               <div className="px-3.5 py-1 rounded-full bg-background/90 border border-border text-[11px] font-mono text-foreground flex items-center gap-2 shadow-xs">
                 <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping" />
-                <span className="font-bold text-foreground">● DEEP FOCUS ACTIVE</span>
+                <span className="font-bold text-foreground">● LIVE FOCUS SESSION</span>
                 <span className="text-muted-foreground">|</span>
-                <span className="text-muted-foreground">CS50 Lecture 04: Pointers</span>
+                <span className="text-muted-foreground font-mono">{formatTime(studyElapsedSec)} Elapsed</span>
               </div>
 
               {/* Right Side Pill */}
@@ -263,203 +344,249 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* Live Interactive Workspace (Video Stage + Synchronized Notes) */}
-            <div className="p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-5 bg-background/50">
-              {/* Left Side: Clean Video Surface (7 cols) */}
-              <div className="lg:col-span-7 flex flex-col gap-3">
-                <div className="relative aspect-video rounded-2xl bg-slate-950 border border-border/80 overflow-hidden flex flex-col justify-between p-4 sm:p-5 shadow-2xl group">
-                  {/* Top Overlay Badges */}
-                  <div className="flex items-center justify-between z-10">
-                    <span className="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-mono text-[10px] font-bold tracking-wider backdrop-blur-md">
-                      RECOMMENDATION FEEDS: BLOCKED
-                    </span>
-                    <span className="px-2.5 py-1 rounded-full bg-black/70 text-white font-mono text-[10px] backdrop-blur-md">
-                      {formatTime(progressSec)} / 48:10
-                    </span>
-                  </div>
-
-                  {/* Center Video Graphic / Visualizer */}
-                  <div className="self-center flex flex-col items-center gap-3 z-10">
-                    <button
-                      type="button"
-                      onClick={() => setIsPlaying(!isPlaying)}
-                      className="w-16 h-16 rounded-full bg-white/95 text-slate-900 flex items-center justify-center shadow-2xl transition-transform hover:scale-110 active:scale-95 cursor-pointer"
-                      title={isPlaying ? "Pause Demo" : "Play Demo"}
-                    >
-                      {isPlaying ? (
-                        <Pause size={24} className="fill-slate-900" />
-                      ) : (
-                        <Play size={24} className="fill-slate-900 ml-1" />
-                      )}
-                    </button>
-                    <span className="text-white text-xs font-semibold tracking-wide drop-shadow-md">
-                      Harvard CS50: Memory & Pointers Explained
-                    </span>
-                  </div>
-
-                  {/* Subtle Grid Animation Background */}
-                  <div className="absolute inset-0 bg-radial from-transparent to-black/80 pointer-events-none" />
-
-                  {/* Bottom Controls Bar */}
-                  <div className="w-full space-y-2 z-10">
-                    {/* Live Progress Bar */}
-                    <div className="w-full h-1.5 bg-white/20 rounded-full overflow-hidden cursor-pointer">
-                      <motion.div 
-                        className="h-full bg-primary rounded-full" 
-                        style={{ width: `${(progressSec / 600) * 100}%` }}
-                      />
+            {/* Interactive Workspace: Conditional Rendering based on Mode Switcher */}
+            {viewMode === 'foclyra' ? (
+              /* FOCLYRA DEEP WORK MODE */
+              <div className="p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-5 bg-background/60">
+                {/* Left Side: Clean Video Surface (7 cols) */}
+                <div className="lg:col-span-7 flex flex-col gap-3">
+                  <div className="relative aspect-video rounded-2xl bg-slate-950 border border-border/80 overflow-hidden flex flex-col justify-between p-4 sm:p-5 shadow-2xl group">
+                    {/* Top Overlay Badges */}
+                    <div className="flex items-center justify-between z-10">
+                      <span className="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 font-mono text-[10px] font-bold tracking-wider backdrop-blur-md">
+                        RECOMMENDATION FEEDS: BLOCKED
+                      </span>
+                      <span className="px-2.5 py-1 rounded-full bg-black/70 text-white font-mono text-[10px] backdrop-blur-md">
+                        {formatTime(progressSec)} / 48:10
+                      </span>
                     </div>
-                    <div className="flex items-center justify-between text-[11px] text-white/80">
-                      <div className="flex items-center gap-3">
-                        <button onClick={() => setIsPlaying(!isPlaying)} className="hover:text-white transition">
-                          {isPlaying ? <Pause size={14} /> : <Play size={14} />}
-                        </button>
-                        <Volume2 size={14} />
-                        <span className="font-mono text-[10px]">{formatTime(progressSec)}</span>
+
+                    {/* Center Video Graphic / Play-Pause Visualizer */}
+                    <div className="self-center flex flex-col items-center gap-3 z-10">
+                      <button
+                        type="button"
+                        onClick={() => setIsPlaying(!isPlaying)}
+                        className="w-16 h-16 rounded-full bg-white/95 text-slate-900 flex items-center justify-center shadow-2xl transition-transform hover:scale-110 active:scale-95 cursor-pointer"
+                        title={isPlaying ? "Pause Demo" : "Play Demo"}
+                      >
+                        {isPlaying ? (
+                          <Pause size={24} className="fill-slate-900" />
+                        ) : (
+                          <Play size={24} className="fill-slate-900 ml-1" />
+                        )}
+                      </button>
+                      <span className="text-white text-xs font-semibold tracking-wide drop-shadow-md">
+                        Harvard CS50: Dynamic Memory & Pointers
+                      </span>
+                    </div>
+
+                    {/* Subtle Radial Gradient */}
+                    <div className="absolute inset-0 bg-radial from-transparent to-black/80 pointer-events-none" />
+
+                    {/* Bottom Controls Bar */}
+                    <div className="w-full space-y-2 z-10">
+                      {/* Live Progress Bar */}
+                      <div className="w-full h-1.5 bg-white/20 rounded-full overflow-hidden cursor-pointer">
+                        <motion.div 
+                          className="h-full bg-primary rounded-full" 
+                          style={{ width: `${(progressSec / 600) * 100}%` }}
+                        />
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span className="px-1.5 py-0.5 rounded bg-white/10 text-[9px] font-mono">1080p HD</span>
-                        <Maximize2 size={13} />
+                      <div className="flex items-center justify-between text-[11px] text-white/80">
+                        <div className="flex items-center gap-3">
+                          <button onClick={() => setIsPlaying(!isPlaying)} className="hover:text-white transition">
+                            {isPlaying ? <Pause size={14} /> : <Play size={14} />}
+                          </button>
+                          <Volume2 size={14} />
+                          <span className="font-mono text-[10px]">{formatTime(progressSec)}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="px-1.5 py-0.5 rounded bg-white/10 text-[9px] font-mono">1080p HD</span>
+                          <Maximize2 size={13} />
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Video Info Strip */}
-                <div className="flex items-center justify-between px-1 text-xs">
-                  <div>
-                    <h3 className="font-bold text-foreground">Lecture 04: Dynamic Memory Allocation</h3>
-                    <p className="text-[11px] text-muted-foreground">Harvard CS50 • David J. Malan</p>
-                  </div>
-                  <span className="px-2.5 py-1 rounded-full bg-primary/10 text-primary font-mono text-[10px] font-bold">
-                    Lesson 4 of 24
-                  </span>
-                </div>
-              </div>
-
-              {/* Right Side: Timestamped Notes & Pomodoro (5 cols) */}
-              <div className="lg:col-span-5 flex flex-col gap-3">
-                {/* Live Pomodoro Sprint Card */}
-                <div className="p-3.5 rounded-2xl bg-card border border-border flex items-center justify-between shadow-xs">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-rose-500/10 text-rose-500 flex items-center justify-center font-bold">
-                      <Flame size={18} />
-                    </div>
+                  {/* Video Info Strip */}
+                  <div className="flex items-center justify-between px-1 text-xs">
                     <div>
-                      <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider block">Deep Work Sprint</span>
-                      <span className="text-sm font-mono font-bold text-foreground">21:45 Remaining</span>
+                      <h3 className="font-bold text-foreground">Lecture 04: Pointers & Heap Memory</h3>
+                      <p className="text-[11px] text-muted-foreground">Harvard CS50 • David J. Malan</p>
                     </div>
+                    <span className="px-2.5 py-1 rounded-full bg-primary/10 text-primary font-mono text-[10px] font-bold">
+                      Lesson 4 of 24
+                    </span>
                   </div>
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
                 </div>
 
-                {/* Synchronized Notes Stream */}
-                <div className="flex-1 p-4 rounded-2xl bg-card border border-border flex flex-col justify-between space-y-3">
-                  <div className="flex items-center justify-between border-b border-border/60 pb-2">
-                    <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
-                      <FileText size={14} className="text-primary" />
-                      <span>Synchronized Notes (3)</span>
-                    </span>
-                    <span className="text-[10px] text-muted-foreground font-mono">Auto-saved 0.5s ago</span>
-                  </div>
-
-                  {/* Note Item 1 */}
-                  <div 
-                    onClick={() => { setSelectedTimestamp('04:12'); setProgressSec(252); }}
-                    className={`p-3 rounded-xl border transition-all cursor-pointer ${
-                      selectedTimestamp === '04:12' 
-                        ? 'bg-primary/10 border-primary/40 shadow-xs' 
-                        : 'bg-muted/40 border-border/50 hover:bg-muted/70'
-                    }`}
-                  >
-                    <div className="flex items-center gap-1.5 text-primary text-[10px] font-mono font-bold">
-                      <Clock size={11} />
-                      <span className="underline">04:12</span>
-                      <span className="text-muted-foreground">• Pointer variable address</span>
+                {/* Right Side: Timestamped Notes & Pomodoro (5 cols) */}
+                <div className="lg:col-span-5 flex flex-col gap-3">
+                  {/* Live Pomodoro Sprint Card */}
+                  <div className="p-3.5 rounded-2xl bg-card border border-border flex items-center justify-between shadow-xs">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-xl bg-rose-500/10 text-rose-500 flex items-center justify-center font-bold">
+                        <Flame size={18} />
+                      </div>
+                      <div>
+                        <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider block">Deep Work Sprint</span>
+                        <span className="text-sm font-mono font-bold text-foreground">21:45 Remaining</span>
+                      </div>
                     </div>
-                    <p className="text-[11px] text-foreground font-mono bg-background/80 p-2 rounded-lg border border-border/60 mt-1.5">
-                      int *p = &x; // stores address
-                    </p>
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
                   </div>
 
-                  {/* Note Item 2 */}
-                  <div 
-                    onClick={() => { setSelectedTimestamp('09:45'); setProgressSec(585); }}
-                    className={`p-3 rounded-xl border transition-all cursor-pointer ${
-                      selectedTimestamp === '09:45' 
-                        ? 'bg-primary/10 border-primary/40 shadow-xs' 
-                        : 'bg-muted/40 border-border/50 hover:bg-muted/70'
-                    }`}
-                  >
-                    <div className="flex items-center gap-1.5 text-primary text-[10px] font-mono font-bold">
-                      <Clock size={11} />
-                      <span className="underline">09:45</span>
-                      <span className="text-muted-foreground">• Heap vs Stack Allocation</span>
+                  {/* Synchronized Notes Stream */}
+                  <div className="flex-1 p-4 rounded-2xl bg-card border border-border flex flex-col justify-between space-y-3">
+                    <div className="flex items-center justify-between border-b border-border/60 pb-2">
+                      <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                        <FileText size={14} className="text-primary" />
+                        <span>Synchronized Notes (3)</span>
+                      </span>
+                      <span className="text-[10px] text-muted-foreground font-mono">Auto-saved 0.5s ago</span>
                     </div>
-                    <p className="text-[11px] text-muted-foreground mt-1">
-                      malloc() allocates on heap memory. Always pair with free() to avoid memory leaks.
-                    </p>
-                  </div>
 
-                  {/* Odoo Style Word Export Badge Doodle */}
-                  <div className="relative pt-2">
-                    <button
-                      type="button"
-                      onClick={() => handleLaunchApp('demo_export')}
-                      className="w-full py-2.5 rounded-xl border border-primary/30 bg-primary/10 hover:bg-primary/20 text-primary font-bold text-xs flex items-center justify-center gap-2 transition cursor-pointer"
+                    {/* Note Item 1 */}
+                    <div 
+                      onClick={() => { setSelectedTimestamp('04:12'); setProgressSec(252); }}
+                      className={`p-3 rounded-xl border transition-all cursor-pointer ${
+                        selectedTimestamp === '04:12' 
+                          ? 'bg-primary/10 border-primary/40 shadow-xs' 
+                          : 'bg-muted/40 border-border/50 hover:bg-muted/70'
+                      }`}
                     >
-                      <Download size={14} />
-                      <span>Export CS50_Syllabus.docx</span>
-                    </button>
-                    {/* Handwritten sticker */}
-                    <div className="absolute -top-3 right-2 bg-amber-300 dark:bg-amber-400 text-slate-950 font-handwriting text-base font-bold px-2 py-0.5 rounded shadow-sm rotate-2">
-                      1-click syllabus! ✨
+                      <div className="flex items-center gap-1.5 text-primary text-[10px] font-mono font-bold">
+                        <Clock size={11} />
+                        <span className="underline">04:12</span>
+                        <span className="text-muted-foreground">• Pointer variable address</span>
+                      </div>
+                      <p className="text-[11px] text-foreground font-mono bg-background/80 p-2 rounded-lg border border-border/60 mt-1.5">
+                        int *p = &x; // stores address
+                      </p>
+                    </div>
+
+                    {/* Note Item 2 */}
+                    <div 
+                      onClick={() => { setSelectedTimestamp('09:45'); setProgressSec(585); }}
+                      className={`p-3 rounded-xl border transition-all cursor-pointer ${
+                        selectedTimestamp === '09:45' 
+                          ? 'bg-primary/10 border-primary/40 shadow-xs' 
+                          : 'bg-muted/40 border-border/50 hover:bg-muted/70'
+                      }`}
+                    >
+                      <div className="flex items-center gap-1.5 text-primary text-[10px] font-mono font-bold">
+                        <Clock size={11} />
+                        <span className="underline">09:45</span>
+                        <span className="text-muted-foreground">• Heap vs Stack Allocation</span>
+                      </div>
+                      <p className="text-[11px] text-muted-foreground mt-1">
+                        malloc() allocates on heap memory. Always pair with free() to avoid memory leaks.
+                      </p>
+                    </div>
+
+                    {/* Odoo Style Word Export Badge Doodle */}
+                    <div className="relative pt-2">
+                      <button
+                        type="button"
+                        onClick={() => handleLaunchApp('demo_export')}
+                        className="w-full py-2.5 rounded-xl border border-primary/30 bg-primary/10 hover:bg-primary/20 text-primary font-bold text-xs flex items-center justify-center gap-2 transition cursor-pointer"
+                      >
+                        <Download size={14} />
+                        <span>Export CS50_Syllabus.docx</span>
+                      </button>
+                      {/* Handwritten sticker */}
+                      <div className="absolute -top-3 right-2 bg-amber-300 dark:bg-amber-400 text-slate-950 font-handwriting text-base font-bold px-2 py-0.5 rounded shadow-sm rotate-2">
+                        1-click syllabus! ✨
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
+            ) : (
+              /* YOUTUBE DISTRACTED CHAOS SIMULATION */
+              <div className="p-6 text-center space-y-6 bg-rose-950/20">
+                <div className="inline-flex p-3 rounded-full bg-rose-500/10 text-rose-500 mb-2">
+                  <EyeOff size={32} />
+                </div>
+                <h3 className="text-2xl font-black text-rose-400 tracking-tight">The YouTube Distraction Trap</h3>
+                <div className="max-w-xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-3 text-left">
+                  <div className="p-4 rounded-2xl bg-card/60 border border-rose-500/30 text-xs space-y-1">
+                    <span className="font-bold text-rose-500">1. Clickbait Sidebar</span>
+                    <p className="text-muted-foreground text-[11px]">You start studying data structures, 10 minutes later you're watching celebrity drama.</p>
+                  </div>
+                  <div className="p-4 rounded-2xl bg-card/60 border border-rose-500/30 text-xs space-y-1">
+                    <span className="font-bold text-rose-500">2. Unskippable Ads</span>
+                    <p className="text-muted-foreground text-[11px]">Every 7 minutes, a 15-second commercial breaks your concentration state.</p>
+                  </div>
+                  <div className="p-4 rounded-2xl bg-card/60 border border-rose-500/30 text-xs space-y-1">
+                    <span className="font-bold text-rose-500">3. Lost Notes</span>
+                    <p className="text-muted-foreground text-[11px]">Notes scattered in physical diaries or random text files with no video timecodes.</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setViewMode('foclyra')}
+                  className="px-6 py-2.5 rounded-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs transition cursor-pointer"
+                >
+                  Switch back to Foclyra Deep Focus →
+                </button>
+              </div>
+            )}
           </motion.div>
         </div>
       </section>
 
       {/* =========================================================================
-          4. Bento Grid Showcase (Sleek Vidyst Cards + Odoo Hand-Drawn Touches)
+          4. Platform & Topic Ticker (Vidyst Section 3 Style)
          ========================================================================= */}
-      <section id="bento" className="py-20 border-t border-border/60 bg-muted/15">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-12">
-          {/* Section Heading */}
+      <section className="py-12 border-y border-border/40 bg-muted/20 overflow-hidden">
+        <div className="max-w-6xl mx-auto px-4 flex flex-wrap items-center justify-center gap-3 text-xs font-semibold text-muted-foreground">
+          <span className="text-[11px] uppercase tracking-wider text-primary font-bold mr-2">Built For Topics Like:</span>
+          {['Computer Science & AI', 'Full-Stack Web Dev', 'System Design', 'Mathematics & Calculus', 'Data Engineering', 'Language Learning'].map((topic) => (
+            <span key={topic} className="px-3.5 py-1.5 rounded-full bg-card border border-border shadow-xs text-foreground">
+              {topic}
+            </span>
+          ))}
+        </div>
+      </section>
+
+      {/* =========================================================================
+          5. Bento Grid Showcase (Vidyst Section 7: "A Whole Studio. One App.")
+         ========================================================================= */}
+      <section id="bento" className="pt-24 sm:pt-36 pb-20">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-16">
+          {/* Section Heading with Vidyst Scale */}
           <div className="text-center space-y-3">
-            <span className="text-xs font-bold uppercase tracking-widest text-primary">Engineered For Focus</span>
+            <span className="text-xs font-bold uppercase tracking-widest text-primary">A Complete Studio. One App.</span>
             <h2 className="text-3xl sm:text-5xl font-black text-foreground tracking-tight">
-              Why Serious Learners Switch To Foclyra
+              Engineered For Radical Retention
             </h2>
             <p className="text-sm text-muted-foreground max-w-xl mx-auto">
-              Everything required to complete long courses and retain complex topics without algorithmic interruptions.
+              Everything required to complete long tutorial series and remember complex topics without distractions.
             </p>
           </div>
 
           {/* Bento Grid */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
             {/* Bento Card 1: Anti-Distraction Shield (7 cols) */}
-            <div className="md:col-span-7 p-7 sm:p-8 rounded-3xl bg-card border border-border shadow-xs hover:border-primary/50 transition-all space-y-5 flex flex-col justify-between">
+            <div className="md:col-span-7 p-8 sm:p-9 rounded-3xl bg-card border border-border shadow-xs hover:border-primary/50 transition-all space-y-6 flex flex-col justify-between">
               <div className="space-y-3">
-                <div className="w-11 h-11 rounded-2xl bg-primary/10 text-primary flex items-center justify-center">
-                  <ShieldCheck size={22} />
+                <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center">
+                  <ShieldCheck size={24} />
                 </div>
                 <h3 className="text-2xl font-bold text-foreground">The Anti-Distraction Shield</h3>
                 <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                  YouTube’s recommendation algorithm is built to maximize ad clicks, not your retention. Foclyra strips out the home feed, autoplay traps, and comment wars.
+                  YouTube was built to maximize watch time and ad impressions. Foclyra isolates the video stream, stripping away the home feed, autoplay traps, and comment wars.
                 </p>
               </div>
 
               {/* Odoo Style Visual Comparison */}
               <div className="grid grid-cols-2 gap-3 pt-2">
-                <div className="p-3.5 rounded-2xl bg-rose-500/5 border border-rose-500/20 text-left space-y-1">
+                <div className="p-4 rounded-2xl bg-rose-500/5 border border-rose-500/20 text-left space-y-1">
                   <span className="text-[10px] font-bold uppercase text-rose-500 block">Standard YouTube</span>
-                  <p className="text-xs text-muted-foreground">Clickbait thumbnails, 15s unskippable ads, comment rabbit holes.</p>
+                  <p className="text-xs text-muted-foreground">Clickbait feeds, 15s ads, comment rabbit holes.</p>
                 </div>
-                <div className="p-3.5 rounded-2xl bg-emerald-500/5 border border-emerald-500/20 text-left space-y-1">
+                <div className="p-4 rounded-2xl bg-emerald-500/5 border border-emerald-500/20 text-left space-y-1">
                   <span className="text-[10px] font-bold uppercase text-emerald-500 block">Foclyra Studio</span>
                   <p className="text-xs text-muted-foreground">Pure lecture video, zero ads, timestamped notes.</p>
                 </div>
@@ -467,18 +594,18 @@ export default function LandingPage() {
             </div>
 
             {/* Bento Card 2: 1-Click Timecode Notes (5 cols) */}
-            <div className="md:col-span-5 p-7 sm:p-8 rounded-3xl bg-card border border-border shadow-xs hover:border-primary/50 transition-all space-y-4 flex flex-col justify-between">
+            <div className="md:col-span-5 p-8 sm:p-9 rounded-3xl bg-card border border-border shadow-xs hover:border-primary/50 transition-all space-y-5 flex flex-col justify-between">
               <div className="space-y-3">
-                <div className="w-11 h-11 rounded-2xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center">
-                  <FileText size={22} />
+                <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center">
+                  <FileText size={24} />
                 </div>
                 <h3 className="text-2xl font-bold text-foreground">1-Click Timecode Notes</h3>
                 <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                  Click spacebar or the note trigger to lock your thoughts to the exact second. Click any timestamp later to jump straight to that concept.
+                  Press hotkey or trigger to bind your thoughts directly to the video's exact second. Clicking any timestamp jumps the video instantly back to that concept.
                 </p>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-muted/60 border border-border text-xs font-mono text-muted-foreground space-y-1">
+              <div className="p-4 rounded-2xl bg-muted/60 border border-border text-xs font-mono text-muted-foreground space-y-1">
                 <div className="text-foreground font-semibold flex items-center gap-1.5">
                   <span className="text-primary font-bold">[12:40]</span>
                   <span>Database indexing trade-offs</span>
@@ -488,10 +615,10 @@ export default function LandingPage() {
             </div>
 
             {/* Bento Card 3: 1-Click Word (.docx) Export (5 cols) */}
-            <div className="md:col-span-5 p-7 sm:p-8 rounded-3xl bg-card border border-border shadow-xs hover:border-primary/50 transition-all space-y-4 flex flex-col justify-between">
+            <div className="md:col-span-5 p-8 sm:p-9 rounded-3xl bg-card border border-border shadow-xs hover:border-primary/50 transition-all space-y-5 flex flex-col justify-between">
               <div className="space-y-3">
-                <div className="w-11 h-11 rounded-2xl bg-blue-500/10 text-blue-500 flex items-center justify-center">
-                  <Download size={22} />
+                <div className="w-12 h-12 rounded-2xl bg-blue-500/10 text-blue-500 flex items-center justify-center">
+                  <Download size={24} />
                 </div>
                 <h3 className="text-2xl font-bold text-foreground">Word (.docx) Export</h3>
                 <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
@@ -499,17 +626,17 @@ export default function LandingPage() {
                 </p>
               </div>
 
-              <div className="flex items-center gap-2 p-3 rounded-2xl bg-blue-500/5 border border-blue-500/20 text-xs font-semibold text-blue-600 dark:text-blue-400">
+              <div className="flex items-center gap-2 p-3.5 rounded-2xl bg-blue-500/5 border border-blue-500/20 text-xs font-semibold text-blue-600 dark:text-blue-400">
                 <FileText size={16} />
                 <span>CS50_Syllabus_Guide.docx (Generated)</span>
               </div>
             </div>
 
             {/* Bento Card 4: Local-First IndexedDB Engine (7 cols) */}
-            <div className="md:col-span-7 p-7 sm:p-8 rounded-3xl bg-card border border-border shadow-xs hover:border-primary/50 transition-all space-y-4 flex flex-col justify-between">
+            <div className="md:col-span-7 p-8 sm:p-9 rounded-3xl bg-card border border-border shadow-xs hover:border-primary/50 transition-all space-y-5 flex flex-col justify-between">
               <div className="space-y-3">
-                <div className="w-11 h-11 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
-                  <Zap size={22} />
+                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center">
+                  <Zap size={24} />
                 </div>
                 <h3 className="text-2xl font-bold text-foreground">0ms Local-First Architecture</h3>
                 <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
@@ -533,53 +660,13 @@ export default function LandingPage() {
       </section>
 
       {/* =========================================================================
-          5. 3-Step Simple Workflow
+          6. Interactive FAQ Accordion (Vidyst Section 11)
          ========================================================================= */}
-      <section id="workflow" className="py-20 border-t border-border/60">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 space-y-12">
-          <div className="text-center space-y-3">
-            <span className="text-xs font-bold uppercase tracking-widest text-primary">Simple 3-Step Flow</span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground tracking-tight">
-              Start Learning In Under 10 Seconds
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-7 rounded-3xl bg-card border border-border space-y-3 relative">
-              <span className="text-4xl font-black text-primary/30 font-mono">01</span>
-              <h3 className="text-base font-bold text-foreground">Paste Any YouTube Link</h3>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                Paste any playlist or video URL. Foclyra automatically extracts lessons, durations, and titles.
-              </p>
-            </div>
-
-            <div className="p-7 rounded-3xl bg-card border border-border space-y-3 relative">
-              <span className="text-4xl font-black text-primary/30 font-mono">02</span>
-              <h3 className="text-base font-bold text-foreground">Enter The Focus Stage</h3>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                Watch in distraction-free dark mode, take timestamped code notes, and run built-in Pomodoro deep work sprints.
-              </p>
-            </div>
-
-            <div className="p-7 rounded-3xl bg-card border border-border space-y-3 relative">
-              <span className="text-4xl font-black text-primary/30 font-mono">03</span>
-              <h3 className="text-base font-bold text-foreground">Own Your Knowledge</h3>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                Export all your study notes into an executive Word (.docx) syllabus and maintain your daily learning streak.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* =========================================================================
-          6. Interactive FAQ Accordion
-         ========================================================================= */}
-      <section id="faq" className="py-20 border-t border-border/60 bg-muted/15">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 space-y-10">
+      <section id="faq" className="pt-24 sm:pt-36 pb-20 border-t border-border/40 bg-muted/15">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 space-y-12">
           <div className="text-center space-y-3">
             <span className="text-xs font-bold uppercase tracking-widest text-primary">Got Questions?</span>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-foreground tracking-tight">
+            <h2 className="text-3xl sm:text-5xl font-black text-foreground tracking-tight">
               Frequently Asked Questions
             </h2>
           </div>
@@ -613,12 +700,12 @@ export default function LandingPage() {
       </section>
 
       {/* =========================================================================
-          7. Final Conversion Banner (Vidyst Style + Odoo Annotation)
+          7. Final Conversion Banner (Vidyst Section 12 Style)
          ========================================================================= */}
-      <section className="py-24 border-t border-border/60 relative overflow-hidden">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center space-y-6">
-          <h2 className="text-4xl sm:text-6xl font-black text-foreground tracking-tight">
-            Ready to take your focus back?
+      <section className="pt-28 pb-32 border-t border-border/40 relative overflow-hidden">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center space-y-7">
+          <h2 className="text-4xl sm:text-6xl md:text-7xl font-black text-foreground tracking-tight">
+            Take your focus back. Today.
           </h2>
 
           <p className="text-sm sm:text-base text-muted-foreground max-w-lg mx-auto">
@@ -642,7 +729,7 @@ export default function LandingPage() {
       {/* =========================================================================
           8. Clean Footer
          ========================================================================= */}
-      <footer className="border-t border-border/60 py-8 bg-background">
+      <footer className="border-t border-border/40 py-10 bg-background">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
           <div className="flex items-center gap-2">
             <img src="/logo.svg" alt="Foclyra" className="w-5 h-5" />
@@ -650,7 +737,7 @@ export default function LandingPage() {
             <span>• Built by Sameed Siddiqui</span>
           </div>
 
-          <div className="flex items-center gap-5">
+          <div className="flex items-center gap-6">
             <a 
               href="https://github.com/ssiddiquiii/foclyra" 
               target="_blank" 
