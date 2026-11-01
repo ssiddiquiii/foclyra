@@ -69,7 +69,7 @@ async function run() {
   try {
     await page.setViewportSize({ width: 320, height: 568 });
     await page.goto(`${BASE_URL}/`, { waitUntil: 'networkidle' });
-    const search = page.getByRole('button', { name: /Search courses, topics/ });
+    const search = page.getByRole('button', { name: /Open command palette|Search courses, topics/ });
     assert(await search.isVisible(), 'Dashboard search trigger is a semantic button');
     const deleteButton = page.getByRole('button', { name: /^Delete / }).first();
     assert((await deleteButton.boundingBox())?.height >= 44, 'Course delete action meets touch target minimum');

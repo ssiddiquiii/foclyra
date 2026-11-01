@@ -376,7 +376,7 @@ export default function Dashboard() {
                   onChange={(e) => setDirectUrl(e.target.value)}
                   placeholder="Paste YouTube playlist or video link..."
                   disabled={isDirectImporting}
-                  className="flex-1 min-w-0 bg-muted/50 border border-border rounded-xl px-3.5 py-2 text-xs sm:text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary font-normal transition"
+                  className="flex-1 min-w-0 bg-muted/50 border border-border rounded-xl px-3.5 py-2 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary font-normal transition"
                 />
                 <button
                   type="submit"
@@ -442,7 +442,8 @@ export default function Dashboard() {
                           <button
                             onClick={(e) => { e.preventDefault(); handleSyncCourse(course); }}
                             disabled={syncingCourseId === course.id}
-                            className="p-1.5 rounded-lg bg-black/60 hover:bg-black/80 text-white/90 border border-white/20 backdrop-blur transition cursor-pointer disabled:opacity-50"
+                            aria-label={`Sync ${course.title}`}
+                            className="flex min-h-9 min-w-9 sm:min-h-0 sm:min-w-0 items-center justify-center p-2 sm:p-1.5 rounded-lg bg-black/60 hover:bg-black/80 text-white/90 border border-white/20 backdrop-blur transition cursor-pointer disabled:opacity-50"
                             title="Sync Playlist with YouTube"
                           >
                             {syncingCourseId === course.id ? (
@@ -455,7 +456,8 @@ export default function Dashboard() {
 
                         <button
                           onClick={(e) => { e.preventDefault(); setCourseToDelete(course); }}
-                          className="p-1.5 rounded-lg bg-black/60 hover:bg-red-600/90 text-white/90 hover:text-white border border-white/20 backdrop-blur transition cursor-pointer"
+                          aria-label={`Delete ${course.title}`}
+                          className="flex min-h-9 min-w-9 sm:min-h-0 sm:min-w-0 items-center justify-center p-2 sm:p-1.5 rounded-lg bg-black/60 hover:bg-red-600/90 text-white/90 hover:text-white border border-white/20 backdrop-blur transition cursor-pointer"
                           title="Delete Course"
                         >
                           <Trash2 size={13} />

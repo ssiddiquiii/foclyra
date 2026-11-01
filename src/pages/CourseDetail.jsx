@@ -112,9 +112,9 @@ export default function CourseDetail() {
   const resumeTargetLesson = resumeLesson || courseLessons[0];
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto space-y-6 animate-page-entry">
+    <div className="p-3.5 sm:p-6 lg:p-8 max-w-5xl w-full mx-auto space-y-6 animate-page-entry">
       {/* Top Navigation Breadcrumbs */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <Link 
           to="/" 
           className="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-muted-foreground hover:text-foreground transition-colors group"
@@ -324,14 +324,14 @@ export default function CourseDetail() {
               <Link 
                 key={lesson.id}
                 to={`/courses/${courseId}/lessons/${lesson.id}`}
-                className={`group flex items-center justify-between gap-3 p-3 sm:p-4 rounded-xl border transition-all duration-150 ${
+                className={`group flex items-center justify-between gap-2 sm:gap-3 p-2.5 sm:p-4 rounded-xl border transition-all duration-150 ${
                   isLastWatched 
                     ? 'border-primary/40 bg-primary/[0.04] shadow-xs' 
                     : 'border-border/50 bg-card hover:bg-muted/40 hover:border-border/80'
                 }`}
               >
                 {/* Left: Index badge + Completion Icon + Title */}
-                <div className="flex min-w-0 items-center gap-3 sm:gap-4 flex-1">
+                <div className="flex min-w-0 items-center gap-2.5 sm:gap-4 flex-1">
                   {/* Status Indicator */}
                   <div className="flex-shrink-0">
                     {isCompleted ? (
@@ -387,7 +387,7 @@ export default function CourseDetail() {
                     </span>
                   )}
 
-                  <div className="w-7 h-7 rounded-lg bg-transparent group-hover:bg-primary/10 group-hover:text-primary text-muted-foreground/40 flex items-center justify-center transition-all">
+                  <div className="hidden sm:flex w-7 h-7 rounded-lg bg-transparent group-hover:bg-primary/10 group-hover:text-primary text-muted-foreground/40 items-center justify-center transition-all">
                     <Play size={12} fill="currentColor" className="ml-0.5" />
                   </div>
                 </div>

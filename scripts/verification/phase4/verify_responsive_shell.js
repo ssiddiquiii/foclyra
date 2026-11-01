@@ -70,7 +70,7 @@ async function run() {
     assert(await page.evaluate(() => document.body.style.overflow) === 'hidden', 'Open drawer locks background scrolling');
     assert(await drawer.evaluate(node => node.contains(document.activeElement)), 'Opening the drawer moves focus inside it');
 
-    const drawerLinks = drawer.locator('a[href]');
+    const drawerLinks = drawer.locator('a[href], button:not([disabled])');
     const firstDrawerLink = drawerLinks.first();
     const lastDrawerLink = drawerLinks.last();
     await lastDrawerLink.focus();
@@ -87,10 +87,10 @@ async function run() {
     const commandDialog = page.getByRole('dialog', { name: 'Command palette' });
     assert(await commandDialog.isVisible(), 'Shared dialog exposes the command palette name and modal role');
     await page.waitForFunction(
-      () => document.activeElement?.getAttribute('aria-label') === 'Search commands and interview questions'
+      () => document.activeElement?.getAttribute('aria-label') === 'Search commands and pages'
     );
     assert(
-      await commandDialog.getByRole('textbox', { name: 'Search commands and interview questions' })
+      await commandDialog.getByRole('textbox', { name: 'Search commands and pages' })
         .evaluate(node => node === document.activeElement),
       'Shared dialog focuses its autofocus target'
     );
@@ -102,7 +102,7 @@ async function run() {
     assert(await searchButton.evaluate(node => node === document.activeElement), 'Shared dialog restores trigger focus');
 
     await menuButton.click();
-    const practiceLink = drawer.getByRole('link', { name: 'Practice' });
+    const practiceLink = drawer.getByRole('link', { name: 'Settings' });
     await practiceLink.focus();
     await page.keyboard.press('Control+k');
     const stackedDialog = page.getByRole('dialog', { name: 'Command palette' });
@@ -111,7 +111,7 @@ async function run() {
     assert(!(await stackedDialog.isVisible()), 'Escape closes the topmost stacked dialog');
     assert(await drawer.getAttribute('aria-hidden') === 'false', 'Escape leaves the underlying drawer open');
     await page.waitForFunction(
-      () => document.activeElement?.textContent?.trim() === 'Practice'
+      () => document.activeElement?.textContent?.trim() === 'Settings'
     );
     assert(await practiceLink.evaluate(node => node === document.activeElement), 'Stacked dialog restores focus inside the drawer');
     await page.keyboard.press('Escape');
@@ -121,8 +121,8 @@ async function run() {
     assert(await drawer.getAttribute('aria-hidden') === 'true', 'Backdrop click closes the drawer');
 
     await menuButton.click();
-    await drawer.getByRole('link', { name: 'Practice' }).click();
-    await page.waitForURL('**/practice');
+    await drawer.getByRole('link', { name: 'Settings' }).click();
+    await page.waitForURL('**/settings');
     assert(await drawer.getAttribute('aria-hidden') === 'true', 'Navigation closes the drawer during route changes');
 
     await page.setViewportSize({ width: 1024, height: 768 });

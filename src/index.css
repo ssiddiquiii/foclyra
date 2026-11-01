@@ -100,7 +100,7 @@
   --sidebar-accent-foreground: #065f46;
   --sidebar-border: #e2e8f0;
   --sidebar-ring: #059669;
-  --safe-area-top: env(safe-area-inset-top);
+  --safe-area-top: env(safe-area-inset-top, 0px);
 }
 
 .dark {
@@ -206,6 +206,20 @@ code, pre, kbd, samp, .font-mono {
   }
   html {
     @apply font-sans;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+  }
+}
+
+button, a, [role="button"] {
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+@media (pointer: coarse) {
+  input, textarea, select {
+
   }
 }
 

@@ -349,7 +349,7 @@ export default function PomodoroTimer() {
           </button>
         ) : (
           /* Expanded Floating Panel */
-          <div className="w-80 glass-panel rounded-2xl p-4 sm:p-5 border border-primary/30 shadow-2xl space-y-4 animate-in zoom-in-95 duration-200 bg-card/98 backdrop-blur-xl">
+          <div className="w-[min(20rem,calc(100vw-1.5rem))] glass-panel rounded-2xl p-4 sm:p-5 border border-primary/30 shadow-2xl space-y-4 animate-in zoom-in-95 duration-200 bg-card/98 backdrop-blur-xl">
             {/* Header */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">

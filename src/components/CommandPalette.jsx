@@ -112,7 +112,7 @@ export default function CommandPalette({ isOpen, onClose, returnFocusRef }) {
           {/* Keyboard Shortcuts Cheat Sheet */}
           <div className="p-3.5 rounded-xl bg-muted/40 border border-border space-y-2">
             <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">⌨️ Power Learner Shortcuts</span>
-            <div className="grid grid-cols-2 gap-2 text-[11px] text-muted-foreground">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] text-muted-foreground">
               <div><kbd className="px-1.5 py-0.5 rounded bg-card border border-border text-foreground font-mono">Ctrl + K</kbd> Command Palette</div>
               <div><kbd className="px-1.5 py-0.5 rounded bg-card border border-border text-foreground font-mono">Space</kbd> Play / Pause Video</div>
               <div><kbd className="px-1.5 py-0.5 rounded bg-card border border-border text-foreground font-mono">Alt + D</kbd> Dashboard</div>

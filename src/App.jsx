@@ -122,7 +122,7 @@ function AppContent() {
   }, [commandPaletteOpen, openCommandPalette, closeCommandPalette, navigate]);
 
   return (
-    <div className={`relative flex bg-background text-foreground transition-colors duration-150 ${isWatchPage ? 'h-screen xl:h-dvh overflow-hidden' : 'min-h-screen'}`}>
+    <div className={`relative flex bg-background text-foreground transition-colors duration-150 ${isWatchPage ? 'h-dvh overflow-hidden' : 'min-h-dvh'}`}>
       {/* Mobile Backdrop Overlay when Drawer is Open */}
       {mobileSidebarOpen && (
         <div
@@ -134,11 +134,11 @@ function AppContent() {
       )}
 
       {/* Mobile Glass Header Bar */}
-      <header className="safe-area-header fixed inset-x-0 top-0 z-40 flex min-h-14 items-center justify-between border-b border-border bg-background/90 px-3.5 shadow-sm backdrop-blur-xl lg:hidden">
+      <header className="safe-area-header fixed inset-x-0 top-0 z-40 flex min-h-14 items-center justify-between gap-2 border-b border-border bg-background/90 px-2.5 sm:px-3.5 shadow-sm backdrop-blur-xl lg:hidden">
         <button
           ref={menuButtonRef}
           onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
-          className="flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-border bg-card text-foreground transition hover:bg-muted cursor-pointer"
+          className="flex min-h-11 min-w-11 flex-shrink-0 items-center justify-center rounded-xl border border-border bg-card text-foreground transition hover:bg-muted cursor-pointer"
           aria-label={mobileSidebarOpen ? 'Close navigation' : 'Open navigation'}
           aria-expanded={mobileSidebarOpen}
           aria-controls="mobile-navigation"
@@ -146,15 +146,15 @@ function AppContent() {
           {mobileSidebarOpen ? <X size={18} /> : <Menu size={18} />}
         </button>
 
-        <div className="flex items-center gap-2">
-          <Link to="/" onMouseEnter={preloadDashboard} className="flex items-center gap-2">
+        <div className="flex min-w-0 items-center gap-1.5 sm:gap-2">
+          <Link to="/" onMouseEnter={preloadDashboard} className="flex min-w-0 items-center gap-1.5 sm:gap-2">
             <img src="/logo.svg" alt="Foclyra" className="w-6 h-6 flex-shrink-0" />
-            <span className="font-bold text-foreground text-xs tracking-normal">Foclyra Studio</span>
+            <span className="truncate font-bold text-foreground text-xs tracking-normal">Foclyra Studio</span>
           </Link>
           <button
             type="button"
             onClick={openBetaModal}
-            className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25 text-[9px] font-bold uppercase tracking-wider cursor-pointer transition"
+            className="flex flex-shrink-0 items-center gap-1 px-1.5 py-0.5 rounded bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25 text-[9px] font-bold uppercase tracking-wider cursor-pointer transition"
             title="Foclyra is in Public Beta. Click for details."
           >
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -162,7 +162,7 @@ function AppContent() {
           </button>
         </div>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex flex-shrink-0 items-center gap-1.5">
           <button
             onClick={toggleTheme}
             aria-label={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
@@ -292,17 +292,22 @@ function AppContent() {
           </nav>
         </div>
 
-        <div className="px-2 pb-4 text-[11px] text-muted-foreground">
-          <span>Theme: </span>
-          <span className="font-semibold text-foreground capitalize">{isDark ? 'Dark Mode' : 'Light Mode'}</span>
+        <div className="space-y-3 border-t border-border/50 px-2 pt-3 pb-4 text-[11px] text-muted-foreground">
+          <div className="flex items-center justify-between">
+            <div>
+              <span>Theme: </span>
+              <span className="font-semibold text-foreground capitalize">{isDark ? 'Dark Mode' : 'Light Mode'}</span>
+            </div>
+            <UserMenu onOpenAuth={() => { closeMobileSidebar(); }} />
+          </div>
         </div>
       </aside>
 
       {/* Main Content View Container */}
       <main className={`min-w-0 flex-1 flex flex-col ${
         isWatchPage 
-          ? 'p-0 h-full overflow-hidden lg:pl-20'
-          : 'safe-area-main pt-16 lg:pt-5 lg:pl-20 xl:pl-22 px-3.5 sm:px-6 justify-between'
+          ? 'safe-area-main safe-area-main-watch p-0 pt-14 lg:pt-0 h-full overflow-hidden lg:pl-20'
+          : 'safe-area-main pt-16 lg:pt-5 lg:pl-20 xl:pl-22 px-3 sm:px-6 justify-between'
       }`}>
         <div className={`w-full min-w-0 flex flex-col ${isWatchPage ? 'h-full overflow-hidden' : 'flex-1'}`}>
         {/* Desktop Top Header Bar (Search & Sign In / Profile) */}
@@ -384,7 +389,7 @@ function AppContent() {
 
         {/* Minimal Studio Footer */}
         {!location.pathname.includes('/lessons/') && (
-          <footer className="mt-6 py-4 border-t border-border/40 text-[11px] text-muted-foreground w-full text-center">
+          <footer className="mt-6 pt-4 pb-16 lg:py-4 border-t border-border/40 text-[11px] text-muted-foreground w-full text-center">
             <span>Foclyra Studio</span>
             <span className="mx-2 text-muted-foreground/40">•</span>
             <span>Built by <span className="font-semibold text-foreground">Sameed Siddiqui</span></span>

@@ -10,7 +10,7 @@ export default function UserMenu({ onOpenAuth }) {
   const { openAuthModal } = useUIStore();
   const handleOpenAuth = () => {
     if (onOpenAuth) onOpenAuth();
-    else openAuthModal('default');
+    openAuthModal('default');
   };
   const { user, profile, signOut } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -80,7 +80,7 @@ export default function UserMenu({ onOpenAuth }) {
       </button>
 
       {dropdownOpen && (
-        <div className="absolute right-0 top-full mt-2 w-64 rounded-2xl border border-white/10 bg-card/95 p-3 shadow-2xl backdrop-blur-2xl z-50 text-foreground animate-in fade-in zoom-in-95 duration-150">
+        <div className="absolute right-0 top-full mt-2 w-[min(16rem,calc(100vw-2rem))] rounded-2xl border border-white/10 bg-card/95 p-3 shadow-2xl backdrop-blur-2xl z-50 text-foreground animate-in fade-in zoom-in-95 duration-150">
           {/* User Info Header */}
           <div className="px-2 py-2 border-b border-border/70 mb-2">
             <p className="font-semibold text-xs text-foreground truncate">{displayName}</p>
