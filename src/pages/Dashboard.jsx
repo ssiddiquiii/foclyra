@@ -271,9 +271,18 @@ export default function Dashboard() {
         <div className="my-auto py-6 sm:py-12 max-w-2xl w-full mx-auto space-y-8 animate-page-entry text-left">
           {/* Header */}
           <div className="space-y-2">
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-primary/10 border border-primary/25 text-primary text-[11px] font-semibold">
-              <Sparkles size={12} />
-              <span>Distraction-Free YouTube Studio</span>
+            <div className="flex items-center justify-between">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-primary/10 border border-primary/25 text-primary text-[11px] font-semibold">
+                <Sparkles size={12} />
+                <span>Distraction-Free YouTube Studio</span>
+              </div>
+              <Link 
+                to="/landing" 
+                className="text-xs font-semibold text-muted-foreground hover:text-primary transition flex items-center gap-1 cursor-pointer"
+                title="View Foclyra Features and Bento Grid"
+              >
+                <span>Feature Showcase →</span>
+              </Link>
             </div>
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-foreground tracking-tight leading-tight">
               Study without distractions
