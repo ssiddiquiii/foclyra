@@ -56,8 +56,12 @@ async function verifyLandingPage() {
     console.log('[PASS] H1 Heading:', heading.replace(/\s+/g, ' ').trim());
 
     // Verify Bento Grid
-    const bentoHeading = await page.textContent('#bento h2');
-    console.log('[PASS] Bento Heading:', bentoHeading);
+    const bentoHeading = await page.textContent('#features h2');
+    console.log('[PASS] Bento Heading:', bentoHeading.replace(/\s+/g, ' ').trim());
+
+    // Verify Final CTA Heading
+    const ctaHeading = await page.textContent('#cta-h');
+    console.log('[PASS] Final CTA Heading:', ctaHeading.replace(/\s+/g, ' ').trim());
 
     // Verify FAQs
     const faqCount = await page.locator('#faq button').count();
