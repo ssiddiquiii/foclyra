@@ -76,7 +76,7 @@ export default function CommandPalette({ isOpen, onClose, returnFocusRef }) {
           <div className="space-y-1">
             <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-2">Quick Navigation</span>
             <button
-              onClick={() => handleSelectRoute('/')}
+              onClick={() => handleSelectRoute('/studio')}
               className="w-full text-left px-3.5 py-2.5 rounded-xl hover:bg-muted border border-transparent hover:border-border transition flex items-center justify-between cursor-pointer group"
             >
               <div className="flex items-center gap-3">

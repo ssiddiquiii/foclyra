@@ -8,7 +8,7 @@ import jsPracticeMap from '../data/jsPracticeMap.json';
  * plus curated external documentation & tutorial links (MDN, JavaScript.info, w3resource).
  *
  * @param {object} props
- * @param {string} props.lessonId — Current lesson ID.
+ * @param {string} props.lessonId · Current lesson ID.
  * @returns {React.JSX.Element}
  */
 export default function ReadingTab({ lessonId }) {
@@ -33,7 +33,7 @@ export default function ReadingTab({ lessonId }) {
           <BookOpen size={18} />
         </div>
         <div className="min-w-0">
-          <h3 className="text-sm font-bold text-foreground tracking-tight">{conceptLabel} — Study Guide</h3>
+          <h3 className="text-sm font-bold text-foreground tracking-tight">{conceptLabel} · Study Guide</h3>
           <p className="text-[10px] text-muted-foreground mt-0.5">In-app concept breakdown, code cheat sheet & docs</p>
         </div>
       </div>
@@ -123,7 +123,7 @@ export default function ReadingTab({ lessonId }) {
                   href={item.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label={`${item.title} — opens external reference in a new tab`}
+                  aria-label={`${item.title} · opens external reference in a new tab`}
                   className="group glass-panel block min-w-0 space-y-2 overflow-hidden rounded-xl border border-border p-3.5 transition duration-200 hover:border-blue-500/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 >
                   <div className="flex items-start justify-between gap-3">

@@ -116,7 +116,7 @@ export default function CourseDetail() {
     return (
       <div className="p-8 text-center space-y-3">
         <h2 className="text-2xl font-bold text-destructive">Course Not Found</h2>
-        <Link to="/" className="text-primary hover:underline text-sm font-semibold">Return to Dashboard</Link>
+        <Link to="/studio" className="text-primary hover:underline text-sm font-semibold">Return to Dashboard</Link>
       </div>
     );
   }
@@ -128,7 +128,7 @@ export default function CourseDetail() {
       {/* Top Navigation Breadcrumbs */}
       <div className="flex items-center justify-between">
         <Link 
-          to="/" 
+          to="/studio" 
           className="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-muted-foreground hover:text-foreground transition-colors group"
         >
           <ArrowLeft size={15} className="group-hover:-translate-x-0.5 transition-transform" />

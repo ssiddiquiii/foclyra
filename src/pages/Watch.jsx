@@ -56,7 +56,7 @@ export default function Watch() {
     return (
       <div className="p-8 text-center">
         <h2 className="text-2xl font-bold text-red-500 mb-4">Lecture Details Not Found</h2>
-        <Link to="/" className="text-primary hover:underline">Return to Dashboard</Link>
+        <Link to="/studio" className="text-primary hover:underline">Return to Dashboard</Link>
       </div>
     );
   }

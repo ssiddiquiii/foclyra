@@ -61,92 +61,93 @@
 
 :root {
   /* ==========================================================================
-     Light Mode: Clean Minimalist Studio
+     Light Mode: Landing-Matched Clean Editorial Studio
+     Canvas: #ffffff | Bento Cards: #f4f4f4 | Primary Pill: #111111
      ========================================================================== */
-  --background: #f8fafc;
-  --foreground: #0f172a;
+  --background: #ffffff;
+  --foreground: #111111;
   
-  --card: #ffffff;
-  --card-foreground: #0f172a;
+  --card: #f4f4f4;
+  --card-foreground: #111111;
   
   --popover: #ffffff;
-  --popover-foreground: #0f172a;
+  --popover-foreground: #111111;
   
-  --primary: #059669;
+  --primary: #111111;
   --primary-foreground: #ffffff;
   
-  --secondary: #f1f5f9;
-  --secondary-foreground: #0f172a;
+  --secondary: #f4f4f4;
+  --secondary-foreground: #111111;
   
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;
+  --muted: #f2f2f2;
+  --muted-foreground: #666666;
   
-  --accent: #ecfdf5;
-  --accent-foreground: #065f46;
+  --accent: #f4f4f4;
+  --accent-foreground: #111111;
   
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
   
-  --border: #e2e8f0;
-  --input: #e2e8f0;
-  --ring: #059669;
+  --border: #e5e5e5;
+  --input: #e5e5e5;
+  --ring: #111111;
   
-  --radius: 12px;
+  --radius: 14px;
 
-  --sidebar: #f8fafc;
-  --sidebar-foreground: #64748b;
-  --sidebar-primary: #059669;
+  --sidebar: #f4f4f4;
+  --sidebar-foreground: #666666;
+  --sidebar-primary: #111111;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #ecfdf5;
-  --sidebar-accent-foreground: #065f46;
-  --sidebar-border: #e2e8f0;
-  --sidebar-ring: #059669;
+  --sidebar-accent: #ffffff;
+  --sidebar-accent-foreground: #111111;
+  --sidebar-border: #e5e5e5;
+  --sidebar-ring: #111111;
   --safe-area-top: env(safe-area-inset-top);
 }
 
 .dark {
   /* ==========================================================================
-     Deep Matte Charcoal & Neon Mint (Hyper-Minimalist Focus Studio)
-     Canvas: #111216 | Text: #E4E6EB | Cards: #181920 | Accent: #00F5D4
+     Dark Mode: Landing-Matched Obsidian Editorial Studio
+     Canvas: #0a0a0c | Bento Cards: #161619 | Primary Pill: #ffffff
      ========================================================================== */
-  --background: #111216;
-  --foreground: #E4E6EB;
+  --background: #0a0a0c;
+  --foreground: #f5f5f7;
   
-  --card: #181920;
-  --card-foreground: #E4E6EB;
+  --card: #161619;
+  --card-foreground: #f5f5f7;
   
-  --popover: #181920;
-  --popover-foreground: #E4E6EB;
+  --popover: #161619;
+  --popover-foreground: #f5f5f7;
   
-  --primary: #00F5D4;
-  --primary-foreground: #061814;
+  --primary: #ffffff;
+  --primary-foreground: #111111;
   
-  --secondary: #1F212B;
-  --secondary-foreground: #E4E6EB;
+  --secondary: #1c1c20;
+  --secondary-foreground: #f5f5f7;
   
-  --muted: #1A1C24;
-  --muted-foreground: #8A8F9E;
+  --muted: #1c1c20;
+  --muted-foreground: #a1a1aa;
   
-  --accent: #232733;
-  --accent-foreground: #00F5D4;
+  --accent: #222227;
+  --accent-foreground: #ffffff;
   
   --destructive: #f43f5e;
   --destructive-foreground: #ffffff;
   
-  --border: #2A2E39;
-  --input: #252833;
-  --ring: #00F5D4;
+  --border: #27272a;
+  --input: #27272a;
+  --ring: #ffffff;
   
-  --radius: 12px;
+  --radius: 14px;
 
-  --sidebar: #0D0E12;
-  --sidebar-foreground: #8A8F9E;
-  --sidebar-primary: #00F5D4;
-  --sidebar-primary-foreground: #061814;
-  --sidebar-accent: #181920;
-  --sidebar-accent-foreground: #E4E6EB;
-  --sidebar-border: #22252F;
-  --sidebar-ring: #00F5D4;
+  --sidebar: #111113;
+  --sidebar-foreground: #a1a1aa;
+  --sidebar-primary: #ffffff;
+  --sidebar-primary-foreground: #111111;
+  --sidebar-accent: #1c1c20;
+  --sidebar-accent-foreground: #f5f5f7;
+  --sidebar-border: #27272a;
+  --sidebar-ring: #ffffff;
 }
 
 body {
@@ -174,8 +175,8 @@ code, pre, kbd, samp, .font-mono {
 }
 
 .dark .glass-panel {
-  background: #181920 !important;
-  border: 1px solid #2A2E39 !important;
+  background: #161619 !important;
+  border: 1px solid #27272a !important;
   box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.3) !important;
 }
 
@@ -188,14 +189,14 @@ code, pre, kbd, samp, .font-mono {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #2A2E39;
+  background: #27272a;
   border-radius: 9999px;
 }
 :not(.dark) ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #d4d4d8;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #00F5D4;
+  background: #71717a;
 }
 
 @layer base {
@@ -277,3 +278,6 @@ code, pre, kbd, samp, .font-mono {
 .font-handwriting {
   font-family: 'Caveat', cursive, sans-serif;
 }
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

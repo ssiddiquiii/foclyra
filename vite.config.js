@@ -57,7 +57,7 @@ export default defineConfig(({ mode }) => {
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'favicon.svg', 'apple-touch-icon.png', 'logo.png', 'logo.svg'],
       manifest: {
-        name: 'Foclyra — Distraction-Free Study Studio',
+        name: 'Foclyra · Distraction-Free Study Studio',
         short_name: 'Foclyra',
         description: 'Distraction-free, local-first study studio with live timestamped notes',
         theme_color: '#00F5D4',

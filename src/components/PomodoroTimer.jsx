@@ -13,6 +13,7 @@ import {
   Plus
 } from 'lucide-react';
 import { useUIStore } from '../hooks/useUIStore';
+import { trackEvent } from '../services/analytics';
 
 const STORAGE_KEYS = {
   END_TIME: 'foclyra_pomo_end_time',
@@ -24,18 +25,9 @@ const STORAGE_KEYS = {
   CUSTOM_BREAK: 'foclyra_pomo_custom_break'
 };
 
-/**
- * Ultra-Smooth Lightweight Pomodoro Focus & Recovery System.
- * - Accurate timestamp-based timing resilient to tab sleep and page navigation.
- * - Automatic real-time countdown during rest breaks with zero freeze.
- * - Live browser tab title indicator: (24:50) 🎯 Focus | Foclyra
- * - Soothing Web Audio synthesizer chimes.
- * - Non-intrusive floating pill with full customizable durations.
- */
 export default function PomodoroTimer() {
   const { pauseActivePlayer } = useUIStore();
 
-  // Durations in minutes
   const [focusMins, setFocusMins] = useState(() => 
     parseInt(localStorage.getItem(STORAGE_KEYS.CUSTOM_FOCUS) || '25', 10)
   );
@@ -45,7 +37,7 @@ export default function PomodoroTimer() {
 
   const [mode, setMode] = useState(() => 
     localStorage.getItem(STORAGE_KEYS.MODE) || 'focus'
-  ); // 'focus' | 'break'
+  );
 
   const [isRunning, setIsRunning] = useState(() => 
     localStorage.getItem(STORAGE_KEYS.RUNNING) === 'true'
@@ -60,7 +52,6 @@ export default function PomodoroTimer() {
     parseInt(localStorage.getItem(STORAGE_KEYS.SESSIONS) || '0', 10)
   );
 
-  // Remaining seconds calculation
   const [timeLeft, setTimeLeft] = useState(() => {
     const isRun = localStorage.getItem(STORAGE_KEYS.RUNNING) === 'true';
     if (isRun) {
@@ -72,7 +63,6 @@ export default function PomodoroTimer() {
     return rem > 0 ? rem : (mode === 'focus' ? focusMins * 60 : breakMins * 60);
   });
 
-  // Format MM:SS
   const formatTime = (seconds) => {
     const safeSecs = Math.max(0, seconds || 0);
     const m = Math.floor(safeSecs / 60);
@@ -80,7 +70,6 @@ export default function PomodoroTimer() {
     return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
 
-  // Play pleasant acoustic synth chime
   const playChime = useCallback((isBreak = false) => {
     if (!soundEnabled) return;
     try {
@@ -107,7 +96,6 @@ export default function PomodoroTimer() {
     } catch {}
   }, [soundEnabled]);
 
-  // Main countdown interval
   useEffect(() => {
     let timer = null;
 
@@ -135,26 +123,23 @@ export default function PomodoroTimer() {
     };
   }, [isRunning, mode, focusMins, breakMins]);
 
-  // Update browser tab title
   useEffect(() => {
     if (isRunning) {
       const icon = mode === 'focus' ? '🎯 Focus' : '☕ Break';
       document.title = `(${formatTime(timeLeft)}) ${icon} | Foclyra`;
     } else {
-      document.title = 'Foclyra — Distraction-Free Study Studio';
+      document.title = 'Foclyra · Distraction-Free Study Studio';
     }
 
     return () => {
-      document.title = 'Foclyra — Distraction-Free Study Studio';
+      document.title = 'Foclyra · Distraction-Free Study Studio';
     };
   }, [isRunning, timeLeft, mode]);
 
-  // Handle Session Completion (Focus -> Break or Break -> Focus)
   const handleSessionComplete = () => {
     localStorage.removeItem(STORAGE_KEYS.END_TIME);
 
     if (mode === 'focus') {
-      // Completed Focus Session!
       const nextSessions = sessionsCompleted + 1;
       setSessionsCompleted(nextSessions);
       localStorage.setItem(STORAGE_KEYS.SESSIONS, nextSessions.toString());
@@ -163,22 +148,18 @@ export default function PomodoroTimer() {
       pauseActivePlayer();
       trackEvent('pomodoro_completed', { mode: 'focus', durationMinutes: focusMins });
 
-      // Seamlessly switch to Break mode and auto-run the countdown
       const breakSecs = breakMins * 60;
       setMode('break');
       localStorage.setItem(STORAGE_KEYS.MODE, 'break');
       setTimeLeft(breakSecs);
       localStorage.setItem(STORAGE_KEYS.REMAINING, breakSecs.toString());
 
-      // Auto-start break timer so it never freezes
       const breakEndTime = Date.now() + breakSecs * 1000;
       localStorage.setItem(STORAGE_KEYS.END_TIME, breakEndTime.toString());
       localStorage.setItem(STORAGE_KEYS.RUNNING, 'true');
       setIsRunning(true);
       setStrictLockActive(true);
-
     } else {
-      // Break Session Finished -> Back to Focus!
       playChime(false);
       setStrictLockActive(false);
 
@@ -188,13 +169,11 @@ export default function PomodoroTimer() {
       setTimeLeft(focusSecs);
       localStorage.setItem(STORAGE_KEYS.REMAINING, focusSecs.toString());
 
-      // Ready for next focus
       setIsRunning(false);
       localStorage.setItem(STORAGE_KEYS.RUNNING, 'false');
     }
   };
 
-  // Toggle Start / Pause
   const toggleStartPause = () => {
     if (isRunning) {
       setIsRunning(false);
@@ -209,7 +188,6 @@ export default function PomodoroTimer() {
     }
   };
 
-  // Reset Timer to current mode duration
   const handleReset = () => {
     setIsRunning(false);
     localStorage.setItem(STORAGE_KEYS.RUNNING, 'false');
@@ -219,7 +197,6 @@ export default function PomodoroTimer() {
     localStorage.setItem(STORAGE_KEYS.REMAINING, secs.toString());
   };
 
-  // Add 1 minute to break during rest
   const handleAddMinuteBreak = () => {
     const newRemaining = timeLeft + 60;
     setTimeLeft(newRemaining);
@@ -230,7 +207,6 @@ export default function PomodoroTimer() {
     }
   };
 
-  // End break and switch back to focus mode
   const handleEndBreak = () => {
     setStrictLockActive(false);
     setIsRunning(false);
@@ -243,7 +219,6 @@ export default function PomodoroTimer() {
     localStorage.setItem(STORAGE_KEYS.REMAINING, secs.toString());
   };
 
-  // Save custom durations
   const saveCustomDurations = () => {
     const f = Math.max(1, Math.min(120, focusMins || 25));
     const b = Math.max(1, Math.min(60, breakMins || 5));
@@ -262,57 +237,61 @@ export default function PomodoroTimer() {
     <>
       {/* ☕ SMOOTH REST TIME RECOVERY OVERLAY */}
       {strictLockActive && (
-        <div className="fixed inset-0 z-[100] bg-background/95 backdrop-blur-2xl flex flex-col items-center justify-center p-6 text-center space-y-6 animate-in fade-in duration-300">
-          <div className="w-20 h-20 rounded-full bg-emerald-500/15 border-2 border-emerald-500/40 text-emerald-400 flex items-center justify-center shadow-xl shadow-emerald-500/20">
-            <Coffee size={38} className="animate-pulse" />
+        <div className="fixed inset-0 z-[100] bg-white/95 dark:bg-[#0a0a0c]/95 backdrop-blur-2xl flex flex-col items-center justify-center p-6 text-center space-y-6 animate-in fade-in duration-300">
+          <div className="size-16 sm:size-20 rounded-[22px] bg-[#16a34a]/10 border border-[#16a34a]/25 text-[#16a34a] dark:text-[#63d94e] flex items-center justify-center shadow-sm">
+            <Coffee className="size-8 sm:size-9" />
           </div>
 
           <div className="space-y-2 max-w-md">
-            <span className="px-3 py-1 text-[11px] font-extrabold uppercase tracking-widest rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-              ☕ Rest & Re-energize
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 text-[11px] font-medium rounded-full bg-[#f4f4f4] dark:bg-zinc-900 text-[#111111] dark:text-zinc-200 border border-[#e5e5e5] dark:border-zinc-800">
+              <span className="size-1.5 rounded-full bg-[#63d94e]" />
+              <span>Rest &amp; Re-energize</span>
             </span>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-normal">
-              Focus Sprint Complete!
+            <h1 className="text-[24px] sm:text-[32px] font-semibold tracking-[-0.03em] text-[#111111] dark:text-white leading-tight">
+              Focus sprint complete.
             </h1>
-            <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed">
-              Step away from the screen, stretch, take a sip of water, and rest your eyes. Your next study session will be sharper!
+            <p className="text-[#666666] dark:text-zinc-400 text-[13.5px] sm:text-[15px] leading-[1.6]">
+              Step away from the screen, stretch, take a sip of water, and rest your eyes before your next lecture.
             </p>
           </div>
 
           {/* Smooth Dynamic Countdown Display */}
-          <div className="glass-panel px-8 py-5 rounded-3xl border border-emerald-500/30 space-y-1 bg-card border-border shadow-2xl">
-            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block">Rest Time Remaining</span>
-            <div className="text-4xl sm:text-5xl font-extrabold font-mono text-emerald-400 tracking-wider">
+          <div className="px-8 py-5 rounded-[24px] bg-[#f4f4f4] dark:bg-zinc-900 border border-[#e5e5e5] dark:border-zinc-800 space-y-1">
+            <span className="text-[11px] font-medium text-[#6f6f6f] dark:text-zinc-400 block">Rest time remaining</span>
+            <div className="text-4xl sm:text-5xl font-semibold font-mono text-[#111111] dark:text-white tracking-tight">
               {formatTime(timeLeft)}
             </div>
-            <div className="text-[11px] text-muted-foreground">
-              {isRunning ? 'Counting down smoothly...' : 'Timer paused'}
+            <div className="text-[11.5px] text-[#6f6f6f] dark:text-zinc-500">
+              {isRunning ? 'Counting down...' : 'Timer paused'}
             </div>
           </div>
 
           {/* Rest Controls */}
-          <div className="flex flex-wrap items-center justify-center gap-3">
+          <div className="flex flex-wrap items-center justify-center gap-2.5">
             <button
+              type="button"
               onClick={toggleStartPause}
-              className="px-4 py-2 rounded-xl bg-muted/50 border border-border hover:bg-muted text-foreground text-xs font-semibold transition flex items-center gap-1.5 cursor-pointer"
+              className="h-9 sm:h-10 px-4 rounded-full bg-[#f4f4f4] dark:bg-zinc-900 border border-[#e5e5e5] dark:border-zinc-800 hover:bg-[#eaeaea] dark:hover:bg-zinc-800 text-[#111111] dark:text-white text-[12.5px] sm:text-[13px] font-medium transition inline-flex items-center gap-1.5 cursor-pointer"
             >
-              {isRunning ? <Pause size={13} /> : <Play size={13} />}
-              <span>{isRunning ? 'Pause Rest' : 'Resume Countdown'}</span>
+              {isRunning ? <Pause className="size-3.5" /> : <Play className="size-3.5" />}
+              <span>{isRunning ? 'Pause Rest' : 'Resume'}</span>
             </button>
 
             <button
+              type="button"
               onClick={handleAddMinuteBreak}
-              className="px-4 py-2 rounded-xl bg-muted/50 border border-border hover:bg-muted text-foreground text-xs font-semibold transition flex items-center gap-1.5 cursor-pointer"
+              className="h-9 sm:h-10 px-4 rounded-full bg-[#f4f4f4] dark:bg-zinc-900 border border-[#e5e5e5] dark:border-zinc-800 hover:bg-[#eaeaea] dark:hover:bg-zinc-800 text-[#111111] dark:text-white text-[12.5px] sm:text-[13px] font-medium transition inline-flex items-center gap-1.5 cursor-pointer"
             >
-              <Plus size={13} />
-              <span>+1 Min Rest</span>
+              <Plus className="size-3.5" />
+              <span>+1 Min</span>
             </button>
 
             <button
+              type="button"
               onClick={handleEndBreak}
-              className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition shadow-lg shadow-emerald-600/30 cursor-pointer"
+              className="h-9 sm:h-10 px-5 rounded-full bg-[#111111] dark:bg-white text-white dark:text-[#111111] text-[12.5px] sm:text-[13px] font-medium transition hover:opacity-90 cursor-pointer"
             >
-              Ready to Focus Now →
+              Ready to Focus →
             </button>
           </div>
         </div>
@@ -321,145 +300,155 @@ export default function PomodoroTimer() {
       {/* 🎯 FLOATING POMODORO WIDGET */}
       <aside aria-label="Pomodoro focus timer" className="fixed bottom-3 right-3 sm:right-4 z-50 will-change-transform">
         {!isExpanded ? (
-          /* Collapsed Pill Button */
+          /* Collapsed Pill Button — Matches Landing Page Preview Pill */
           <button
+            type="button"
             onClick={() => setIsExpanded(true)}
             aria-label={`Open Pomodoro timer, ${formatTime(timeLeft)} remaining in ${mode} mode`}
-            className={`flex items-center gap-2.5 px-3.5 py-2 rounded-full font-bold text-xs shadow-2xl border backdrop-blur-md transition-all duration-300 hover:scale-105 cursor-pointer ${
+            className={`inline-flex h-8 sm:h-9 items-center gap-2 px-3 sm:px-3.5 rounded-full font-medium text-[11.5px] sm:text-[12.5px] shadow-[0_8px_24px_-4px_rgba(0,0,0,0.12)] border backdrop-blur-md transition-all duration-200 hover:scale-[1.02] cursor-pointer ${
               isRunning
-                ? mode === 'focus'
-                  ? 'bg-primary/25 border-primary/60 text-white shadow-primary/20 animate-pulse'
-                  : 'bg-emerald-500/25 border-emerald-500/60 text-emerald-300 shadow-emerald-500/20 animate-pulse'
-                : 'bg-card border-border text-foreground hover:bg-muted hover:border-border/80'
+                ? 'bg-[#111111] dark:bg-white border-[#111111] dark:border-white text-white dark:text-[#111111]'
+                : 'bg-[#f4f4f4]/95 dark:bg-zinc-900/95 border-[#e5e5e5] dark:border-zinc-800 text-[#111111] dark:text-white hover:bg-[#eaeaea] dark:hover:bg-zinc-800'
             }`}
           >
-            {mode === 'focus' ? (
-              <Flame size={15} className="text-primary fill-primary" />
-            ) : (
-              <Coffee size={15} className="text-emerald-400" />
-            )}
-            <span className="font-mono text-xs sm:text-sm font-extrabold">{formatTime(timeLeft)}</span>
-            <span className="text-[10px] text-zinc-400 uppercase tracking-wider hidden sm:inline">
-              ({mode})
-            </span>
+            <span className={`size-2 rounded-full shrink-0 ${mode === 'focus' ? 'bg-[#f4525f]' : 'bg-[#63d94e]'} ${isRunning ? 'animate-pulse' : ''}`} />
+            <span className="font-mono font-semibold">{formatTime(timeLeft)}</span>
+            <span className="text-[#8d8d8d] hidden sm:inline">•</span>
+            <span className="hidden sm:inline capitalize">{mode === 'focus' ? 'Pomodoro' : 'Break'}</span>
             {sessionsCompleted > 0 && (
-              <span className="px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400 text-[10px] font-bold border border-amber-500/30">
+              <span className="px-1.5 py-0.5 rounded-full bg-[#FF6B2C]/15 text-[#FF6B2C] text-[10px] font-mono font-semibold">
                 {sessionsCompleted}
               </span>
             )}
           </button>
         ) : (
-          /* Expanded Floating Panel */
-          <div className="w-80 glass-panel rounded-2xl p-4 sm:p-5 border border-primary/30 shadow-2xl space-y-4 animate-in zoom-in-95 duration-200 bg-card/98 backdrop-blur-xl">
+          /* Expanded Floating Bento Panel */
+          <div className="w-[296px] sm:w-80 rounded-[22px] p-4 sm:p-5 border border-[#e5e5e5] dark:border-zinc-800 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.2)] space-y-3.5 animate-in zoom-in-95 duration-200 bg-[#f4f4f4] dark:bg-[#141417]">
             {/* Header */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Flame size={17} className="text-primary fill-primary" />
-                <h3 className="text-xs sm:text-sm font-bold text-foreground uppercase tracking-wider">Focus & Rest Timer</h3>
+                <span className="size-7 rounded-[8px] bg-[#FF6B2C] text-white flex items-center justify-center shadow-2xs">
+                  <Flame className="size-3.5 fill-white" />
+                </span>
+                <h3 className="text-[13.5px] font-semibold tracking-[-0.015em] text-[#111111] dark:text-white">
+                  Pomodoro Timer
+                </h3>
               </div>
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1">
                 <button
+                  type="button"
                   onClick={() => setIsEditing(!isEditing)}
-                  className="text-muted-foreground hover:text-primary transition p-1.5 rounded-lg hover:bg-muted cursor-pointer"
+                  className="size-7 rounded-full bg-white dark:bg-zinc-800 text-[#666666] dark:text-zinc-300 hover:text-[#111111] dark:hover:text-white transition flex items-center justify-center cursor-pointer"
                   title="Customize Durations"
                 >
-                  <Edit3 size={14} />
+                  <Edit3 className="size-3.5" />
                 </button>
                 <button
+                  type="button"
                   onClick={() => setSoundEnabled(!soundEnabled)}
-                  className="text-muted-foreground hover:text-foreground transition p-1.5 rounded-lg hover:bg-muted cursor-pointer"
+                  className="size-7 rounded-full bg-white dark:bg-zinc-800 text-[#666666] dark:text-zinc-300 hover:text-[#111111] dark:hover:text-white transition flex items-center justify-center cursor-pointer"
                   title={soundEnabled ? 'Chime Sound Enabled' : 'Sound Muted'}
                 >
-                  {soundEnabled ? <Volume2 size={14} className="text-primary" /> : <VolumeX size={14} />}
+                  {soundEnabled ? <Volume2 className="size-3.5 text-[#111111] dark:text-white" /> : <VolumeX className="size-3.5" />}
                 </button>
                 <button
+                  type="button"
                   onClick={() => setIsExpanded(false)}
-                  className="text-muted-foreground hover:text-foreground transition p-1.5 rounded-lg hover:bg-muted cursor-pointer"
+                  className="size-7 rounded-full bg-white dark:bg-zinc-800 text-[#666666] dark:text-zinc-300 hover:text-[#111111] dark:hover:text-white transition flex items-center justify-center cursor-pointer"
                 >
-                  <X size={15} />
+                  <X className="size-3.5" />
                 </button>
               </div>
             </div>
 
             {/* Custom Duration Editor */}
             {isEditing ? (
-              <div className="p-3 rounded-xl bg-muted/40 border border-border space-y-3">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-primary block">Customize Minutes:</span>
+              <div className="p-3.5 rounded-[16px] bg-white dark:bg-zinc-900 border border-[#e5e5e5] dark:border-zinc-800 space-y-3">
+                <span className="text-[11px] font-medium text-[#6f6f6f] dark:text-zinc-400 block">Customize duration (minutes)</span>
                 <div className="grid grid-cols-2 gap-2.5 text-xs">
                   <div>
-                    <label className="text-[10px] text-muted-foreground block mb-1">Focus (min):</label>
+                    <label className="text-[11px] text-[#666666] dark:text-zinc-400 block mb-1">Focus</label>
                     <input
                       type="number"
                       min="1"
                       max="120"
                       value={focusMins}
                       onChange={(e) => setFocusMins(parseInt(e.target.value, 10) || 1)}
-                      className="w-full bg-card border border-border rounded-lg p-2 text-foreground font-bold focus:outline-none focus:border-primary text-center"
+                      className="w-full bg-[#f4f4f4] dark:bg-zinc-800 border border-[#e5e5e5] dark:border-zinc-700 rounded-xl p-2 text-[#111111] dark:text-white font-mono font-semibold focus:outline-none text-center"
                     />
                   </div>
                   <div>
-                    <label className="text-[10px] text-muted-foreground block mb-1">Break (min):</label>
+                    <label className="text-[11px] text-[#666666] dark:text-zinc-400 block mb-1">Break</label>
                     <input
                       type="number"
                       min="1"
                       max="60"
                       value={breakMins}
                       onChange={(e) => setBreakMins(parseInt(e.target.value, 10) || 1)}
-                      className="w-full bg-card border border-border rounded-lg p-2 text-foreground font-bold focus:outline-none focus:border-primary text-center"
+                      className="w-full bg-[#f4f4f4] dark:bg-zinc-800 border border-[#e5e5e5] dark:border-zinc-700 rounded-xl p-2 text-[#111111] dark:text-white font-mono font-semibold focus:outline-none text-center"
                     />
                   </div>
                 </div>
                 <button
+                  type="button"
                   onClick={saveCustomDurations}
-                  className="w-full py-2 bg-primary text-white text-xs font-bold rounded-lg hover:bg-primary/90 transition flex items-center justify-center gap-1.5 cursor-pointer shadow"
+                  className="w-full h-9 bg-[#111111] dark:bg-white text-white dark:text-[#111111] text-[12px] font-medium rounded-full hover:opacity-90 transition flex items-center justify-center gap-1.5 cursor-pointer"
                 >
-                  <Check size={14} />
-                  <span>Save Times</span>
+                  <Check className="size-3.5" />
+                  <span>Save Durations</span>
                 </button>
               </div>
             ) : (
-              /* Mode Selector Tabs */
-              <div className="grid grid-cols-2 gap-1 bg-muted/50 p-1 rounded-xl text-[10px] font-bold uppercase tracking-wider border border-border">
+              /* Mode Selector Chip — Matches Landing Page Switcher */
+              <div className="grid grid-cols-2 p-1 rounded-full bg-white dark:bg-zinc-900 border border-[#e5e5e5] dark:border-zinc-800 text-[11.5px] font-medium">
                 <button
+                  type="button"
                   onClick={() => {
                     setMode('focus');
                     localStorage.setItem(STORAGE_KEYS.MODE, 'focus');
                     setIsRunning(false);
                     setTimeLeft(focusMins * 60);
                   }}
-                  className={`py-1.5 rounded-lg transition cursor-pointer text-center ${
-                    mode === 'focus' ? 'bg-primary text-white shadow' : 'text-muted-foreground hover:text-foreground'
+                  className={`h-7 rounded-full transition cursor-pointer flex items-center justify-center gap-1.5 ${
+                    mode === 'focus'
+                      ? 'bg-[#111111] dark:bg-white text-white dark:text-[#111111] shadow-2xs'
+                      : 'text-[#666666] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white'
                   }`}
                 >
-                  Focus ({focusMins}m)
+                  <span className="size-1.5 rounded-full bg-[#f4525f]" />
+                  <span>Focus ({focusMins}m)</span>
                 </button>
                 <button
+                  type="button"
                   onClick={() => {
                     setMode('break');
                     localStorage.setItem(STORAGE_KEYS.MODE, 'break');
                     setIsRunning(false);
                     setTimeLeft(breakMins * 60);
                   }}
-                  className={`py-1.5 rounded-lg transition cursor-pointer text-center ${
-                    mode === 'break' ? 'bg-emerald-600 text-white shadow' : 'text-muted-foreground hover:text-foreground'
+                  className={`h-7 rounded-full transition cursor-pointer flex items-center justify-center gap-1.5 ${
+                    mode === 'break'
+                      ? 'bg-[#111111] dark:bg-white text-white dark:text-[#111111] shadow-2xs'
+                      : 'text-[#666666] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white'
                   }`}
                 >
-                  Break ({breakMins}m)
+                  <span className="size-1.5 rounded-full bg-[#63d94e]" />
+                  <span>Break ({breakMins}m)</span>
                 </button>
               </div>
             )}
 
-            {/* Countdown Clock Display */}
-            <div className="text-center py-1 space-y-2">
-              <div className="text-4xl sm:text-5xl font-extrabold font-mono text-foreground tracking-wider">
+            {/* Countdown Clock Display Card */}
+            <div className="rounded-[16px] bg-white dark:bg-zinc-900 border border-[#e5e5e5] dark:border-zinc-800 p-4 text-center space-y-2.5">
+              <div className="text-4xl font-semibold font-mono text-[#111111] dark:text-white tracking-tight">
                 {formatTime(timeLeft)}
               </div>
 
               {/* Smooth Progress Bar */}
-              <div className="w-full bg-muted h-1.5 rounded-full overflow-hidden border border-border">
+              <div className="w-full bg-[#f2f2f2] dark:bg-zinc-800 h-1.5 rounded-full overflow-hidden">
                 <div
-                  className={`h-full transition-all duration-300 ${
-                    mode === 'focus' ? 'bg-gradient-to-r from-primary to-accent' : 'bg-emerald-400'
+                  className={`h-full transition-all duration-300 rounded-full ${
+                    mode === 'focus' ? 'bg-[#111111] dark:bg-white' : 'bg-[#16a34a] dark:bg-[#34d399]'
                   }`}
                   style={{ width: `${progressPercent}%` }}
                 />
@@ -467,37 +456,33 @@ export default function PomodoroTimer() {
             </div>
 
             {/* Controls */}
-            <div className="flex items-center justify-center gap-2.5">
+            <div className="flex items-center justify-center gap-2">
               <button
+                type="button"
                 onClick={toggleStartPause}
-                className={`flex-1 py-2.5 rounded-xl font-bold text-xs transition duration-200 active:scale-95 flex items-center justify-center gap-2 cursor-pointer shadow-lg ${
-                  isRunning
-                    ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30'
-                    : mode === 'focus'
-                    ? 'bg-primary text-white hover:bg-primary/90 shadow-primary/30'
-                    : 'bg-emerald-600 text-white hover:bg-emerald-500 shadow-emerald-600/30'
-                }`}
+                className="flex-1 h-9 rounded-full font-medium text-[12.5px] transition active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer bg-[#111111] dark:bg-white text-white dark:text-[#111111] hover:opacity-90"
               >
-                {isRunning ? <Pause size={14} fill="currentColor" /> : <Play size={14} fill="currentColor" />}
+                {isRunning ? <Pause className="size-3.5 fill-current" /> : <Play className="size-3.5 fill-current" />}
                 <span>{isRunning ? 'Pause' : mode === 'focus' ? 'Start Focus' : 'Start Break'}</span>
               </button>
 
               <button
+                type="button"
                 onClick={handleReset}
-                className="p-2.5 rounded-xl bg-muted/50 border border-border text-muted-foreground hover:text-foreground transition cursor-pointer"
+                className="size-9 rounded-full bg-white dark:bg-zinc-900 border border-[#e5e5e5] dark:border-zinc-800 text-[#666666] dark:text-zinc-300 hover:text-[#111111] dark:hover:text-white flex items-center justify-center transition cursor-pointer shrink-0"
                 title="Reset Timer"
               >
-                <RotateCcw size={14} />
+                <RotateCcw className="size-3.5" />
               </button>
             </div>
 
             {/* Sessions Counter Footer */}
-            <div className="pt-2 border-t border-border flex items-center justify-between text-[11px] text-muted-foreground">
-              <span className="flex items-center gap-1 font-semibold">
-                <Flame size={13} className="text-amber-400" />
-                <span>Today's Focus Cycles:</span>
+            <div className="pt-2 border-t border-[#e5e5e5] dark:border-zinc-800 flex items-center justify-between text-[11.5px] text-[#666666] dark:text-zinc-400">
+              <span className="inline-flex items-center gap-1.5">
+                <Flame className="size-3.5 text-[#FF6B2C]" />
+                <span>Focus cycles today</span>
               </span>
-              <span className="font-bold text-foreground">{sessionsCompleted} Finished</span>
+              <span className="font-mono font-semibold text-[#111111] dark:text-white">{sessionsCompleted} done</span>
             </div>
           </div>
         )}

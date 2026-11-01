@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { LogIn, LogOut, Cloud, ChevronDown, Layers, Sparkles } from 'lucide-react';
+import { LogOut, Cloud, ChevronDown, Layers } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useUIStore } from '../hooks/useUIStore';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -16,7 +16,6 @@ export default function UserMenu({ onOpenAuth }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  // Live query for active courses in IndexedDB
   const courses = useLiveQuery(() => db.courses.toArray()) || [];
   const activeCount = courses.length;
 
@@ -37,17 +36,17 @@ export default function UserMenu({ onOpenAuth }) {
     return (
       <div className="flex items-center gap-2">
         {isGuestExhausted && (
-          <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/25 text-amber-500 dark:text-amber-400 text-[10px] font-semibold">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+          <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#f4f4f4] dark:bg-zinc-900 border border-[#e5e5e5] dark:border-zinc-800 text-[#111111] dark:text-zinc-200 text-[11px] font-medium">
+            <span className="size-1.5 rounded-full bg-[#F5C542]" />
             <span>Trial Used</span>
           </span>
         )}
         <button
+          type="button"
           onClick={handleOpenAuth}
-          className="h-9 flex items-center gap-2 px-4 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold shadow-xs transition hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+          className="h-8 sm:h-9 inline-flex items-center justify-center gap-1.5 px-3.5 sm:px-4 rounded-full bg-[#111111] dark:bg-white text-white dark:text-[#111111] text-[12px] sm:text-[13px] font-medium hover:opacity-90 transition cursor-pointer whitespace-nowrap shadow-2xs"
           title="Sign in with Google or Email to unlock 5 courses & cloud backup"
         >
-          <Sparkles size={13} />
           <span>Sign In</span>
         </button>
       </div>
@@ -61,48 +60,49 @@ export default function UserMenu({ onOpenAuth }) {
   return (
     <div className="relative" ref={dropdownRef}>
       <button
+        type="button"
         onClick={() => setDropdownOpen(!dropdownOpen)}
-        className="h-9 flex items-center gap-2.5 px-3 rounded-full border border-border/80 bg-card/80 hover:bg-muted text-foreground text-xs font-semibold shadow-xs transition hover:scale-[1.01] cursor-pointer backdrop-blur-md"
+        className="h-8 sm:h-9 flex items-center gap-2 px-2.5 sm:px-3 rounded-full border border-[#e5e5e5] dark:border-zinc-800 bg-[#f4f4f4] dark:bg-zinc-900 hover:bg-[#eaeaea] dark:hover:bg-zinc-800 text-[#111111] dark:text-white text-[12px] sm:text-[12.5px] font-medium transition cursor-pointer"
         aria-expanded={dropdownOpen}
       >
         {avatarUrl ? (
-          <img src={avatarUrl} alt={displayName} className="w-6 h-6 rounded-full object-cover border border-primary/40 shadow-xs" />
+          <img src={avatarUrl} alt={displayName} className="size-5 sm:size-6 rounded-full object-cover border border-[#e5e5e5] dark:border-zinc-700" />
         ) : (
-          <div className="w-6 h-6 rounded-full bg-primary/20 text-primary border border-primary/30 flex items-center justify-center font-bold text-xs">
+          <div className="size-5 sm:size-6 rounded-full bg-[#111111] dark:bg-white text-white dark:text-[#111111] flex items-center justify-center font-semibold text-[11px]">
             {displayName.charAt(0).toUpperCase()}
           </div>
         )}
-        <span className="hidden md:inline max-w-[110px] truncate text-xs">{displayName}</span>
-        <span className="hidden sm:inline-block px-1.5 py-0.2 rounded-full bg-primary/10 text-primary text-[10px] font-bold border border-primary/20">
+        <span className="hidden md:inline max-w-[110px] truncate">{displayName}</span>
+        <span className="hidden sm:inline-block px-2 py-0.5 rounded-full bg-white dark:bg-zinc-800 text-[#111111] dark:text-zinc-200 text-[10px] font-mono font-medium border border-[#e5e5e5] dark:border-zinc-700">
           {activeCount}/{maxLimit}
         </span>
-        <ChevronDown size={13} className="text-muted-foreground hidden sm:inline" />
+        <ChevronDown className="size-3.5 text-[#666666] dark:text-zinc-400 hidden sm:inline" />
       </button>
 
       {dropdownOpen && (
-        <div className="absolute right-0 top-full mt-2 w-64 rounded-2xl border border-white/10 bg-card/95 p-3 shadow-2xl backdrop-blur-2xl z-50 text-foreground animate-in fade-in zoom-in-95 duration-150">
+        <div className="absolute right-0 top-full mt-2 w-64 rounded-[20px] border border-[#e5e5e5] dark:border-zinc-800 bg-white dark:bg-[#141417] p-3 shadow-[0_16px_40px_-8px_rgba(0,0,0,0.16)] z-50 text-[#111111] dark:text-white animate-in fade-in zoom-in-95 duration-150">
           {/* User Info Header */}
-          <div className="px-2 py-2 border-b border-border/70 mb-2">
-            <p className="font-semibold text-xs text-foreground truncate">{displayName}</p>
-            <p className="text-[10px] text-muted-foreground truncate">{user.email}</p>
-            <div className="mt-2 flex items-center gap-1.5 text-[10px] text-emerald-500 font-medium">
-              <Cloud size={12} />
+          <div className="px-2.5 py-2 border-b border-[#efefef] dark:border-zinc-800 mb-2">
+            <p className="font-semibold text-[13px] text-[#111111] dark:text-white truncate">{displayName}</p>
+            <p className="text-[11px] text-[#6f6f6f] dark:text-zinc-400 truncate">{user.email}</p>
+            <div className="mt-2 inline-flex items-center gap-1.5 text-[11px] text-[#16a34a] dark:text-[#63d94e] font-medium">
+              <Cloud className="size-3" />
               <span>Cloud Sync Active</span>
             </div>
           </div>
 
           {/* Quota Progress Bar */}
-          <div className="px-2.5 py-2 bg-muted/40 rounded-xl border border-border/60 mb-2">
-            <div className="flex items-center justify-between text-[11px] mb-1.5">
-              <span className="text-muted-foreground font-medium flex items-center gap-1">
-                <Layers size={12} className="text-primary" />
-                Study Courses
+          <div className="p-3 bg-[#f4f4f4] dark:bg-zinc-900 rounded-[14px] mb-2">
+            <div className="flex items-center justify-between text-[11.5px] mb-1.5">
+              <span className="text-[#666666] dark:text-zinc-400 font-medium inline-flex items-center gap-1.5">
+                <Layers className="size-3.5 text-[#111111] dark:text-white" />
+                <span>Study Courses</span>
               </span>
-              <span className="font-bold text-foreground">{activeCount} / {maxLimit}</span>
+              <span className="font-mono font-semibold text-[#111111] dark:text-white">{activeCount} / {maxLimit}</span>
             </div>
-            <div className="w-full bg-border/60 rounded-full h-1.5 overflow-hidden">
+            <div className="w-full bg-white dark:bg-zinc-800 rounded-full h-1.5 overflow-hidden">
               <div
-                className="bg-primary h-full transition-all duration-300"
+                className="bg-[#16a34a] dark:bg-[#34d399] h-full transition-all duration-300 rounded-full"
                 style={{ width: `${Math.min(100, (activeCount / maxLimit) * 100)}%` }}
               />
             </div>
@@ -110,13 +110,14 @@ export default function UserMenu({ onOpenAuth }) {
 
           {/* Sign Out Button */}
           <button
+            type="button"
             onClick={() => {
               setDropdownOpen(false);
               signOut();
             }}
-            className="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-xs text-red-500 hover:bg-red-500/10 font-medium transition cursor-pointer"
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-full text-[12px] text-[#e11d48] dark:text-rose-400 hover:bg-rose-500/10 font-medium transition cursor-pointer"
           >
-            <LogOut size={14} />
+            <LogOut className="size-3.5" />
             <span>Sign Out</span>
           </button>
         </div>

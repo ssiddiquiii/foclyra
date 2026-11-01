@@ -40,7 +40,7 @@ user.name = "Developer"; // ✅ Allowed!
     keyPoints: [
       'Primitives: Number, String, Boolean, Null, Undefined, Symbol, BigInt (Passed by Value).',
       'Reference: Object, Array, Function (Passed by Reference).',
-      'typeof null is historically "object" — a famous JS design flaw!'
+      'typeof null is historically "object" - a famous JS design flaw!'
     ],
     codeSnippet: `const count = 42;             // Number
 const name = "Foclyra";      // String
@@ -99,7 +99,7 @@ console.log(userOne.email); // "sameed@gmail.com" (Mutated original!)`,
   'fozwNnFunlo': {
     overview: 'Strings are immutable sequences of UTF-16 code units with powerful built-in inspection and slicing methods.',
     keyPoints: [
-      'Strings are immutable — methods return NEW strings rather than modifying originals.',
+      'Strings are immutable - methods return NEW strings rather than modifying originals.',
       'Template Literals (backticks ``) support string interpolation (${val}) and multi-line text.',
       'Use slice(start, end) for extract sub-strings (supports negative indices).'
     ],
@@ -162,7 +162,7 @@ console.log(user[sym]); // Access symbol property`,
     pitfalls: 'Symbol keys are non-enumerable in standard for...in loops and Object.keys(). Use Object.getOwnPropertySymbols().'
   },
   'Bn56WahG_t0': {
-    overview: 'Functions are first-class citizens in JS — they can be assigned to variables, passed as arguments, and returned from other functions.',
+    overview: 'Functions are first-class citizens in JS - they can be assigned to variables, passed as arguments, and returned from other functions.',
     keyPoints: [
       'Function Declarations are hoisted completely.',
       'Function Expressions (assigned to const/let) are NOT hoisted before initialization.',

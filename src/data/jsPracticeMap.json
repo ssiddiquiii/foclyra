@@ -150,7 +150,7 @@
     ],
     "readingMaterials": [
       {
-        "title": "Git Handbook — GitHub Guides",
+        "title": "Git Handbook - GitHub Guides",
         "url": "https://guides.github.com/introduction/git-handbook/",
         "source": "GitHub Docs",
         "readTime": "8 min read",
@@ -202,7 +202,7 @@
     ],
     "readingMaterials": [
       {
-        "title": "MDN: Storing the information you need — Variables",
+        "title": "MDN: Storing the information you need - Variables",
         "url": "https://developer.mozilla.org/en-US/docs/Learn/JavaScript/First_steps/Variables",
         "source": "MDN Web Docs",
         "readTime": "6 min read",
@@ -283,7 +283,7 @@
       "keyPoints": [
         "Primitives: Number, String, Boolean, Null, Undefined, Symbol, BigInt (Passed by Value).",
         "Reference: Object, Array, Function (Passed by Reference).",
-        "typeof null is historically \"object\" — a famous JS design flaw!"
+        "typeof null is historically \"object\" - a famous JS design flaw!"
       ],
       "codeSnippet": "const count = 42;             // Number\nconst name = \"Foclyra\";      // String\nconst isActive = true;        // Boolean\nconst empty = null;           // Null (typeof returns \"object\")\nlet unassigned;               // Undefined\nconst id = Symbol(\"id\");      // Symbol (Unique value)",
       "pitfalls": "typeof null === \"object\" returns true due to legacy 32-bit type tag representations in early V8 versions."
@@ -619,7 +619,7 @@
     "summaryArticle": {
       "overview": "Strings are immutable sequences of UTF-16 code units with powerful built-in inspection and slicing methods.",
       "keyPoints": [
-        "Strings are immutable — methods return NEW strings rather than modifying originals.",
+        "Strings are immutable - methods return NEW strings rather than modifying originals.",
         "Template Literals (backticks ``) support string interpolation (${val}) and multi-line text.",
         "Use slice(start, end) for extract sub-strings (supports negative indices)."
       ],
@@ -1059,7 +1059,7 @@
       }
     ],
     "summaryArticle": {
-      "overview": "Functions are first-class citizens in JS — they can be assigned to variables, passed as arguments, and returned from other functions.",
+      "overview": "Functions are first-class citizens in JS - they can be assigned to variables, passed as arguments, and returned from other functions.",
       "keyPoints": [
         "Function Declarations are hoisted completely.",
         "Function Expressions (assigned to const/let) are NOT hoisted before initialization.",
@@ -2562,7 +2562,7 @@
   },
   "ZRS485LxX0s": {
     "concept": "v8-internals",
-    "conceptLabel": "V8 Internals — PACKED vs HOLEY Arrays",
+    "conceptLabel": "V8 Internals - PACKED vs HOLEY Arrays",
     "practices": [
       {
         "title": "w3resource Array #14: Benchmark Duplicate Removal in V8",
