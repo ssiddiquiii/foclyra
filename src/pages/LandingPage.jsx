@@ -54,7 +54,7 @@ function InlineTile({ bg = '#111111', color = '#ffffff', rotate = -6, children }
   );
 }
 
-// Rotating Hero H1 items (Vidyst exact blur + spring grid transition)
+// Rotating Hero H1 items (Single-word punchy items matching Vidyst's exact rhythm)
 const HERO_PLATFORMS = [
   {
     label: 'YouTube',
@@ -68,21 +68,21 @@ const HERO_PLATFORMS = [
     )
   },
   {
-    label: 'Harvard CS50',
+    label: 'CS50',
     bg: '#A51C30',
     color: '#ffffff',
     rotate: 5,
     svg: <GraduationCap style={{ width: '0.46em', height: '0.46em', strokeWidth: 2.2, flexShrink: 0 }} />
   },
   {
-    label: 'MIT OpenCourse',
+    label: 'MIT',
     bg: '#111111',
     color: '#ffffff',
     rotate: -4,
     svg: <Terminal style={{ width: '0.44em', height: '0.44em', strokeWidth: 2.2, flexShrink: 0 }} />
   },
   {
-    label: 'freeCodeCamp',
+    label: 'Tutorials',
     bg: '#F5C542',
     color: '#111111',
     rotate: 5,
@@ -216,12 +216,12 @@ export default function LandingPage() {
           2. Hero Section (Exact Vidyst H1 Formula: font-semibold + tracking-[-0.045em])
          ========================================================================= */}
       <section id="top" className="px-6 pt-[96px] sm:pt-[108px] text-center">
-        <h1 className="mx-auto max-w-[1000px] text-[clamp(42px,6.8vw,92px)] leading-[1.06] font-semibold tracking-[-0.045em] text-[#111111] dark:text-white">
-          <span className="block">Study any course on</span>
+        <h1 className="mx-auto max-w-[900px] text-[clamp(44px,6.8vw,96px)] leading-[1.06] font-semibold tracking-[-0.045em] text-[#111111] dark:text-white">
+          <span className="block">Study deeply on</span>
 
           {/* Vidyst CSS Grid Blur + Spring Rotating Line */}
           <span className="grid justify-center justify-items-center overflow-hidden pt-[.04em] pb-[.1em]">
-            <span className="sr-only">YouTube, Harvard CS50, MIT OpenCourse, freeCodeCamp</span>
+            <span className="sr-only">YouTube, CS50, MIT, Tutorials</span>
             {HERO_PLATFORMS.map((item, idx) => {
               const isActive = idx === tickerIndex;
               const isPrev = idx === (tickerIndex - 1 + HERO_PLATFORMS.length) % HERO_PLATFORMS.length;
@@ -260,7 +260,7 @@ export default function LandingPage() {
 
           {/* Vidyst Bottom-Fade Gradient Line */}
           <span className="block bg-[linear-gradient(180deg,#111_0%,#111_25%,#b5b5b5_100%)] dark:bg-[linear-gradient(180deg,#fff_0%,#fff_25%,#52525b_100%)] bg-clip-text pb-[.08em] text-transparent">
-            without the rabbit hole.
+            without the noise.
           </span>
         </h1>
 
@@ -544,26 +544,28 @@ export default function LandingPage() {
          ========================================================================= */}
       <section className="px-6 pt-[140px] sm:pt-[168px]">
         <div className="mx-auto max-w-[1160px] text-center">
-          <div className="text-[15px] text-[#6f6f6f] dark:text-zinc-400">Focus &amp; Retention</div>
-          <h2 className="mt-2.5 mx-auto max-w-[920px] text-[clamp(34px,4.8vw,64px)] leading-[1.14] font-semibold tracking-[-0.035em] text-balance text-[#111111] dark:text-white">
-            Watch once. Capture{' '}
+          <div className="text-[15px] text-[#6f6f6f] dark:text-zinc-400">Focus &amp; Notes</div>
+          <h2 className="mt-2.5 mx-auto max-w-[820px] text-[clamp(34px,4.8vw,64px)] leading-[1.14] font-semibold tracking-[-0.035em] text-[#111111] dark:text-white">
+            Watch{' '}
             <span className="whitespace-nowrap">
               <InlineTile bg="#FF0000" color="#ffffff" rotate={-5}>
                 <Play size={18} className="fill-current" />
               </InlineTile>{' '}
-              lectures
-            </span>{' '}
-            and{' '}
-            <span className="whitespace-nowrap">
-              <InlineTile bg="#111111" color="#ffffff" rotate={5}>
-                <FileText size={18} />
-              </InlineTile>{' '}
-              notes
-            </span>{' '}
-            <span className="text-[#8d8d8d] dark:text-zinc-500">in the same take.</span>
+              video.
+            </span>
+            <br />
+            <span className="text-[#8d8d8d] dark:text-zinc-500">
+              Capture{' '}
+              <span className="whitespace-nowrap">
+                <InlineTile bg="#111111" color="#ffffff" rotate={5}>
+                  <FileText size={18} />
+                </InlineTile>{' '}
+                notes.
+              </span>
+            </span>
           </h2>
-          <p className="mx-auto mt-6 max-w-[560px] text-[18px] leading-[1.55] text-pretty text-[#666666] dark:text-zinc-400">
-            No more alt-tabbing between browser windows and messy docs. Every note you write is automatically indexed to the exact second of the lecture.
+          <p className="mx-auto mt-6 max-w-[520px] text-[18px] leading-[1.55] text-pretty text-[#666666] dark:text-zinc-400">
+            No alt-tabbing between windows. Every note you write locks to the exact second of the lecture.
           </p>
         </div>
       </section>
@@ -703,8 +705,8 @@ export default function LandingPage() {
           <div className="text-center">
             <div className="text-[15px] text-[#6f6f6f] dark:text-zinc-400">How It Works</div>
             <h2 className="mt-2.5 text-[clamp(34px,4.8vw,64px)] leading-[1.14] font-semibold tracking-[-0.035em] text-[#111111] dark:text-white">
-              From playlist link{' '}
-              <span className="text-[#8d8d8d] dark:text-zinc-500">to structured mastery.</span>
+              Paste a link.{' '}
+              <span className="text-[#8d8d8d] dark:text-zinc-500">Start learning.</span>
             </h2>
           </div>
 
@@ -751,9 +753,9 @@ export default function LandingPage() {
       <section id="faq" className="px-6 pt-[140px] sm:pt-[168px]">
         <div className="mx-auto max-w-[760px]">
           <div className="text-center">
-            <div className="text-[15px] text-[#6f6f6f] dark:text-zinc-400">Questions</div>
+            <div className="text-[15px] text-[#6f6f6f] dark:text-zinc-400">FAQ</div>
             <h2 className="mt-2.5 text-[clamp(34px,4.8vw,60px)] leading-[1.14] font-semibold tracking-[-0.035em] text-[#111111] dark:text-white">
-              Everything you need to know.
+              Questions, <span className="text-[#8d8d8d] dark:text-zinc-500">answered.</span>
             </h2>
           </div>
 
