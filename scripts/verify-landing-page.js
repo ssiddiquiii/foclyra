@@ -81,8 +81,8 @@ async function verifyLandingPage() {
     console.log(`[PASS] Full page desktop screenshot saved: ${screenshotDesktopPath}`);
 
     // Test Navigation to Studio
-    console.log('2. Testing "Start Learning Free" CTA navigation...');
-    await page.locator('text=Start Learning Free').first().click();
+    console.log('2. Testing "Import a Playlist Free" CTA navigation...');
+    await page.locator('text=Import a Playlist Free').first().click();
     await page.waitForTimeout(600);
     console.log(`[PASS] Navigated to: ${page.url()}`);
 
