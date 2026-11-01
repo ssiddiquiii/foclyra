@@ -18,6 +18,7 @@ import { Toaster } from './components/ui/toast';
 import { trackPageView } from './services/analytics';
 
 // Lazy-loaded page components with instant hover preloading
+const LandingPage = lazy(() => import('./pages/LandingPage'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const CourseDetail = lazy(() => import('./pages/CourseDetail'));
 const Watch = lazy(() => import('./pages/Watch'));
@@ -42,6 +43,7 @@ function AppContent() {
   const drawerRef = useRef(null);
   const location = useLocation();
   const isWatchPage = location.pathname.includes('/lessons/');
+  const isLandingPage = location.pathname === '/landing' || location.pathname === '/welcome';
   const navigate = useNavigate();
   const reduceMotion = useReducedMotion();
 
@@ -123,6 +125,23 @@ function AppContent() {
     window.addEventListener('keydown', handleGlobalKeyDown);
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
   }, [commandPaletteOpen, openCommandPalette, closeCommandPalette, navigate]);
+
+  if (isLandingPage) {
+    return (
+      <div className="min-h-screen bg-background text-foreground">
+        <Suspense fallback={
+          <div className="flex flex-col items-center justify-center min-h-screen space-y-4">
+            <div className="animate-spin w-8 h-8 border-3 border-primary border-t-transparent rounded-full" />
+          </div>
+        }>
+          <LandingPage />
+        </Suspense>
+        <AuthModal />
+        <BetaModal />
+        <Toaster />
+      </div>
+    );
+  }
 
   return (
     <div className={`relative flex bg-background text-foreground transition-colors duration-150 ${isWatchPage ? 'h-screen xl:h-dvh overflow-hidden' : 'min-h-screen'}`}>
@@ -373,6 +392,8 @@ function AppContent() {
                   className={`min-w-0 w-full flex flex-col ${isWatchPage ? 'h-full overflow-hidden' : 'flex-1'}`}
                 >
                   <Routes location={location}>
+                    <Route path="/landing" element={<LandingPage />} />
+                    <Route path="/welcome" element={<LandingPage />} />
                     <Route path="/" element={<Dashboard />} />
                     <Route path="/courses/:courseId" element={<CourseDetail />} />
                     <Route path="/courses/:courseId/lessons/:lessonId" element={<Watch />} />
