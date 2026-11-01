@@ -3,87 +3,21 @@ import { Link, useNavigate } from 'react-router-dom';
 import { 
   Play, 
   Pause,
-  ShieldCheck, 
-  FileText, 
-  Clock, 
-  ArrowRight, 
-  Download, 
   ChevronDown, 
   Sun, 
   Moon,
-  ExternalLink,
   Volume2,
-  Maximize2,
-  Code,
-  EyeOff,
-  CheckCircle2,
-  BookOpen,
-  Layers,
-  ListVideo,
-  Timer
+  Maximize2
 } from 'lucide-react';
 import { useTheme } from '../hooks/useTheme';
 import { useAuth } from '../hooks/useAuth';
 import { trackEvent } from '../services/analytics';
-
-/**
- * Vidyst-style inline tilted icon tile (`size-[.8em] rounded-[.22em]`)
- */
-function InlineTile({ bg = '#111111', color = '#ffffff', rotate = -6, children }) {
-  return (
-    <span
-      aria-hidden="true"
-      className="relative top-[-.06em] inline-flex items-center justify-center rounded-[.22em] align-middle select-none shadow-xs"
-      style={{
-        width: '.8em',
-        height: '.8em',
-        margin: '0 .06em',
-        background: bg,
-        color,
-        transform: `rotate(${rotate}deg)`
-      }}
-    >
-      {children}
-    </span>
-  );
-}
-
-// Rotating Hero H1 items — strictly what Foclyra actually imports from YouTube
-const HERO_ITEMS = [
-  {
-    label: 'playlists',
-    bg: '#FF0000',
-    color: '#ffffff',
-    rotate: -6,
-    svg: <ListVideo style={{ width: '0.46em', height: '0.46em', strokeWidth: 2.2, flexShrink: 0 }} />
-  },
-  {
-    label: 'lectures',
-    bg: '#111111',
-    color: '#ffffff',
-    rotate: 5,
-    svg: (
-      <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: '0.46em', height: '0.46em', flexShrink: 0 }}>
-        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-      </svg>
-    )
-  },
-  {
-    label: 'tutorials',
-    bg: '#F5C542',
-    color: '#111111',
-    rotate: -4,
-    svg: <Code style={{ width: '0.46em', height: '0.46em', strokeWidth: 2.3, flexShrink: 0 }} />
-  }
-];
 
 export default function LandingPage() {
   const { isDark, toggleTheme } = useTheme();
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const [tickerIndex, setTickerIndex] = useState(0);
-  const [pauseAnimations, setPauseAnimations] = useState(false);
   const [viewMode, setViewMode] = useState('foclyra'); // 'foclyra' | 'youtube'
   const [isPlaying, setIsPlaying] = useState(true);
   const [progressSec, setProgressSec] = useState(252); // 04:12
@@ -92,21 +26,13 @@ export default function LandingPage() {
   const [activeFaq, setActiveFaq] = useState(null);
 
   useEffect(() => {
-    if (pauseAnimations) return undefined;
-    const timer = setInterval(() => {
-      setTickerIndex((prev) => (prev + 1) % HERO_ITEMS.length);
-    }, 2600);
-    return () => clearInterval(timer);
-  }, [pauseAnimations]);
-
-  useEffect(() => {
-    if (!isPlaying || pauseAnimations) return undefined;
+    if (!isPlaying) return undefined;
     const interval = setInterval(() => {
       setProgressSec((prev) => (prev >= 600 ? 250 : prev + 1));
       setPomodoroSec((prev) => (prev <= 60 ? 1500 : prev - 1));
     }, 1000);
     return () => clearInterval(interval);
-  }, [isPlaying, pauseAnimations]);
+  }, [isPlaying]);
 
   const formatTime = (secs) => {
     const m = Math.floor(secs / 60).toString().padStart(2, '0');
@@ -126,24 +52,24 @@ export default function LandingPage() {
 
   const FAQS = [
     {
-      q: "What does Foclyra actually do?",
-      a: "Foclyra imports any public or unlisted YouTube playlist or video link (up to 200 videos) into a clean course workspace. You can watch lectures without YouTube's sidebar recommendations or comments, take timestamped notes below the video, track completion progress, and export your notes to a Word (.docx) file."
+      q: "What does Foclyra do?",
+      a: "Foclyra imports any public or unlisted YouTube playlist or video link (up to 200 videos) into a dedicated study workspace. You can watch lectures without YouTube's sidebar recommendations or comments, take timestamped notes alongside the video, track lecture completion, and export your notes to a Word (.docx) document."
     },
     {
-      q: "Do I need an account to try it?",
-      a: "No. You can import 1 full playlist as a guest right away—your progress and notes are saved locally in your browser's IndexedDB. Signing in with a free account unlocks up to 5 playlists and syncs your courses, progress, and notes across devices via Supabase."
+      q: "Do I need an account to use it?",
+      a: "No. You can import 1 full playlist right away as a guest—your progress and notes are saved locally in your browser's IndexedDB. Creating a free account unlocks up to 5 playlists and syncs your courses, progress, and notes across devices via Supabase."
     },
     {
       q: "Is Foclyra free?",
-      a: "Yes. Both guest mode and registered accounts are completely free."
+      a: "Yes. Both guest access and registered accounts are completely free."
     },
     {
       q: "How do timestamped notes and Word export work?",
-      a: "While a lecture is playing, typing a note and pressing Enter saves it with the current video timecode (e.g., 04:12). Clicking any saved timecode jumps the video player back to that exact second. At any time, you can export notes for a single course or all courses into a structured .docx file."
+      a: "While a lecture is playing, typing a note and pressing Enter saves it with the current video timecode (for example, 04:12). Clicking any saved timecode jumps the video player back to that exact second. Whenever you are ready, you can export notes for a single course or all courses as a formatted .docx file."
     },
     {
-      q: "What happens if I clear my browser data or switch laptops?",
-      a: "If you sign in with Google or email, your courses, watch progress, and notes sync to the cloud automatically. You can also export and import a full JSON backup anytime from the Settings page."
+      q: "Can I back up my data or switch devices?",
+      a: "Yes. When signed in with Google or email, your courses, watch progress, and notes sync automatically. You can also download or restore a full JSON backup anytime from the Settings page."
     }
   ];
 
@@ -153,12 +79,12 @@ export default function LandingPage() {
           1. Top Navigation
          ========================================================================= */}
       <header className="sticky top-0 z-50 w-full bg-white/85 dark:bg-[#0a0a0c]/85 backdrop-blur-xl border-b border-[#efefef] dark:border-zinc-800/70">
-        <div className="max-w-[1240px] mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-7">
+        <div className="max-w-[1200px] mx-auto px-6 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-8">
             <Link to="/" className="flex items-center gap-2.5 group">
               <img src="/logo.svg" alt="Foclyra" className="w-6 h-6 transition-transform group-hover:scale-105" />
               <span className="font-semibold text-[16px] tracking-[-0.02em] text-[#111111] dark:text-white">
-                foclyra
+                Foclyra
               </span>
             </Link>
 
@@ -171,14 +97,6 @@ export default function LandingPage() {
           </div>
 
           <div className="flex items-center gap-2.5">
-            <button
-              type="button"
-              onClick={() => setPauseAnimations(!pauseAnimations)}
-              className="hidden sm:flex h-9 shrink-0 items-center gap-2 rounded-full bg-[#f2f2f2] dark:bg-zinc-800/90 px-3.5 text-[13px] font-medium text-[#111111] dark:text-zinc-200 hover:bg-[#e5e5e5] dark:hover:bg-zinc-700 transition cursor-pointer"
-            >
-              <span>{pauseAnimations ? 'Resume motion' : 'Pause motion'}</span>
-            </button>
-
             <button
               type="button"
               onClick={toggleTheme}
@@ -200,130 +118,73 @@ export default function LandingPage() {
       </header>
 
       {/* =========================================================================
-          2. Hero Section — Clear, Grounded Value Proposition
+          2. Hero Section
          ========================================================================= */}
-      <section id="top" className="px-6 pt-[96px] sm:pt-[108px] text-center">
-        <h1 className="mx-auto max-w-[920px] text-[clamp(44px,6.8vw,92px)] leading-[1.06] font-semibold tracking-[-0.045em] text-[#111111] dark:text-white">
-          <span className="block">Turn YouTube</span>
-
-          {/* Rotating line: playlists / lectures / tutorials */}
-          <span className="grid justify-center justify-items-center overflow-hidden pt-[.04em] pb-[.1em]">
-            <span className="sr-only">playlists, lectures, tutorials</span>
-            {HERO_ITEMS.map((item, idx) => {
-              const isActive = idx === tickerIndex;
-              const isPrev = idx === (tickerIndex - 1 + HERO_ITEMS.length) % HERO_ITEMS.length;
-              return (
-                <span
-                  key={item.label}
-                  aria-hidden="true"
-                  className="flex items-center gap-[.18em] whitespace-nowrap [grid-area:1/1]"
-                  style={{
-                    opacity: isActive ? 1 : 0,
-                    transform: isActive
-                      ? 'translateY(0) scale(1)'
-                      : isPrev
-                      ? 'translateY(-.55em) scale(0.92)'
-                      : 'translateY(.55em) scale(0.92)',
-                    filter: isActive ? 'blur(0px)' : 'blur(6px)',
-                    transition: 'opacity .5s ease, transform .6s cubic-bezier(.34,1.3,.64,1), filter .5s ease',
-                    pointerEvents: isActive ? 'auto' : 'none'
-                  }}
-                >
-                  <span
-                    className="flex size-[.8em] flex-none items-center justify-center rounded-[.22em] shadow-xs"
-                    style={{
-                      background: item.bg,
-                      color: item.color,
-                      transform: `rotate(${item.rotate}deg)`
-                    }}
-                  >
-                    {item.svg}
-                  </span>
-                  <span>{item.label}</span>
-                </span>
-              );
-            })}
-          </span>
-
-          <span className="block bg-[linear-gradient(180deg,#111_0%,#111_25%,#b5b5b5_100%)] dark:bg-[linear-gradient(180deg,#fff_0%,#fff_25%,#52525b_100%)] bg-clip-text pb-[.08em] text-transparent">
+      <section id="top" className="px-6 pt-[88px] sm:pt-[104px] text-center">
+        <h1 className="mx-auto max-w-[920px] text-[clamp(42px,6.4vw,88px)] leading-[1.06] font-semibold tracking-[-0.045em] text-[#111111] dark:text-white">
+          <span className="block">Turn YouTube playlists</span>
+          <span className="block bg-[linear-gradient(180deg,#111_0%,#111_30%,#9e9e9e_100%)] dark:bg-[linear-gradient(180deg,#fff_0%,#fff_30%,#666_100%)] bg-clip-text pb-[.08em] text-transparent">
             into structured courses.
           </span>
         </h1>
 
-        <p className="mx-auto mt-7 max-w-[570px] text-[18px] sm:text-[20px] leading-[1.5] text-pretty text-[#666666] dark:text-zinc-400 font-normal">
-          Paste any YouTube playlist or video link to study without sidebar recommendations or comments. Take{' '}
-          <span className="relative inline-block px-1.5 text-[#111111] dark:text-amber-200 font-medium">
-            <span className="absolute inset-0 bg-[#F5C542]/35 dark:bg-[#F5C542]/20 rounded -rotate-1 -z-10" />
-            timestamped notes
-          </span>
-          , track lecture progress, and export to Word (.docx).
+        <p className="mx-auto mt-6 max-w-[780px] text-[17px] sm:text-[19px] leading-[1.6] text-[#555555] dark:text-zinc-400 font-normal">
+          Import any YouTube playlist or video into a distraction-free study workspace.
+          <br className="hidden sm:inline" />{' '}
+          Watch without recommendations, take timestamped notes, and export to Word (.docx).
         </p>
 
         <div className="relative mt-8 inline-flex flex-col items-center">
           <button
             type="button"
             onClick={() => handleLaunchApp('hero_main_pill')}
-            className="flex h-[52px] items-center gap-[9px] rounded-full bg-[#111111] dark:bg-white px-[26px] text-[16px] font-medium text-white dark:text-[#111111] hover:bg-[#333333] dark:hover:bg-zinc-200 transition active:scale-[.98] cursor-pointer shadow-sm"
+            className="flex h-[52px] items-center gap-2.5 rounded-full bg-[#111111] dark:bg-white px-7 text-[16px] font-medium text-white dark:text-[#111111] hover:bg-[#333333] dark:hover:bg-zinc-200 transition active:scale-[.98] cursor-pointer shadow-sm"
           >
-            <Play size={15} className="fill-current" />
             <span>Import a Playlist Free</span>
           </button>
 
-          {/* Odoo Handwritten Note — Accurate to Quota Service */}
-          <div className="hidden lg:flex items-center gap-2 absolute -right-56 top-1.5 select-none pointer-events-none">
-            <svg className="w-11 h-9 text-[#0284c7] dark:text-sky-400 -rotate-6" viewBox="0 0 60 44" fill="none">
-              <path d="M52 34 C 34 36, 18 28, 8 12" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-              <path d="M16 10 L 7 11 L 10 20" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            <div className="font-handwriting text-[21px] text-[#111111] dark:text-zinc-200 -rotate-3 leading-[1.1] text-left">
-              <span>Try 1 playlist without login</span>
-              <span className="block text-[16px] text-[#6f6f6f] dark:text-zinc-400">or 5 with a free account!</span>
-            </div>
-          </div>
-
-          <p className="mt-5 text-[14px] text-[#6f6f6f] dark:text-zinc-500">
-            Free to use • Local IndexedDB storage + optional Supabase cloud sync
+          <p className="mt-4 text-[14px] text-[#6f6f6f] dark:text-zinc-500">
+            Try 1 playlist immediately without login • Up to 5 playlists with a free account
           </p>
         </div>
       </section>
 
       {/* =========================================================================
-          3. Interactive Watch Workspace Preview (Grounded in Real Watch.jsx UI)
+          3. Interactive Watch Workspace Preview
          ========================================================================= */}
-      <section id="studio" className="px-6 pt-[64px]">
-        <div className="mx-auto max-w-[1160px]">
-          {/* Switcher: Foclyra Watch View vs Standard YouTube */}
+      <section id="studio" className="px-6 pt-[56px]">
+        <div className="mx-auto max-w-[1140px]">
+          {/* Mode Switcher */}
           <div className="flex items-center justify-center mb-5">
             <div className="inline-flex p-1 rounded-full bg-[#f2f2f2] dark:bg-zinc-900 border border-[#e5e5e5] dark:border-zinc-800">
               <button
                 type="button"
                 onClick={() => setViewMode('foclyra')}
-                className={`flex h-10 items-center gap-2 rounded-full px-5 text-[14px] font-semibold transition-all duration-200 active:scale-[.97] cursor-pointer ${
+                className={`flex h-9 items-center gap-2 rounded-full px-4 text-[13px] font-medium transition-all duration-200 cursor-pointer ${
                   viewMode === 'foclyra'
                     ? 'bg-[#111111] dark:bg-white text-white dark:text-[#111111] shadow-xs'
                     : 'text-[#666666] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white'
                 }`}
               >
-                <span className="size-2 rounded-full bg-[#63d94e]" />
-                <span>Foclyra Watch View</span>
+                <span className="size-1.5 rounded-full bg-[#63d94e]" />
+                <span>Foclyra Workspace</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setViewMode('youtube')}
-                className={`flex h-10 items-center gap-2 rounded-full px-5 text-[14px] font-semibold transition-all duration-200 active:scale-[.97] cursor-pointer ${
+                className={`flex h-9 items-center gap-2 rounded-full px-4 text-[13px] font-medium transition-all duration-200 cursor-pointer ${
                   viewMode === 'youtube'
-                    ? 'bg-[#f4525f] text-white shadow-xs'
+                    ? 'bg-[#111111] dark:bg-white text-white dark:text-[#111111] shadow-xs'
                     : 'text-[#666666] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white'
                 }`}
               >
-                <EyeOff size={14} />
-                <span>Standard YouTube Page</span>
+                <span>Standard YouTube Tab</span>
               </button>
             </div>
           </div>
 
-          <div className="rounded-[28px] bg-[#f4f4f4] dark:bg-zinc-900/90 p-3 sm:p-4 border border-[#e5e5e5] dark:border-zinc-800/80 shadow-[0_24px_60px_-15px_rgba(0,0,0,0.08)]">
+          <div className="rounded-[28px] bg-[#f4f4f4] dark:bg-zinc-900/90 p-3 sm:p-4 border border-[#e5e5e5] dark:border-zinc-800/80">
             <div className="rounded-[20px] bg-white dark:bg-[#111113] border border-[#e5e5e5] dark:border-zinc-800 overflow-hidden">
               {/* Window Top Bar */}
               <div className="h-11 px-4 bg-[#fafafa] dark:bg-zinc-900/80 border-b border-[#efefef] dark:border-zinc-800 flex items-center justify-between text-[12px]">
@@ -332,20 +193,19 @@ export default function LandingPage() {
                   <span className="size-3 rounded-full bg-[#febc2e]" />
                   <span className="size-3 rounded-full bg-[#28c840]" />
                   <span className="ml-2 text-[#6f6f6f] dark:text-zinc-400 font-medium hidden sm:inline">
-                    JavaScript Masterclass • 4 of 24 lectures completed (17%)
+                    JavaScript Masterclass • 4 of 24 lectures completed
                   </span>
                 </div>
 
-                {/* Real Pomodoro Timer Indicator */}
                 <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-[#f2f2f2] dark:bg-zinc-800 text-[12px] font-medium text-[#111111] dark:text-zinc-200">
-                  <Timer size={13} className="text-[#f4525f]" />
+                  <span className="size-1.5 rounded-full bg-[#f4525f]" />
                   <span className="font-mono">{formatTime(pomodoroSec)}</span>
                   <span className="text-[#8d8d8d]">•</span>
-                  <span className="text-[#111111] dark:text-white font-semibold">Pomodoro Focus</span>
+                  <span>Pomodoro Timer</span>
                 </div>
 
                 <div className="hidden sm:flex items-center gap-2 text-[12px] text-[#666666] dark:text-zinc-400">
-                  <span className="text-[#16a34a] dark:text-[#63d94e] font-medium">● Saved to IndexedDB</span>
+                  <span className="text-[#16a34a] dark:text-[#63d94e] font-medium">Saved in browser</span>
                 </div>
               </div>
 
@@ -356,7 +216,7 @@ export default function LandingPage() {
                     <div className="relative aspect-video rounded-[16px] bg-[#0f0f12] overflow-hidden flex flex-col justify-between p-4 sm:p-5">
                       <div className="flex items-center justify-between z-10">
                         <span className="px-2.5 py-1 rounded-full bg-white/10 text-white/90 text-[11px] font-medium backdrop-blur-md">
-                          Theater Mode • Sidebar Hidden
+                          Theater Mode
                         </span>
                         <span className="px-2.5 py-1 rounded-full bg-black/60 text-white/90 font-mono text-[11px]">
                           {formatTime(progressSec)} / 48:10
@@ -407,11 +267,11 @@ export default function LandingPage() {
                           Lecture 04: Closures &amp; Lexical Scope in JavaScript
                         </div>
                         <div className="text-[13px] text-[#6f6f6f] dark:text-zinc-400">
-                          Auto-resumes where you left off • Press Space to play/pause
+                          Auto-resumes where you left off
                         </div>
                       </div>
-                      <span className="px-3 py-1 rounded-full bg-[#f2f2f2] dark:bg-zinc-800 text-[#16a34a] dark:text-[#63d94e] text-[12px] font-medium">
-                        ✓ Mark Complete
+                      <span className="px-3 py-1 rounded-full bg-[#f2f2f2] dark:bg-zinc-800 text-[#111111] dark:text-zinc-200 text-[12px] font-medium">
+                        Completed
                       </span>
                     </div>
                   </div>
@@ -420,9 +280,8 @@ export default function LandingPage() {
                   <div className="lg:col-span-5 flex flex-col justify-between rounded-[16px] bg-[#f8f8f8] dark:bg-zinc-900/70 p-4 border border-[#efefef] dark:border-zinc-800 space-y-3">
                     <div className="space-y-2.5">
                       <div className="flex items-center justify-between pb-2 border-b border-[#e5e5e5] dark:border-zinc-800">
-                        <span className="text-[13px] font-semibold tracking-[-0.01em] text-[#111111] dark:text-white flex items-center gap-1.5">
-                          <FileText size={14} />
-                          <span>Lesson Notes (2)</span>
+                        <span className="text-[13px] font-semibold tracking-[-0.01em] text-[#111111] dark:text-white">
+                          Lesson Notes (2)
                         </span>
                         <span className="text-[11px] text-[#6f6f6f] dark:text-zinc-400 font-mono">
                           Enter to save
@@ -438,7 +297,6 @@ export default function LandingPage() {
                         }`}
                       >
                         <div className="flex items-center gap-1.5 text-[12px] font-mono font-medium text-[#111111] dark:text-white">
-                          <Clock size={11} />
                           <span className="underline">04:12</span>
                           <span className="text-[#6f6f6f] font-sans">• Click timecode to seek video</span>
                         </div>
@@ -456,12 +314,11 @@ export default function LandingPage() {
                         }`}
                       >
                         <div className="flex items-center gap-1.5 text-[12px] font-mono font-medium text-[#111111] dark:text-white">
-                          <Clock size={11} />
                           <span className="underline">09:45</span>
                           <span className="text-[#6f6f6f] font-sans">• Practical use case</span>
                         </div>
                         <p className="mt-1 text-[13px] text-[#555555] dark:text-zinc-400 leading-[1.45]">
-                          Used for data privacy, factory functions, and memoization.
+                          Used for data encapsulation, factory functions, and memoization.
                         </p>
                       </div>
                     </div>
@@ -472,7 +329,6 @@ export default function LandingPage() {
                         onClick={() => handleLaunchApp('demo_export')}
                         className="w-full h-10 rounded-full bg-[#111111] dark:bg-white text-white dark:text-[#111111] text-[13px] font-medium flex items-center justify-center gap-2 hover:opacity-90 transition cursor-pointer"
                       >
-                        <Download size={14} />
                         <span>Download Course Notes (.docx)</span>
                       </button>
                     </div>
@@ -482,23 +338,23 @@ export default function LandingPage() {
                 /* Grounded Comparison: What Standard YouTube Shows vs Foclyra */
                 <div className="p-8 sm:p-12 text-center space-y-6">
                   <h3 className="text-[22px] leading-[1.2] font-semibold tracking-[-0.02em] text-[#111111] dark:text-white">
-                    What gets in your way on a normal YouTube tab
+                    What gets in your way on a standard YouTube tab
                   </h3>
                   <div className="max-w-2xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-3 text-left">
                     <div className="p-4 rounded-[16px] bg-[#f4f4f4] dark:bg-zinc-900 space-y-1">
-                      <div className="text-[14px] font-semibold text-[#f4525f]">Recommended Sidebar</div>
+                      <div className="text-[14px] font-semibold text-[#111111] dark:text-white">Recommended Sidebar</div>
                       <p className="text-[13px] text-[#666666] dark:text-zinc-400 leading-[1.5]">
-                        Unrelated viral videos and Shorts sit right next to your lecture player.
+                        Unrelated videos and Shorts sit right next to your lecture player.
                       </p>
                     </div>
                     <div className="p-4 rounded-[16px] bg-[#f4f4f4] dark:bg-zinc-900 space-y-1">
-                      <div className="text-[14px] font-semibold text-[#f4525f]">No Course Progress</div>
+                      <div className="text-[14px] font-semibold text-[#111111] dark:text-white">No Course Progress</div>
                       <p className="text-[13px] text-[#666666] dark:text-zinc-400 leading-[1.5]">
-                        Hard to track which lectures in a 50-video playlist you have actually finished.
+                        No clear checklist showing how many lectures in a 50-video playlist you have completed.
                       </p>
                     </div>
                     <div className="p-4 rounded-[16px] bg-[#f4f4f4] dark:bg-zinc-900 space-y-1">
-                      <div className="text-[14px] font-semibold text-[#f4525f]">Separate Note Apps</div>
+                      <div className="text-[14px] font-semibold text-[#111111] dark:text-white">Separate Note Apps</div>
                       <p className="text-[13px] text-[#666666] dark:text-zinc-400 leading-[1.5]">
                         Switching windows to write notes without clickable video timestamps.
                       </p>
@@ -509,8 +365,7 @@ export default function LandingPage() {
                     onClick={() => setViewMode('foclyra')}
                     className="inline-flex h-10 items-center gap-2 rounded-full bg-[#111111] dark:bg-white px-5 text-[14px] font-medium text-white dark:text-[#111111] cursor-pointer"
                   >
-                    <span>See Foclyra Watch View</span>
-                    <ArrowRight size={14} />
+                    <span>Switch back to Foclyra Workspace</span>
                   </button>
                 </div>
               )}
@@ -520,155 +375,108 @@ export default function LandingPage() {
       </section>
 
       {/* =========================================================================
-          4. Editorial Two-Tone Section — Grounded in Video + Timestamped Notes
+          4. Features Bento Grid — 4 Real Capabilities, Zero Fake Icons
          ========================================================================= */}
-      <section className="px-6 pt-[140px] sm:pt-[168px]">
-        <div className="mx-auto max-w-[1160px] text-center">
-          <div className="text-[15px] text-[#6f6f6f] dark:text-zinc-400">Side-by-Side Study</div>
-          <h2 className="mt-2.5 mx-auto max-w-[820px] text-[clamp(34px,4.8vw,64px)] leading-[1.14] font-semibold tracking-[-0.035em] text-[#111111] dark:text-white">
-            Watch{' '}
-            <span className="whitespace-nowrap">
-              <InlineTile bg="#FF0000" color="#ffffff" rotate={-5}>
-                <Play size={18} className="fill-current" />
-              </InlineTile>{' '}
-              lectures.
-            </span>
-            <br />
-            <span className="text-[#8d8d8d] dark:text-zinc-500">
-              Write{' '}
-              <span className="whitespace-nowrap">
-                <InlineTile bg="#111111" color="#ffffff" rotate={5}>
-                  <FileText size={18} />
-                </InlineTile>{' '}
-                notes.
-              </span>
-            </span>
-          </h2>
-          <p className="mx-auto mt-6 max-w-[540px] text-[18px] leading-[1.55] text-pretty text-[#666666] dark:text-zinc-400">
-            Your video player, playlist syllabus, and note editor live in one tab. Every note automatically saves the current video timestamp so you can jump back to any explanation in one click.
-          </p>
-        </div>
-      </section>
-
-      {/* =========================================================================
-          5. Bento Grid — 4 Real Features From the Codebase
-         ========================================================================= */}
-      <section id="features" className="px-6 pt-[140px] sm:pt-[168px]">
-        <div className="mx-auto max-w-[1240px]">
-          <div className="text-center">
-            <div className="text-[15px] text-[#6f6f6f] dark:text-zinc-400">What’s Inside</div>
-            <h2 className="mt-2.5 text-[clamp(34px,4.8vw,64px)] leading-[1.14] font-semibold tracking-[-0.035em] text-[#111111] dark:text-white">
-              Built for{' '}
-              <span className="whitespace-nowrap">
-                <InlineTile bg="#111111" color="#ffffff" rotate={-6}>
-                  <Layers size={18} />
-                </InlineTile>{' '}
-                playlists.
-              </span>
-              <br />
-              <span className="text-[#8d8d8d] dark:text-zinc-500">
-                Designed for{' '}
-                <span className="whitespace-nowrap">
-                  <InlineTile bg="#F5C542" color="#111111" rotate={5}>
-                    <BookOpen size={18} />
-                  </InlineTile>{' '}
-                  completion.
-                </span>
-              </span>
+      <section id="features" className="px-6 pt-[128px] sm:pt-[152px]">
+        <div className="mx-auto max-w-[1200px]">
+          <div className="text-center max-w-[960px] mx-auto">
+            <div className="text-[14px] font-medium text-[#6f6f6f] dark:text-zinc-400">Features</div>
+            <h2 className="mt-2 text-[clamp(30px,3.8vw,46px)] leading-[1.12] font-semibold tracking-[-0.035em] text-[#111111] dark:text-white">
+              Everything you need to finish a playlist.
             </h2>
+            <p className="mt-4 text-[17px] leading-[1.6] text-[#666666] dark:text-zinc-400">
+              Your video player, lecture checklist, timestamped notes, and focus timer in one tab.
+            </p>
           </div>
 
-          <div className="mt-14 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-12">
-            {/* Card 1: Clean Playlist & Video Importer (7 cols) */}
-            <div className="lg:col-span-7 rounded-[28px] bg-[#f4f4f4] dark:bg-zinc-900/90 p-7 sm:p-9 flex flex-col justify-between min-h-[290px]">
-              <div className="space-y-2.5 max-w-md">
+          <div className="mt-12 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-12">
+            {/* Card 1: Clean Playlist & Video Player (7 cols) */}
+            <div className="lg:col-span-7 rounded-[28px] bg-[#f4f4f4] dark:bg-zinc-900/90 p-7 sm:p-9 flex flex-col justify-between min-h-[280px]">
+              <div className="space-y-2.5 max-w-lg">
                 <h3 className="text-[22px] leading-[1.2] font-semibold tracking-[-0.02em] text-[#111111] dark:text-white">
-                  Distraction-free playlist &amp; video player.
+                  Distraction-free playlist player
                 </h3>
-                <p className="text-[15px] leading-[1.55] text-[#666666] dark:text-zinc-400 text-pretty">
+                <p className="text-[15px] leading-[1.6] text-[#666666] dark:text-zinc-400">
                   Import any public or unlisted YouTube playlist (up to 200 videos) or single tutorial. Watch in Theater Mode with chapter markers, playback speed controls, and auto-saved resume timestamps—without YouTube’s home feed or comment section.
                 </p>
               </div>
 
               <div className="mt-8 flex flex-wrap items-center gap-2">
-                <span className="px-3.5 py-1.5 rounded-full bg-white dark:bg-zinc-800 text-[13px] font-medium text-[#111111] dark:text-zinc-200 shadow-2xs">
-                  ✓ No sidebar recommendations
+                <span className="px-3.5 py-1.5 rounded-full bg-white dark:bg-zinc-800 text-[13px] font-medium text-[#111111] dark:text-zinc-200">
+                  No sidebar recommendations
                 </span>
-                <span className="px-3.5 py-1.5 rounded-full bg-white dark:bg-zinc-800 text-[13px] font-medium text-[#111111] dark:text-zinc-200 shadow-2xs">
-                  ✓ No comment section
+                <span className="px-3.5 py-1.5 rounded-full bg-white dark:bg-zinc-800 text-[13px] font-medium text-[#111111] dark:text-zinc-200">
+                  No comments feed
                 </span>
-                <span className="px-3.5 py-1.5 rounded-full bg-white dark:bg-zinc-800 text-[13px] font-medium text-[#111111] dark:text-zinc-200 shadow-2xs">
-                  ✓ Auto-resumes playback
+                <span className="px-3.5 py-1.5 rounded-full bg-white dark:bg-zinc-800 text-[13px] font-medium text-[#111111] dark:text-zinc-200">
+                  Auto-resumes playback
                 </span>
               </div>
             </div>
 
             {/* Card 2: Timestamped Notes (5 cols) */}
-            <div className="lg:col-span-5 rounded-[28px] bg-[#f4f4f4] dark:bg-zinc-900/90 p-7 sm:p-9 flex flex-col justify-between min-h-[290px]">
+            <div className="lg:col-span-5 rounded-[28px] bg-[#f4f4f4] dark:bg-zinc-900/90 p-7 sm:p-9 flex flex-col justify-between min-h-[280px]">
               <div className="space-y-2.5">
                 <h3 className="text-[22px] leading-[1.2] font-semibold tracking-[-0.02em] text-[#111111] dark:text-white">
-                  Timestamped lecture notes.
+                  Timestamped lecture notes
                 </h3>
-                <p className="text-[15px] leading-[1.55] text-[#666666] dark:text-zinc-400 text-pretty">
-                  Every note you save records the exact video timecode. Click any timestamp later to seek the video directly to that point.
+                <p className="text-[15px] leading-[1.6] text-[#666666] dark:text-zinc-400">
+                  Every note you save records the exact video timecode. Click any timestamp later to seek the video directly to that explanation.
                 </p>
               </div>
 
-              <div className="mt-6 rounded-[18px] bg-white dark:bg-zinc-800 p-4 shadow-2xs">
+              <div className="mt-6 rounded-[18px] bg-white dark:bg-zinc-800 p-4">
                 <div className="flex items-center justify-between text-[12px] font-mono text-[#111111] dark:text-white font-medium">
-                  <span>[12:40] Event Loop &amp; Microtasks</span>
-                  <span className="text-[#16a34a] dark:text-[#63d94e]">Seek video ↗</span>
+                  <span>04:12 • Event Loop &amp; Microtasks</span>
+                  <span className="text-[#16a34a] dark:text-[#63d94e]">Jump to 04:12</span>
                 </div>
-                <p className="mt-1 text-[13px] text-[#666666] dark:text-zinc-400">
+                <p className="mt-1.5 text-[13px] text-[#666666] dark:text-zinc-400">
                   Promise callbacks run in the microtask queue before the next macrotask.
                 </p>
               </div>
             </div>
 
             {/* Card 3: Word (.docx) Export (5 cols) */}
-            <div className="lg:col-span-5 rounded-[28px] bg-[#f4f4f4] dark:bg-zinc-900/90 p-7 sm:p-9 flex flex-col justify-between min-h-[290px]">
+            <div className="lg:col-span-5 rounded-[28px] bg-[#f4f4f4] dark:bg-zinc-900/90 p-7 sm:p-9 flex flex-col justify-between min-h-[280px]">
               <div className="space-y-2.5">
                 <h3 className="text-[22px] leading-[1.2] font-semibold tracking-[-0.02em] text-[#111111] dark:text-white">
-                  Course-wise Word (.docx) export.
+                  Course-wise Word (.docx) export
                 </h3>
-                <p className="text-[15px] leading-[1.55] text-[#666666] dark:text-zinc-400 text-pretty">
-                  Download notes for a single course or export all your notes at once as a formatted Microsoft Word (.docx) file organized by lecture and timestamp.
+                <p className="text-[15px] leading-[1.6] text-[#666666] dark:text-zinc-400">
+                  Download notes for a single course or export all your notes at once as a formatted Microsoft Word (.docx) document organized by lecture and timestamp.
                 </p>
               </div>
 
-              <div className="mt-6 flex items-center justify-between rounded-[18px] bg-white dark:bg-zinc-800 px-4 py-3.5 shadow-2xs">
-                <div className="flex items-center gap-2.5">
-                  <FileText size={16} className="text-[#111111] dark:text-white" />
-                  <span className="text-[13px] font-medium text-[#111111] dark:text-white">
-                    JavaScript_Notes.docx
-                  </span>
-                </div>
-                <span className="font-handwriting text-[18px] text-[#0284c7] dark:text-sky-400 font-bold">
-                  1-click download
+              <div className="mt-6 flex items-center justify-between rounded-[18px] bg-white dark:bg-zinc-800 px-4 py-3.5">
+                <span className="text-[13px] font-medium text-[#111111] dark:text-white">
+                  JavaScript_Masterclass_Notes.docx
+                </span>
+                <span className="text-[12px] font-medium text-[#6f6f6f] dark:text-zinc-400">
+                  .docx file
                 </span>
               </div>
             </div>
 
             {/* Card 4: Pomodoro, Streak & Cloud Sync (7 cols) */}
-            <div className="lg:col-span-7 rounded-[28px] bg-[#f4f4f4] dark:bg-zinc-900/90 p-7 sm:p-9 flex flex-col justify-between min-h-[290px]">
-              <div className="space-y-2.5 max-w-md">
+            <div className="lg:col-span-7 rounded-[28px] bg-[#f4f4f4] dark:bg-zinc-900/90 p-7 sm:p-9 flex flex-col justify-between min-h-[280px]">
+              <div className="space-y-2.5 max-w-lg">
                 <h3 className="text-[22px] leading-[1.2] font-semibold tracking-[-0.02em] text-[#111111] dark:text-white">
-                  Pomodoro timer, study streaks &amp; cloud sync.
+                  Pomodoro timer, study streaks &amp; cloud sync
                 </h3>
-                <p className="text-[15px] leading-[1.55] text-[#666666] dark:text-zinc-400 text-pretty">
-                  Run customizable Pomodoro focus/break timers while you watch, track your daily study streak, and keep data safe in local IndexedDB—with optional Supabase cloud sync and JSON backups.
+                <p className="text-[15px] leading-[1.6] text-[#666666] dark:text-zinc-400">
+                  Run customizable Pomodoro focus/break sessions while you watch, track your daily study streak, and keep your data stored locally in IndexedDB—with optional Supabase cloud sync and JSON backups.
                 </p>
               </div>
 
               <div className="mt-8 flex flex-wrap items-center gap-2">
-                <span className="px-3.5 py-1.5 rounded-full bg-white dark:bg-zinc-800 text-[13px] font-medium text-[#111111] dark:text-zinc-200 shadow-2xs">
-                  ⏱ Built-in Pomodoro timer
+                <span className="px-3.5 py-1.5 rounded-full bg-white dark:bg-zinc-800 text-[13px] font-medium text-[#111111] dark:text-zinc-200">
+                  Built-in Pomodoro timer
                 </span>
-                <span className="px-3.5 py-1.5 rounded-full bg-white dark:bg-zinc-800 text-[13px] font-medium text-[#111111] dark:text-zinc-200 shadow-2xs">
-                  🔥 Daily streak calendar
+                <span className="px-3.5 py-1.5 rounded-full bg-white dark:bg-zinc-800 text-[13px] font-medium text-[#111111] dark:text-zinc-200">
+                  Daily study streak
                 </span>
-                <span className="px-3.5 py-1.5 rounded-full bg-white dark:bg-zinc-800 text-[13px] font-medium text-[#111111] dark:text-zinc-200 shadow-2xs">
-                  ☁️ Supabase cloud sync
+                <span className="px-3.5 py-1.5 rounded-full bg-white dark:bg-zinc-800 text-[13px] font-medium text-[#111111] dark:text-zinc-200">
+                  Supabase cloud sync
                 </span>
               </div>
             </div>
@@ -677,34 +485,33 @@ export default function LandingPage() {
       </section>
 
       {/* =========================================================================
-          6. Workflow Section — 3 Factual Steps
+          5. How It Works — 3 Clear Steps
          ========================================================================= */}
-      <section id="workflow" className="px-6 pt-[140px] sm:pt-[168px]">
-        <div className="mx-auto max-w-[1240px]">
-          <div className="text-center">
-            <div className="text-[15px] text-[#6f6f6f] dark:text-zinc-400">How It Works</div>
-            <h2 className="mt-2.5 text-[clamp(34px,4.8vw,64px)] leading-[1.14] font-semibold tracking-[-0.035em] text-[#111111] dark:text-white">
-              Paste a link.{' '}
-              <span className="text-[#8d8d8d] dark:text-zinc-500">Start studying.</span>
+      <section id="workflow" className="px-6 pt-[128px] sm:pt-[152px]">
+        <div className="mx-auto max-w-[1200px]">
+          <div className="text-center max-w-[960px] mx-auto">
+            <div className="text-[14px] font-medium text-[#6f6f6f] dark:text-zinc-400">How It Works</div>
+            <h2 className="mt-2 text-[clamp(30px,3.8vw,46px)] leading-[1.12] font-semibold tracking-[-0.035em] text-[#111111] dark:text-white">
+              Start studying in three steps.
             </h2>
           </div>
 
-          <div className="mt-14 grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-3">
             {[
               {
                 step: '01',
-                title: 'Import a YouTube playlist or video',
-                desc: 'Paste any YouTube URL on the dashboard—or pick one of the built-in starter courses to test-drive immediately.'
+                title: 'Paste a YouTube link',
+                desc: 'Paste any public or unlisted YouTube playlist or video URL—or pick one of the starter courses on the dashboard.'
               },
               {
                 step: '02',
-                title: 'Watch & capture timestamped notes',
-                desc: 'Study in a clean layout with Theater Mode, a floating Pomodoro timer, and notes tied to exact video seconds.'
+                title: 'Watch & write timestamped notes',
+                desc: 'Study in Theater Mode with a built-in Pomodoro timer and save notes tied to the exact video second.'
               },
               {
                 step: '03',
                 title: 'Track progress & export to Word',
-                desc: 'Mark lectures complete, build your daily streak, and download your course notes as a .docx file anytime.'
+                desc: 'Mark lectures complete as you go and download your notes as a formatted Word (.docx) document anytime.'
               }
             ].map((item) => (
               <div
@@ -716,7 +523,7 @@ export default function LandingPage() {
                   <h3 className="text-[20px] leading-[1.25] font-semibold tracking-[-0.02em] text-[#111111] dark:text-white">
                     {item.title}
                   </h3>
-                  <p className="text-[15px] leading-[1.55] text-[#666666] dark:text-zinc-400">
+                  <p className="text-[15px] leading-[1.6] text-[#666666] dark:text-zinc-400">
                     {item.desc}
                   </p>
                 </div>
@@ -727,18 +534,18 @@ export default function LandingPage() {
       </section>
 
       {/* =========================================================================
-          7. FAQ Section
+          6. FAQ Section
          ========================================================================= */}
-      <section id="faq" className="px-6 pt-[140px] sm:pt-[168px]">
+      <section id="faq" className="px-6 pt-[128px] sm:pt-[152px]">
         <div className="mx-auto max-w-[760px]">
           <div className="text-center">
-            <div className="text-[15px] text-[#6f6f6f] dark:text-zinc-400">FAQ</div>
-            <h2 className="mt-2.5 text-[clamp(34px,4.8vw,60px)] leading-[1.14] font-semibold tracking-[-0.035em] text-[#111111] dark:text-white">
-              Questions, <span className="text-[#8d8d8d] dark:text-zinc-500">answered.</span>
+            <div className="text-[14px] font-medium text-[#6f6f6f] dark:text-zinc-400">FAQ</div>
+            <h2 className="mt-2 text-[clamp(30px,3.8vw,46px)] leading-[1.12] font-semibold tracking-[-0.035em] text-[#111111] dark:text-white">
+              Frequently asked questions
             </h2>
           </div>
 
-          <div className="mt-12 divide-y divide-[#e5e5e5] dark:divide-zinc-800 border-y border-[#e5e5e5] dark:border-zinc-800">
+          <div className="mt-10 divide-y divide-[#e5e5e5] dark:divide-zinc-800 border-y border-[#e5e5e5] dark:border-zinc-800">
             {FAQS.map((faq, idx) => {
               const isOpen = activeFaq === idx;
               return (
@@ -769,43 +576,27 @@ export default function LandingPage() {
       </section>
 
       {/* =========================================================================
-          8. Final CTA Section
+          7. Final CTA Section
          ========================================================================= */}
-      <section aria-labelledby="cta-h" className="px-6 pt-[140px] sm:pt-[168px] pb-20">
-        <div className="mx-auto max-w-[1240px] overflow-hidden rounded-[32px] bg-[#f4f4f4] dark:bg-zinc-900/90 px-6 pt-20 pb-20 sm:pt-24 sm:pb-[88px] text-center">
+      <section aria-labelledby="cta-h" className="px-6 pt-[128px] sm:pt-[152px] pb-20">
+        <div className="mx-auto max-w-[1200px] overflow-hidden rounded-[32px] bg-[#f4f4f4] dark:bg-zinc-900/90 px-6 py-20 sm:py-24 text-center">
           <h2
             id="cta-h"
-            className="mx-auto max-w-[820px] text-[clamp(38px,5.6vw,76px)] leading-[1.12] font-semibold tracking-[-0.04em] text-balance text-[#111111] dark:text-white"
+            className="mx-auto max-w-[960px] text-[clamp(30px,3.8vw,46px)] leading-[1.12] font-semibold tracking-[-0.035em] text-[#111111] dark:text-white"
           >
-            Stop losing{' '}
-            <span className="whitespace-nowrap">
-              <InlineTile bg="#111111" color="#ffffff" rotate={-6}>
-                <ShieldCheck size={22} />
-              </InlineTile>{' '}
-              focus.
-            </span>{' '}
-            <span className="text-[#8d8d8d] dark:text-zinc-500">
-              Finish your{' '}
-              <span className="whitespace-nowrap">
-                <InlineTile bg="#63d94e" color="#111111" rotate={5}>
-                  <CheckCircle2 size={22} />
-                </InlineTile>{' '}
-                playlist.
-              </span>
-            </span>
+            Ready to study your next playlist?
           </h2>
 
-          <p className="mx-auto mt-6 max-w-[520px] text-[18px] leading-[1.55] text-[#666666] dark:text-zinc-400">
-            Paste a YouTube playlist or pick a starter course on the dashboard—no login required to try your first course.
+          <p className="mx-auto mt-4 max-w-[780px] text-[17px] leading-[1.6] text-[#666666] dark:text-zinc-400">
+            Paste any YouTube playlist URL or try a starter course on the dashboard—no login required for your first course.
           </p>
 
           <div className="mt-8 flex flex-col items-center justify-center">
             <button
               type="button"
               onClick={() => handleLaunchApp('footer_banner')}
-              className="flex h-[52px] items-center gap-[9px] rounded-full bg-[#111111] dark:bg-white px-[28px] text-[16px] font-medium text-white dark:text-[#111111] hover:bg-[#333333] dark:hover:bg-zinc-200 transition active:scale-[.98] cursor-pointer shadow-sm"
+              className="flex h-[52px] items-center gap-2 rounded-full bg-[#111111] dark:bg-white px-7 text-[16px] font-medium text-white dark:text-[#111111] hover:bg-[#333333] dark:hover:bg-zinc-200 transition active:scale-[.98] cursor-pointer shadow-sm"
             >
-              <Play size={15} className="fill-current" />
               <span>Open Foclyra Studio</span>
             </button>
             <span className="mt-4 text-[13px] text-[#6f6f6f] dark:text-zinc-500">
@@ -816,13 +607,13 @@ export default function LandingPage() {
       </section>
 
       {/* =========================================================================
-          9. Footer
+          8. Footer
          ========================================================================= */}
       <footer className="px-6 py-10 border-t border-[#efefef] dark:border-zinc-800/70">
-        <div className="mx-auto max-w-[1240px] flex flex-col sm:flex-row items-center justify-between gap-4 text-[13px] text-[#6f6f6f] dark:text-zinc-400">
+        <div className="mx-auto max-w-[1200px] flex flex-col sm:flex-row items-center justify-between gap-4 text-[13px] text-[#6f6f6f] dark:text-zinc-400">
           <div className="flex items-center gap-2">
             <img src="/logo.svg" alt="Foclyra" className="w-5 h-5" />
-            <span className="font-semibold text-[#111111] dark:text-white">foclyra</span>
+            <span className="font-semibold text-[#111111] dark:text-white">Foclyra</span>
             <span>— Built by Sameed Siddiqui</span>
           </div>
 
@@ -831,10 +622,9 @@ export default function LandingPage() {
               href="https://github.com/ssiddiquiii/foclyra"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-[#111111] dark:hover:text-white transition flex items-center gap-1"
+              className="hover:text-[#111111] dark:hover:text-white transition"
             >
-              <span>GitHub</span>
-              <ExternalLink size={12} />
+              GitHub
             </a>
             <button
               type="button"
