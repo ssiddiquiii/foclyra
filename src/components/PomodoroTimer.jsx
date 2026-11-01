@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { 
-  Play, 
-  Pause, 
-  RotateCcw, 
-  Flame, 
-  Coffee, 
-  X, 
-  Volume2, 
-  VolumeX, 
-  Edit3, 
-  Check, 
+import {
+  Play,
+  Pause,
+  RotateCcw,
+  Flame,
+  Coffee,
+  X,
+  Volume2,
+  VolumeX,
+  Edit3,
+  Check,
   Plus
 } from 'lucide-react';
 import { useUIStore } from '../hooks/useUIStore';
@@ -36,18 +36,18 @@ export default function PomodoroTimer() {
   const { pauseActivePlayer } = useUIStore();
 
   // Durations in minutes
-  const [focusMins, setFocusMins] = useState(() => 
+  const [focusMins, setFocusMins] = useState(() =>
     parseInt(localStorage.getItem(STORAGE_KEYS.CUSTOM_FOCUS) || '25', 10)
   );
-  const [breakMins, setBreakMins] = useState(() => 
+  const [breakMins, setBreakMins] = useState(() =>
     parseInt(localStorage.getItem(STORAGE_KEYS.CUSTOM_BREAK) || '5', 10)
   );
 
-  const [mode, setMode] = useState(() => 
+  const [mode, setMode] = useState(() =>
     localStorage.getItem(STORAGE_KEYS.MODE) || 'focus'
   ); // 'focus' | 'break'
 
-  const [isRunning, setIsRunning] = useState(() => 
+  const [isRunning, setIsRunning] = useState(() =>
     localStorage.getItem(STORAGE_KEYS.RUNNING) === 'true'
   );
 
@@ -56,7 +56,7 @@ export default function PomodoroTimer() {
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [strictLockActive, setStrictLockActive] = useState(false);
 
-  const [sessionsCompleted, setSessionsCompleted] = useState(() => 
+  const [sessionsCompleted, setSessionsCompleted] = useState(() =>
     parseInt(localStorage.getItem(STORAGE_KEYS.SESSIONS) || '0', 10)
   );
 
@@ -104,7 +104,7 @@ export default function PomodoroTimer() {
         osc.start(ctx.currentTime + i * 0.12);
         osc.stop(ctx.currentTime + i * 0.12 + 0.65);
       });
-    } catch {}
+    } catch { }
   }, [soundEnabled]);
 
   // Main countdown interval
@@ -139,13 +139,13 @@ export default function PomodoroTimer() {
   useEffect(() => {
     if (isRunning) {
       const icon = mode === 'focus' ? '🎯 Focus' : '☕ Break';
-      document.title = `(${formatTime(timeLeft)}) ${icon} | Foclyra`;
+      document.title = `(${formatTime(timeLeft)}) ${icon} | Foclyra Studio`;
     } else {
-      document.title = 'Foclyra — Distraction-Free Study Studio';
+      document.title = 'Foclyra Studio';
     }
 
     return () => {
-      document.title = 'Foclyra — Distraction-Free Study Studio';
+      document.title = 'Foclyra Studio';
     };
   }, [isRunning, timeLeft, mode]);
 
@@ -325,13 +325,12 @@ export default function PomodoroTimer() {
           <button
             onClick={() => setIsExpanded(true)}
             aria-label={`Open Pomodoro timer, ${formatTime(timeLeft)} remaining in ${mode} mode`}
-            className={`flex items-center gap-2.5 px-3.5 py-2 rounded-full font-bold text-xs shadow-2xl border backdrop-blur-md transition-all duration-300 hover:scale-105 cursor-pointer ${
-              isRunning
+            className={`flex items-center gap-2.5 px-3.5 py-2 rounded-full font-bold text-xs shadow-2xl border backdrop-blur-md transition-all duration-300 hover:scale-105 cursor-pointer ${isRunning
                 ? mode === 'focus'
                   ? 'bg-primary/25 border-primary/60 text-white shadow-primary/20 animate-pulse'
                   : 'bg-emerald-500/25 border-emerald-500/60 text-emerald-300 shadow-emerald-500/20 animate-pulse'
                 : 'bg-card border-border text-foreground hover:bg-muted hover:border-border/80'
-            }`}
+              }`}
           >
             {mode === 'focus' ? (
               <Flame size={15} className="text-primary fill-primary" />
@@ -427,9 +426,8 @@ export default function PomodoroTimer() {
                     setIsRunning(false);
                     setTimeLeft(focusMins * 60);
                   }}
-                  className={`py-1.5 rounded-lg transition cursor-pointer text-center ${
-                    mode === 'focus' ? 'bg-primary text-white shadow' : 'text-muted-foreground hover:text-foreground'
-                  }`}
+                  className={`py-1.5 rounded-lg transition cursor-pointer text-center ${mode === 'focus' ? 'bg-primary text-white shadow' : 'text-muted-foreground hover:text-foreground'
+                    }`}
                 >
                   Focus ({focusMins}m)
                 </button>
@@ -440,9 +438,8 @@ export default function PomodoroTimer() {
                     setIsRunning(false);
                     setTimeLeft(breakMins * 60);
                   }}
-                  className={`py-1.5 rounded-lg transition cursor-pointer text-center ${
-                    mode === 'break' ? 'bg-emerald-600 text-white shadow' : 'text-muted-foreground hover:text-foreground'
-                  }`}
+                  className={`py-1.5 rounded-lg transition cursor-pointer text-center ${mode === 'break' ? 'bg-emerald-600 text-white shadow' : 'text-muted-foreground hover:text-foreground'
+                    }`}
                 >
                   Break ({breakMins}m)
                 </button>
@@ -458,9 +455,8 @@ export default function PomodoroTimer() {
               {/* Smooth Progress Bar */}
               <div className="w-full bg-muted h-1.5 rounded-full overflow-hidden border border-border">
                 <div
-                  className={`h-full transition-all duration-300 ${
-                    mode === 'focus' ? 'bg-gradient-to-r from-primary to-accent' : 'bg-emerald-400'
-                  }`}
+                  className={`h-full transition-all duration-300 ${mode === 'focus' ? 'bg-gradient-to-r from-primary to-accent' : 'bg-emerald-400'
+                    }`}
                   style={{ width: `${progressPercent}%` }}
                 />
               </div>
@@ -470,13 +466,12 @@ export default function PomodoroTimer() {
             <div className="flex items-center justify-center gap-2.5">
               <button
                 onClick={toggleStartPause}
-                className={`flex-1 py-2.5 rounded-xl font-bold text-xs transition duration-200 active:scale-95 flex items-center justify-center gap-2 cursor-pointer shadow-lg ${
-                  isRunning
+                className={`flex-1 py-2.5 rounded-xl font-bold text-xs transition duration-200 active:scale-95 flex items-center justify-center gap-2 cursor-pointer shadow-lg ${isRunning
                     ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30'
                     : mode === 'focus'
-                    ? 'bg-primary text-white hover:bg-primary/90 shadow-primary/30'
-                    : 'bg-emerald-600 text-white hover:bg-emerald-500 shadow-emerald-600/30'
-                }`}
+                      ? 'bg-primary text-white hover:bg-primary/90 shadow-primary/30'
+                      : 'bg-emerald-600 text-white hover:bg-emerald-500 shadow-emerald-600/30'
+                  }`}
               >
                 {isRunning ? <Pause size={14} fill="currentColor" /> : <Play size={14} fill="currentColor" />}
                 <span>{isRunning ? 'Pause' : mode === 'focus' ? 'Start Focus' : 'Start Break'}</span>
