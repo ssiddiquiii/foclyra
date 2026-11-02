@@ -126,3 +126,4 @@ export default function EducationalPolicyModal({ isOpen, onClose, data = {} }) {
     </Dialog>
   );
 }
+
