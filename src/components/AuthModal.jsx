@@ -1,3 +1,4 @@
+import { migrateGuestPlaylistToAccount } from '../services/cloudSyncService';
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Sparkles, Cloud, ShieldCheck, Mail, ArrowRight, Lock, CheckCircle2, AlertCircle, Check, User } from 'lucide-react';

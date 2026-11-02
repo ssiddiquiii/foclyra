@@ -73,6 +73,17 @@ export function removeGuestImport(playlistId) {
 }
 
 /**
+ * Clears all guest import history from browser storage (e.g. after successful migration to account).
+ */
+export function clearGuestImportHistory() {
+  try {
+    localStorage.removeItem(GUEST_IMPORTS_STORAGE_KEY);
+  } catch (err) {
+    console.warn('Failed to clear guest import history from localStorage:', err);
+  }
+}
+
+/**
  * Validates whether the user (guest or registered) is allowed to import this playlist.
  * @param {object} params
  * @param {object|null} params.user Current Supabase user (null for guest)

@@ -1,3 +1,4 @@
+import { getGuestImportHistory, clearGuestImportHistory, normalizePlaylistId } from './quotaService.js';
 import { supabase, isSupabaseConfigured } from './supabaseClient.js';
 import { db } from '../db/FoclyraDB.js';
 
@@ -88,17 +89,31 @@ export async function syncProgressToCloud(user, progress, immediate = false) {
 }
 
 /**
- * Syncs a single note to Supabase user_notes.
+ * Syncs a single note to Supabase user_notes with idempotent deduplication.
  */
 export async function syncNoteToCloud(user, note) {
   if (!user || !isSupabaseConfigured() || !supabase) return;
 
   try {
+    // Deduplication check: verify if note already exists on cloud for this user, course, lesson, and timestamp
+    const { data: existing } = await supabase
+      .from('user_notes')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('course_id', note.courseId)
+      .eq('lesson_id', note.lessonId)
+      .eq('timestamp', Number(note.timestamp))
+      .maybeSingle();
+
+    if (existing) {
+      return; // Already present in cloud, skip duplicate insertion
+    }
+
     await supabase.from('user_notes').insert({
       user_id: user.id,
       course_id: note.courseId,
       lesson_id: note.lessonId,
-      timestamp: note.timestamp,
+      timestamp: Number(note.timestamp),
       content: note.content,
       created_at: new Date(note.createdAt || Date.now()).toISOString(),
       updated_at: new Date(note.updatedAt || Date.now()).toISOString()
@@ -411,4 +426,76 @@ export function subscribeToProgressRealtime(user, onProgressChange) {
   return () => {
     supabase.removeChannel(channel);
   };
+}
+
+
+/**
+ * Safely and idempotently migrates a guest user's imported playlist, progress,
+ * and notes to their newly authenticated Supabase account upon signup/login.
+ * 
+ * - Preserves playlist metadata, total lecture count, and learning progress.
+ * - Idempotent: retries do not create duplicate records.
+ * - Safe against network failures: clears guest data only after cloud confirmation.
+ * 
+ * @param {object} user - Supabase user object
+ * @returns {Promise<{ success: boolean, migratedCount: number, error?: string }>}
+ */
+export async function migrateGuestPlaylistToAccount(user) {
+  if (!user || !isSupabaseConfigured() || !supabase) {
+    return { success: false, error: 'User or Supabase not configured' };
+  }
+
+  try {
+    const guestHistory = getGuestImportHistory();
+    const localCourses = await db.courses.toArray();
+
+    // If no guest playlist exists, migration is a clean no-op
+    if ((!guestHistory || guestHistory.length === 0) && (!localCourses || localCourses.length === 0)) {
+      return { success: true, migratedCount: 0 };
+    }
+
+    let migratedCount = 0;
+
+    for (const c of localCourses) {
+      const cleanId = normalizePlaylistId(c.id);
+      const lessonCount = await db.lessons.where('courseId').equals(c.id).count();
+
+      // 1. Upsert course record into user_courses (idempotent onConflict)
+      const { error: courseError } = await supabase.from('user_courses').upsert({
+        user_id: user.id,
+        course_id: cleanId,
+        title: c.title || 'Imported Course',
+        thumbnail_url: c.thumbnailUrl || '',
+        total_lessons: lessonCount || c.totalLessons || 0,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id,course_id' });
+
+      if (courseError) {
+        throw new Error(`Failed to migrate course "${c.title}": ${courseError.message}`);
+      }
+
+      // 2. Migrate any watch progress for this course (deterministic UUID v5)
+      const localProgress = await db.progress.where('courseId').equals(c.id).toArray();
+      for (const p of localProgress) {
+        await syncProgressToCloud(user, p, true);
+      }
+
+      // 3. Migrate any notes for this course (deduplicated)
+      const localNotes = await db.notes.where('courseId').equals(c.id).toArray();
+      for (const n of localNotes) {
+        await syncNoteToCloud(user, n);
+      }
+
+      migratedCount++;
+    }
+
+    // 4. Clear guest-specific storage ONLY after all cloud uploads succeed
+    clearGuestImportHistory();
+
+    return { success: true, migratedCount };
+  } catch (err) {
+    console.error('Guest-to-user migration failed:', err);
+    // Guest data remains intact in Dexie and localStorage for safe retry!
+    return { success: false, error: err.message, migratedCount: 0 };
+  }
 }

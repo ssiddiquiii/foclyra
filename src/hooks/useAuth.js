@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { supabase, isSupabaseConfigured } from '../services/supabaseClient';
-import { hydrateFromCloud, subscribeToProgressRealtime } from '../services/cloudSyncService';
+import { hydrateFromCloud, subscribeToProgressRealtime, migrateGuestPlaylistToAccount } from '../services/cloudSyncService';
 import { identifyUser, resetUser, trackEvent } from '../services/analytics';
 
 let progressUnsub = null;
@@ -47,6 +47,7 @@ export const useAuth = create((set, get) => ({
           email: session.user.email,
           provider: session.user.app_metadata?.provider || 'email'
         });
+        await migrateGuestPlaylistToAccount(session.user).catch(() => {});
         hydrateFromCloud(session.user).catch(() => {});
         setupRealtime(session.user);
       } else {
@@ -67,6 +68,7 @@ export const useAuth = create((set, get) => ({
           email: session.user.email,
           provider: session.user.app_metadata?.provider || 'email'
         });
+        await migrateGuestPlaylistToAccount(session.user).catch(() => {});
         hydrateFromCloud(session.user).catch(() => {});
         setupRealtime(session.user);
       } else {
