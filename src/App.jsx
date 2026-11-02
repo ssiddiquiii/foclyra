@@ -442,14 +442,14 @@ function AppContent() {
           </ErrorBoundary>
         </div>
 
-        {/* Minimal Studio Footer */}
+        {/* Minimal Studio Footer — Centered Shaded Foclyra Watermark Only */}
         {!location.pathname.includes('/lessons/') && (
-          <footer className="mt-10 py-5 border-t border-[#efefef] dark:border-zinc-800/70 text-[12px] text-[#6f6f6f] dark:text-zinc-400 w-full text-center px-3.5">
-            <span>© {new Date().getFullYear()} Foclyra Studio</span>
-            <span className="mx-2 text-[#d4d4d8] dark:text-zinc-700">·</span>
-            <span>
-              Built by <span className="font-medium text-[#111111] dark:text-white">Sameed Siddiqui</span>
-            </span>
+          <footer className="mt-10 mb-6 py-4 w-full flex items-center justify-center px-3.5 select-none overflow-hidden">
+            <div aria-hidden="true" className="flex items-center justify-center pointer-events-none select-none">
+              <span className="block text-[clamp(36px,7vw,58px)] leading-[0.85] font-semibold tracking-[-0.055em] bg-[linear-gradient(180deg,#e4e4e9_0%,#f2f2f5_62%,rgba(255,255,255,0.05)_100%)] dark:bg-[linear-gradient(180deg,#242429_0%,#16161a_62%,rgba(10,10,12,0.05)_100%)] bg-clip-text text-transparent">
+                foclyra
+              </span>
+            </div>
           </footer>
         )}
       </main>

@@ -25,14 +25,9 @@ import { REGISTERED_MAX_PLAYLISTS } from '../services/quotaService';
 import { toast } from '../components/ui/toast';
 
 /**
- * Settings & Console Management Component.
- * Supports:
- * - Account Profile, Cloud Sync & Security Sessions
- * - Danger Zone: Account Deletion (GDPR / Right to be Forgotten)
- * - YouTube API Key management (custom key support)
- * - Local backup JSON export and import
- * - Watch progress and notes clearing
- * - Community feedback reporting
+ * Editorial Settings & Preferences Console.
+ * Matches Landing Page and Studio Dashboard minimalist editorial aesthetic.
+ * @returns {React.JSX.Element}
  */
 export default function Settings() {
   const { openFeedbackModal, openAuthModal } = useUIStore();
@@ -137,7 +132,6 @@ export default function Settings() {
       } catch {
         throw new SyntaxError('Invalid JSON file format. Please select a valid JSON backup file.');
       }
-
       await importBackup(parsedData);
       toast.update(importToastId, {
         title: 'Backup restored',
@@ -249,66 +243,68 @@ export default function Settings() {
   const avatarUrl = profile?.avatar_url || '';
 
   return (
-    <div className="p-4 sm:p-8 max-w-4xl mx-auto space-y-8 animate-page-entry">
+    <div className="p-3.5 sm:p-8 max-w-4xl mx-auto space-y-6 sm:space-y-8 animate-page-entry min-w-0 w-full">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-normal">Settings & Preferences</h1>
-        <p className="text-muted-foreground text-xs sm:text-sm mt-1 leading-relaxed">
+        <h1 className="text-2xl sm:text-3xl font-semibold text-[#111111] dark:text-white tracking-[-0.03em]">
+          Settings & Preferences
+        </h1>
+        <p className="text-zinc-600 dark:text-zinc-400 text-xs sm:text-sm mt-1 leading-relaxed">
           Manage your account profile, cloud sync, security sessions, and local backups.
         </p>
       </div>
 
-      {/* 1. Account & Cloud Profile Section */}
-      <div className="rounded-2xl p-5 sm:p-6 space-y-5 bg-card border border-border shadow-xs">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3.5">
+      {/* 1. Account & Cloud Profile Bento Card */}
+      <div className="rounded-[28px] border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-100/70 dark:bg-zinc-900/50 p-4 sm:p-7 shadow-xs space-y-5 backdrop-blur-xs min-w-0">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 min-w-0">
+          <div className="flex items-center gap-3.5 min-w-0 w-full">
             {avatarUrl ? (
               <img 
                 src={avatarUrl} 
                 alt={displayName} 
-                className="w-12 h-12 rounded-full object-cover border-2 border-primary/40 shadow-xs flex-shrink-0" 
+                className="w-11 sm:w-12 h-11 sm:h-12 rounded-full object-cover border-2 border-zinc-200 dark:border-zinc-700 shadow-xs flex-shrink-0" 
               />
             ) : (
-              <div className="w-12 h-12 rounded-full bg-primary/10 text-primary border border-primary/20 flex items-center justify-center font-bold text-base flex-shrink-0">
-                {user ? displayName.charAt(0).toUpperCase() : <User size={20} />}
+              <div className="w-11 sm:w-12 h-11 sm:h-12 rounded-full bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 border border-zinc-300/60 dark:border-zinc-700/60 flex items-center justify-center font-bold text-base flex-shrink-0">
+                {user ? displayName.charAt(0).toUpperCase() : <User size={18} />}
               </div>
             )}
             
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 flex-wrap">
-                <h2 className="text-base font-bold text-foreground truncate">
+                <h2 className="text-base font-bold text-zinc-950 dark:text-zinc-50 truncate">
                   {user ? displayName : 'Guest User'}
                 </h2>
                 {user && (
-                  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${
+                  <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
                     isGoogleUser 
-                      ? 'bg-blue-500/10 text-blue-500 border-blue-500/20' 
-                      : 'bg-primary/10 text-primary border border-primary/20'
+                      ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20' 
+                      : 'bg-zinc-200/80 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border-zinc-300/70 dark:border-zinc-700/70'
                   }`}>
                     {isGoogleUser ? 'Google Account' : 'Email Account'}
                   </span>
                 )}
                 {user && (
-                  <span className="inline-flex items-center gap-1 text-[11px] text-emerald-500 font-medium">
+                  <span className="inline-flex items-center gap-1 text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
                     <Cloud size={12} />
                     <span>Cloud Sync Active</span>
                   </span>
                 )}
               </div>
-              <p className="text-xs text-muted-foreground mt-0.5 truncate">
+              <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 leading-relaxed break-words">
                 {user ? user.email : 'You are currently browsing locally without a cloud account (1 trial course).'}
               </p>
             </div>
           </div>
 
           {user ? (
-            <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-2 flex-wrap shrink-0">
               <button
                 type="button"
                 onClick={signOut}
-                className="px-3.5 py-1.5 rounded-xl border border-border bg-muted/40 hover:bg-muted text-xs font-semibold text-foreground transition flex items-center gap-1.5 cursor-pointer"
+                className="h-9 px-4 rounded-full border border-zinc-200/80 dark:border-zinc-800/80 bg-white/90 dark:bg-zinc-900/90 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs font-medium text-zinc-800 dark:text-zinc-200 transition flex items-center gap-1.5 cursor-pointer shadow-2xs"
                 title="Sign out from this device"
               >
-                <LogOut size={13} className="text-muted-foreground" />
+                <LogOut size={13} className="text-zinc-400 dark:text-zinc-500" />
                 <span>Sign Out</span>
               </button>
             </div>
@@ -316,7 +312,7 @@ export default function Settings() {
             <button
               type="button"
               onClick={() => openAuthModal('default')}
-              className="px-4 py-2 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold transition flex items-center gap-2 cursor-pointer shadow-xs"
+              className="h-9 px-4 rounded-full bg-zinc-950 hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-100 text-white text-xs font-medium transition flex items-center justify-center gap-2 cursor-pointer shadow-xs active:scale-[0.98] shrink-0"
             >
               <Sparkles size={13} />
               <span>Sign In / Sign Up</span>
@@ -326,40 +322,40 @@ export default function Settings() {
 
         {/* Quota & Security Details (if logged in) */}
         {user && (
-          <div className="pt-2 border-t border-border/60 space-y-4">
+          <div className="pt-3 border-t border-zinc-200/80 dark:border-zinc-800/80 space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
               {/* Course Limit Meter */}
-              <div className="p-3.5 rounded-xl bg-muted/40 border border-border/60">
-                <div className="flex items-center justify-between text-xs mb-1.5">
-                  <span className="text-muted-foreground font-medium flex items-center gap-1.5">
-                    <Layers size={13} className="text-primary" />
+              <div className="p-4 rounded-2xl bg-white/80 dark:bg-zinc-900/60 border border-zinc-200/70 dark:border-zinc-800/70 shadow-2xs">
+                <div className="flex items-center justify-between text-xs mb-2">
+                  <span className="text-zinc-600 dark:text-zinc-400 font-medium flex items-center gap-1.5">
+                    <Layers size={13} className="text-zinc-900 dark:text-zinc-100" />
                     <span>Study Courses Quota</span>
                   </span>
-                  <span className="font-bold text-foreground">{activeCount} / {REGISTERED_MAX_PLAYLISTS}</span>
+                  <span className="font-bold text-zinc-950 dark:text-zinc-50 font-mono">{activeCount} / {REGISTERED_MAX_PLAYLISTS}</span>
                 </div>
-                <div className="w-full bg-border/60 rounded-full h-1.5 overflow-hidden">
+                <div className="w-full bg-zinc-200 dark:bg-zinc-800 rounded-full h-1.5 overflow-hidden">
                   <div
-                    className="bg-primary h-full transition-all duration-300"
+                    className="bg-gradient-to-r from-emerald-500 to-teal-400 h-full transition-all duration-300"
                     style={{ width: `${Math.min(100, (activeCount / REGISTERED_MAX_PLAYLISTS) * 100)}%` }}
                   />
                 </div>
               </div>
 
               {/* Multi-Device Session Security */}
-              <div className="p-3.5 rounded-xl bg-muted/40 border border-border/60 flex items-center justify-between gap-3">
+              <div className="p-4 rounded-2xl bg-white/80 dark:bg-zinc-900/60 border border-zinc-200/70 dark:border-zinc-800/70 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
                 <div className="min-w-0">
-                  <span className="text-xs font-semibold text-foreground block flex items-center gap-1.5">
-                    <Smartphone size={13} className="text-muted-foreground" />
+                  <span className="text-xs font-semibold text-zinc-950 dark:text-zinc-50 flex items-center gap-1.5">
+                    <Smartphone size={13} className="text-zinc-500 dark:text-zinc-400" />
                     <span>Active Sessions</span>
                   </span>
-                  <span className="text-[11px] text-muted-foreground block truncate">
+                  <span className="text-[11px] text-zinc-500 dark:text-zinc-400 block truncate mt-0.5">
                     Logged in across authorized devices
                   </span>
                 </div>
                 <button
                   type="button"
                   onClick={handleSignOutAllDevices}
-                  className="px-3 py-1.5 rounded-lg border border-border/70 bg-card hover:bg-muted text-[11px] font-semibold text-muted-foreground hover:text-foreground transition cursor-pointer flex-shrink-0"
+                  className="h-8 px-3 rounded-full border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-[11px] font-medium text-zinc-700 dark:text-zinc-300 transition cursor-pointer flex-shrink-0 shadow-2xs self-start sm:self-auto"
                   title="Sign out of all sessions across all phones and computers"
                 >
                   Sign Out All Devices
@@ -370,15 +366,17 @@ export default function Settings() {
         )}
       </div>
 
-      {/* 2. YouTube API Configuration */}
-      <div className="rounded-2xl p-5 sm:p-6 space-y-4 bg-card border border-border shadow-xs">
+      {/* 2. YouTube API Configuration Bento Card */}
+      <div className="rounded-[28px] border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-100/70 dark:bg-zinc-900/50 p-5 sm:p-7 shadow-xs space-y-4 backdrop-blur-xs">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center border border-primary/20 flex-shrink-0">
-            <Key size={18} />
+          <div className="w-9 h-9 rounded-xl bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 flex items-center justify-center border border-zinc-300/60 dark:border-zinc-700/60 flex-shrink-0">
+            <Key size={17} />
           </div>
           <div>
-            <h2 className="text-base font-semibold text-foreground tracking-normal">YouTube API Configuration (Optional)</h2>
-            <p className="text-muted-foreground text-xs leading-relaxed">
+            <h2 className="text-base font-semibold text-zinc-950 dark:text-zinc-50 tracking-tight">
+              YouTube API Configuration (Optional)
+            </h2>
+            <p className="text-zinc-500 dark:text-zinc-400 text-xs leading-relaxed mt-0.5">
               Foclyra includes an automatic serverless proxy with zero-key fallback. You can also provide a personal Google Cloud YouTube Data API v3 key.
             </p>
           </div>
@@ -386,7 +384,7 @@ export default function Settings() {
 
         <form onSubmit={handleSaveApiKey} className="space-y-3 pt-1">
           <div>
-            <label className="block text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">
+            <label className="block text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-1.5">
               Personal API Key
             </label>
             <div className="flex flex-col sm:flex-row gap-2">
@@ -395,19 +393,19 @@ export default function Settings() {
                 value={customKey}
                 onChange={(e) => setCustomKey(e.target.value)}
                 placeholder="AIzaSy... (Leave empty to use built-in proxy)"
-                className="flex-1 px-4 py-2.5 rounded-xl bg-muted/60 border border-border text-foreground text-xs font-mono focus:outline-none focus:border-primary placeholder:text-muted-foreground transition"
+                className="w-full sm:flex-1 min-w-0 h-10 px-4 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 text-zinc-950 dark:text-zinc-50 text-xs font-mono focus:outline-none focus:ring-1 focus:ring-zinc-950 dark:focus:ring-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 transition shadow-2xs"
               />
               <button
                 type="submit"
-                className="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs flex-shrink-0"
+                className="h-10 px-5 rounded-full bg-zinc-950 hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-100 text-white text-xs font-medium transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs flex-shrink-0 active:scale-[0.98]"
               >
-                {keySaved ? <CheckCircle2 size={14} /> : null}
+                {keySaved ? <CheckCircle2 size={13} /> : null}
                 <span>{keySaved ? 'Saved!' : 'Save Key'}</span>
               </button>
             </div>
           </div>
-          <div className="flex items-center justify-between text-[11px] text-muted-foreground pt-1">
-            <span>Status: <strong className={customKey.trim() ? 'text-emerald-500' : 'text-primary'}>{customKey.trim() ? 'Personal Key Active' : 'Automatic Proxy Active'}</strong></span>
+          <div className="flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400 pt-1">
+            <span>Status: <strong className={customKey.trim() ? 'text-emerald-500 font-semibold' : 'text-zinc-950 dark:text-zinc-100 font-semibold'}>{customKey.trim() ? 'Personal Key Active' : 'Automatic Proxy Active'}</strong></span>
             {customKey.trim() && (
               <button
                 type="button"
@@ -421,7 +419,7 @@ export default function Settings() {
                     timeout: 4000,
                   });
                 }}
-                className="text-muted-foreground hover:text-destructive transition underline cursor-pointer"
+                className="text-zinc-500 hover:text-red-500 dark:text-zinc-400 dark:hover:text-red-400 transition underline cursor-pointer"
               >
                 Clear & Reset
               </button>
@@ -430,29 +428,31 @@ export default function Settings() {
         </form>
       </div>
 
-      {/* 3. Local Data Backups */}
-      <div className="rounded-2xl p-5 sm:p-6 space-y-5 bg-card border border-border shadow-xs">
+      {/* 3. Local Data Backups Bento Card */}
+      <div className="rounded-[28px] border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-100/70 dark:bg-zinc-900/50 p-5 sm:p-7 shadow-xs space-y-4 backdrop-blur-xs">
         <div>
-          <h2 className="text-base font-semibold text-foreground tracking-normal mb-1">Local Data Backups</h2>
-          <p className="text-muted-foreground text-xs leading-relaxed">
+          <h2 className="text-base font-semibold text-zinc-950 dark:text-zinc-50 tracking-tight mb-1">
+            Local Data Backups
+          </h2>
+          <p className="text-zinc-500 dark:text-zinc-400 text-xs leading-relaxed">
             Foclyra is a local-first application. Your watch progress and notes are stored entirely in your browser.
             We recommend exporting periodic backups to keep your data secure.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
           {/* Export button */}
           <button
             onClick={handleExport}
-            className="flex items-center justify-center gap-2.5 px-5 py-3 bg-muted/40 border border-border hover:bg-muted transition rounded-xl font-semibold text-foreground text-xs sm:text-sm cursor-pointer shadow-xs"
+            className="flex items-center justify-center gap-2.5 h-11 px-5 bg-white/80 dark:bg-zinc-900/80 border border-zinc-200/80 dark:border-zinc-800/80 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition rounded-full font-medium text-zinc-900 dark:text-zinc-100 text-xs sm:text-sm cursor-pointer shadow-2xs"
           >
-            <Download size={16} className="text-muted-foreground" />
+            <Download size={15} className="text-zinc-500 dark:text-zinc-400" />
             <span>Export Backup JSON</span>
           </button>
 
           {/* Import button wrapper */}
-          <label className={`flex items-center justify-center gap-2.5 px-5 py-3 bg-muted/40 border border-border hover:bg-muted transition rounded-xl font-semibold text-foreground text-xs sm:text-sm shadow-xs ${isImporting ? 'opacity-50 pointer-events-none' : 'cursor-pointer'}`}>
-            <Upload size={16} className="text-muted-foreground" />
+          <label className={`flex items-center justify-center gap-2.5 h-11 px-5 bg-white/80 dark:bg-zinc-900/80 border border-zinc-200/80 dark:border-zinc-800/80 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition rounded-full font-medium text-zinc-900 dark:text-zinc-100 text-xs sm:text-sm shadow-2xs ${isImporting ? 'opacity-50 pointer-events-none' : 'cursor-pointer'}`}>
+            <Upload size={15} className="text-zinc-500 dark:text-zinc-400" />
             <span>{isImporting ? 'Restoring Backup...' : 'Import Backup JSON'}</span>
             <input 
               type="file" 
@@ -465,43 +465,47 @@ export default function Settings() {
         </div>
       </div>
 
-      {/* 4. Progress Data Management */}
-      <div className="rounded-2xl p-5 sm:p-6 border border-border space-y-4 bg-card shadow-xs">
+      {/* 4. Progress Data Management Bento Card */}
+      <div className="rounded-[28px] border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-100/70 dark:bg-zinc-900/50 p-5 sm:p-7 shadow-xs space-y-4 backdrop-blur-xs">
         <div>
-          <h2 className="text-base font-semibold text-foreground tracking-normal mb-1">Progress & Notes Reset</h2>
-          <p className="text-muted-foreground text-xs leading-relaxed">
+          <h2 className="text-base font-semibold text-zinc-950 dark:text-zinc-50 tracking-tight mb-1">
+            Progress & Notes Reset
+          </h2>
+          <p className="text-zinc-500 dark:text-zinc-400 text-xs leading-relaxed">
             Reset your watch times, checkmarks, and notes to zero. Your course catalogs will stay safe and untouched.
           </p>
         </div>
 
         {!showConfirmReset ? (
-          <button
-            onClick={() => setShowConfirmReset(true)}
-            className="px-4 py-2.5 rounded-xl bg-muted/40 border border-border text-foreground hover:bg-muted transition text-xs font-semibold flex items-center gap-2 cursor-pointer"
-          >
-            <RotateCcw size={14} className="text-muted-foreground" />
-            <span>Clear Watch Progress & Notes</span>
-          </button>
+          <div className="pt-1">
+            <button
+              onClick={() => setShowConfirmReset(true)}
+              className="h-9 px-4 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition text-xs font-medium flex items-center gap-2 cursor-pointer shadow-2xs"
+            >
+              <RotateCcw size={13} className="text-zinc-500 dark:text-zinc-400" />
+              <span>Clear Watch Progress & Notes</span>
+            </button>
+          </div>
         ) : (
-          <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/25 space-y-4">
+          <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/25 space-y-3.5">
             <div className="flex items-start gap-3 text-amber-600 dark:text-amber-400 text-xs">
-              <ShieldAlert size={18} className="flex-shrink-0 mt-0.5" />
+              <ShieldAlert size={17} className="flex-shrink-0 mt-0.5" />
               <div>
                 <span className="font-bold block mb-1">Confirm Reset Progress & Notes</span>
                 <span className="leading-relaxed">Are you sure? All completed checkmarks, watch progress, and notes will be cleared. All course catalogs will remain untouched.</span>
               </div>
             </div>
 
-            <div className="flex gap-3">
+            <div className="flex gap-2.5 pt-1">
               <button
                 onClick={handleExecuteReset}
-                className="px-4 py-2 text-xs font-semibold rounded-xl bg-amber-600 hover:bg-amber-700 text-white transition cursor-pointer shadow-xs"
+                className="h-8.5 px-4 text-xs font-medium rounded-full bg-amber-600 hover:bg-amber-700 text-white transition cursor-pointer shadow-xs"
               >
                 Yes, Clear Progress & Notes
               </button>
               <button
                 onClick={() => setShowConfirmReset(false)}
-                className="px-4 py-2 text-xs font-semibold rounded-xl bg-card border border-border text-foreground hover:bg-muted transition cursor-pointer"
+                className="h-8.5 px-4 text-xs font-medium rounded-full bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer shadow-2xs"
               >
                 Cancel
               </button>
@@ -512,30 +516,32 @@ export default function Settings() {
 
       {/* 5. Danger Zone: Delete Account (GDPR Compliance) */}
       {user && (
-        <div className="rounded-2xl p-5 sm:p-6 border border-red-500/30 bg-red-500/[0.03] space-y-4 shadow-xs">
+        <div className="rounded-[28px] border border-red-500/25 bg-red-500/[0.03] p-5 sm:p-7 space-y-4 shadow-xs">
           <div>
             <div className="flex items-center gap-2 text-red-600 dark:text-red-400 font-bold text-base mb-1">
-              <AlertTriangle size={18} />
+              <AlertTriangle size={17} />
               <span>Danger Zone: Delete Account</span>
             </div>
-            <p className="text-muted-foreground text-xs leading-relaxed">
+            <p className="text-zinc-500 dark:text-zinc-400 text-xs leading-relaxed">
               Permanently delete your Foclyra account and purge all associated cloud data including courses, progress, and synchronized notes. This action is irreversible.
             </p>
           </div>
 
           {!showDeleteConfirm ? (
-            <button
-              type="button"
-              onClick={() => setShowDeleteConfirm(true)}
-              className="px-4 py-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/30 text-xs font-semibold transition flex items-center gap-2 cursor-pointer"
-            >
-              <Trash2 size={14} />
-              <span>Delete My Account</span>
-            </button>
+            <div className="pt-1">
+              <button
+                type="button"
+                onClick={() => setShowDeleteConfirm(true)}
+                className="h-9 px-4 rounded-full bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/25 text-xs font-medium transition flex items-center gap-2 cursor-pointer shadow-2xs"
+              >
+                <Trash2 size={13} />
+                <span>Delete My Account</span>
+              </button>
+            </div>
           ) : (
-            <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/25 space-y-3.5">
+            <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/25 space-y-3.5">
               <p className="text-xs text-red-600 dark:text-red-400 font-medium">
-                To confirm permanent deletion of your account and cloud data, please type <strong className="font-mono bg-red-500/20 px-1.5 py-0.5 rounded text-foreground font-bold">DELETE</strong> below:
+                To confirm permanent deletion of your account and cloud data, please type <strong className="font-mono bg-red-500/20 px-1.5 py-0.5 rounded text-zinc-950 dark:text-zinc-50 font-bold">DELETE</strong> below:
               </p>
               
               <div className="flex flex-col sm:flex-row gap-2 max-w-md">
@@ -544,13 +550,13 @@ export default function Settings() {
                   value={deleteInputText}
                   onChange={(e) => setDeleteInputText(e.target.value)}
                   placeholder="Type DELETE"
-                  className="flex-1 px-3.5 py-2 rounded-xl bg-card border border-red-500/40 text-foreground text-xs font-mono focus:outline-none focus:border-red-500 placeholder:text-muted-foreground"
+                  className="flex-1 h-9 px-3.5 rounded-full bg-white dark:bg-zinc-900 border border-red-500/40 text-zinc-950 dark:text-zinc-50 text-xs font-mono focus:outline-none focus:ring-1 focus:ring-red-500 placeholder:text-zinc-400"
                 />
                 <button
                   type="button"
                   disabled={deleteInputText.trim() !== 'DELETE' || isDeletingAccount}
                   onClick={handleDeleteAccount}
-                  className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 disabled:opacity-40 text-white text-xs font-semibold transition cursor-pointer flex items-center justify-center gap-2 shadow-xs"
+                  className="h-9 px-4 rounded-full bg-red-600 hover:bg-red-700 disabled:opacity-40 text-white text-xs font-medium transition cursor-pointer flex items-center justify-center gap-1.5 shadow-xs"
                 >
                   <Trash2 size={13} />
                   <span>{isDeletingAccount ? 'Deleting...' : 'Confirm Delete'}</span>
@@ -561,7 +567,7 @@ export default function Settings() {
                     setShowDeleteConfirm(false);
                     setDeleteInputText('');
                   }}
-                  className="px-3.5 py-2 rounded-xl bg-card border border-border text-foreground hover:bg-muted text-xs font-medium transition cursor-pointer"
+                  className="h-9 px-3.5 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs font-medium transition cursor-pointer shadow-2xs"
                 >
                   Cancel
                 </button>
@@ -571,11 +577,13 @@ export default function Settings() {
         </div>
       )}
 
-      {/* 6. Community & Feedback Section */}
-      <div className="rounded-2xl p-5 sm:p-6 space-y-4 bg-card border border-border shadow-xs">
+      {/* 6. Community & Feedback Bento Card */}
+      <div className="rounded-[28px] border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-100/70 dark:bg-zinc-900/50 p-5 sm:p-7 shadow-xs space-y-4 backdrop-blur-xs">
         <div>
-          <h2 className="text-base font-semibold text-foreground tracking-normal mb-1">Feedback & Error Reporting</h2>
-          <p className="text-muted-foreground text-xs leading-relaxed">
+          <h2 className="text-base font-semibold text-zinc-950 dark:text-zinc-50 tracking-tight mb-1">
+            Feedback & Error Reporting
+          </h2>
+          <p className="text-zinc-500 dark:text-zinc-400 text-xs leading-relaxed">
             Spotted an issue, missing video duration, or have a suggestion to make Foclyra better?
             We read every single piece of feedback!
           </p>
@@ -584,9 +592,9 @@ export default function Settings() {
           <button
             type="button"
             onClick={openFeedbackModal}
-            className="px-4 py-2.5 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 text-xs font-semibold transition flex items-center gap-2 cursor-pointer shadow-xs"
+            className="h-9 px-4 rounded-full bg-zinc-950 hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-100 text-white text-xs font-medium transition flex items-center gap-2 cursor-pointer shadow-xs active:scale-[0.98]"
           >
-            <MessageSquarePlus size={16} />
+            <MessageSquarePlus size={14} />
             <span>Send Feedback or Report Bug</span>
           </button>
         </div>

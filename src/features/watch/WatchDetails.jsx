@@ -1,6 +1,10 @@
 import React from 'react';
 import { CheckCircle2, ChevronLeft, ChevronRight, Circle } from 'lucide-react';
 
+/**
+ * Editorial Watch Details bar.
+ * Clean lecture title, channel badge, and high-contrast control pills.
+ */
 export function WatchDetails({
   course,
   lesson,
@@ -13,35 +17,37 @@ export function WatchDetails({
   onNavigate
 }) {
   return (
-    <div className="px-3 sm:px-6 py-3 max-w-7xl w-full mx-auto border-b border-border/50">
+    <div className="px-3 sm:px-6 py-3.5 max-w-7xl w-full mx-auto border-b border-zinc-200/80 dark:border-zinc-800/80">
       {/* Title */}
-      <h1 className="text-base sm:text-lg md:text-xl font-bold text-foreground tracking-tight leading-snug">
+      <h1 className="text-base sm:text-lg md:text-xl font-bold text-zinc-950 dark:text-zinc-50 tracking-tight leading-snug">
         {lesson.title}
       </h1>
 
       {/* Meta & Quick Action Buttons */}
-      <div className="flex flex-wrap items-center justify-between gap-2.5 text-xs text-muted-foreground pt-1">
-        <div className="flex items-center gap-2 min-w-0">
-          <span className="font-semibold text-foreground truncate max-w-[180px] sm:max-w-xs">{course.channelName || 'YouTube Creator'}</span>
-          <span className="text-muted-foreground/40">•</span>
-          <span className="font-mono text-[10px] sm:text-[11px] px-2 py-0.5 rounded-md bg-muted text-muted-foreground font-medium flex-shrink-0">
+      <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-zinc-500 dark:text-zinc-400 pt-1.5">
+        <div className="flex items-center gap-2 min-w-0 flex-wrap">
+          <span className="font-semibold text-zinc-800 dark:text-zinc-200 truncate max-w-[180px] sm:max-w-xs">
+            {course.channelName || 'YouTube Creator'}
+          </span>
+          <span className="text-zinc-300 dark:text-zinc-700">•</span>
+          <span className="font-mono text-[10px] sm:text-[11px] px-2.5 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800/80 text-zinc-600 dark:text-zinc-300 font-medium flex-shrink-0 border border-zinc-200/70 dark:border-zinc-700/70">
             Lecture {currentIndex + 1} of {totalLessons}
           </span>
         </div>
 
         {/* Quick Progress & Navigation Controls */}
-        <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+        <div className="flex items-center gap-2 flex-wrap">
           {onToggleComplete && (
             <button
               type="button"
               onClick={onToggleComplete}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${
+              className={`flex items-center gap-1.5 h-8 px-3.5 rounded-full text-xs font-medium transition cursor-pointer active:scale-[0.98] shadow-2xs ${
                 isCompleted
-                  ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
-                  : 'bg-muted hover:bg-muted/80 text-foreground border border-border'
+                  ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25 hover:bg-emerald-500/15'
+                  : 'bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-200/80 dark:border-zinc-800/80'
               }`}
             >
-              {isCompleted ? <CheckCircle2 size={14} className="text-emerald-500" /> : <Circle size={14} className="text-muted-foreground" />}
+              {isCompleted ? <CheckCircle2 size={13} className="text-emerald-500" /> : <Circle size={13} className="text-zinc-400" />}
               <span>{isCompleted ? 'Completed' : 'Mark Done'}</span>
             </button>
           )}
@@ -50,10 +56,10 @@ export function WatchDetails({
             <button
               type="button"
               onClick={() => onNavigate(prevLessonId)}
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-muted hover:bg-muted/80 text-foreground border border-border text-xs font-medium transition cursor-pointer"
+              className="flex items-center gap-1 h-8 px-3 rounded-full bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200/80 dark:border-zinc-800/80 text-xs font-medium transition cursor-pointer shadow-2xs"
               title="Previous Lecture"
             >
-              <ChevronLeft size={14} />
+              <ChevronLeft size={13} />
               <span className="hidden sm:inline">Prev</span>
             </button>
           )}
@@ -62,11 +68,11 @@ export function WatchDetails({
             <button
               type="button"
               onClick={() => onNavigate(nextLessonId)}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold shadow-sm transition cursor-pointer"
+              className="flex items-center gap-1 h-8 px-3.5 rounded-full bg-zinc-950 hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-100 text-white text-xs font-medium shadow-xs transition cursor-pointer active:scale-[0.98]"
               title="Next Lecture"
             >
               <span>Next</span>
-              <ChevronRight size={14} />
+              <ChevronRight size={13} />
             </button>
           )}
         </div>

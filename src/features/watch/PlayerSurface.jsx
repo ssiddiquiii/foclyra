@@ -2,6 +2,10 @@ import React from 'react';
 import { Play, ChevronLeft, ChevronRight } from 'lucide-react';
 import { PlayerControls } from './PlayerControls';
 
+/**
+ * Editorial Player Surface.
+ * Handles YouTube embedded player, custom controls, and theater modes.
+ */
 export function PlayerSurface({
   course,
   lesson,
@@ -12,9 +16,7 @@ export function PlayerSurface({
   prevLessonId,
   nextLessonId,
   onNavigate,
-  isPlaylistCollapsed,
-  onTogglePlaylist,
-  lessonsCount
+  isPlaylistCollapsed
 }) {
   const renderPlayerContent = () => {
     if (lesson.type === 'youtube') {
@@ -29,7 +31,7 @@ export function PlayerSurface({
               type="button" 
               aria-label={`Play ${lesson.title}`} 
               onClick={() => controller.setIsPlayerTriggered(true)} 
-              className="group/thumb absolute inset-0 z-20 flex h-full w-full cursor-pointer items-center justify-center bg-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
+              className="group/thumb absolute inset-0 z-20 flex h-full w-full cursor-pointer items-center justify-center bg-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-inset"
             >
               <img 
                 src={initialThumb} 
@@ -41,9 +43,9 @@ export function PlayerSurface({
                 }}
                 className="w-full h-full object-cover object-center opacity-95 group-hover/thumb:scale-[1.02] transition duration-500" 
               />
-              <div className="absolute inset-0 bg-black/35 group-hover/thumb:bg-black/15 transition duration-300" />
-              <span className="absolute z-30 flex h-16 w-16 items-center justify-center rounded-full border border-white/30 bg-primary/90 text-primary-foreground shadow-2xl backdrop-blur-md transition duration-300 group-hover/thumb:scale-110 sm:h-20 sm:w-20">
-                <Play size={28} fill="currentColor" className="ml-1 text-zinc-950" />
+              <div className="absolute inset-0 bg-black/30 group-hover/thumb:bg-black/15 transition duration-300" />
+              <span className="absolute z-30 flex h-16 w-16 items-center justify-center rounded-full bg-white text-zinc-950 shadow-2xl backdrop-blur-md transition duration-300 group-hover/thumb:scale-110 sm:h-20 sm:w-20">
+                <Play size={26} fill="currentColor" className="ml-1 text-zinc-950" />
               </span>
             </button>
           ) : (
@@ -61,21 +63,20 @@ export function PlayerSurface({
     }
 
     return (
-      <div className="flex flex-col items-center justify-center p-8 max-w-md mx-auto text-center space-y-6 h-full justify-center">
-        <span className="px-3 py-1.5 text-xs font-semibold uppercase tracking-wider rounded bg-accent/20 text-accent border border-accent/30">Udemy Cohort</span>
+      <div className="flex flex-col items-center justify-center p-8 max-w-md mx-auto text-center space-y-5 h-full justify-center">
+        <span className="px-3 py-1 text-[11px] font-semibold uppercase tracking-wider rounded-full bg-zinc-800 text-zinc-300 border border-zinc-700">Manual Cohort</span>
         <h3 className="text-2xl font-bold text-white leading-snug">{lesson.title}</h3>
-        <p className="text-zinc-400 text-sm leading-relaxed">This course is manually tracked. Visit Udemy.com to watch the video, then mark it complete below.</p>
-        <a href={course.udemyUrl} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-lg bg-zinc-900 border border-border text-white hover:bg-zinc-800 transition font-medium">Open Course on Udemy</a>
-        <button onClick={onUdemyToggle} className={`w-full py-4 rounded-xl font-bold transition duration-200 active:scale-98 ${isUdemyCompleted ? 'bg-emerald-600 text-white hover:bg-emerald-700' : 'bg-primary text-white hover:bg-primary/95 shadow-lg shadow-primary/20'}`}>{isUdemyCompleted ? '✓ Completed (Unmark)' : 'Mark as Completed'}</button>
+        <p className="text-zinc-400 text-xs sm:text-sm leading-relaxed">This course is manually tracked. Watch the video externally, then mark it complete below.</p>
+        <a href={course.udemyUrl} target="_blank" rel="noreferrer" className="inline-flex items-center justify-center gap-2 h-10 px-5 rounded-full bg-white text-zinc-950 hover:bg-zinc-200 transition text-xs font-semibold shadow-xs">Open External Course</a>
+        <button onClick={onUdemyToggle} className={`w-full h-11 rounded-full font-semibold text-xs sm:text-sm transition duration-200 active:scale-[0.98] ${isUdemyCompleted ? 'bg-emerald-600 text-white hover:bg-emerald-700' : 'bg-zinc-800 text-white hover:bg-zinc-700 border border-zinc-700'}`}>{isUdemyCompleted ? '✓ Completed (Unmark)' : 'Mark as Completed'}</button>
       </div>
     );
   };
 
   // 1. THEATER MODE (isPlaylistCollapsed = true):
-  // Expansive, taller cinema stage with larger 16:9 video frame and sleek side black gaps
   if (isPlaylistCollapsed) {
     return (
-      <div className="w-full bg-black relative flex items-center justify-center border-b border-border/50 flex-shrink-0 group/stage py-1 sm:py-2">
+      <div className="w-full bg-black relative flex items-center justify-center border-b border-zinc-800/80 flex-shrink-0 group/stage py-1 sm:py-2">
         {/* Floating Left Prev Lecture Arrow in Cinema Margin */}
         {prevLessonId && (
           <button
@@ -84,11 +85,11 @@ export function PlayerSurface({
               e.stopPropagation();
               onNavigate(prevLessonId);
             }}
-            className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-30 p-2.5 sm:p-3 rounded-full bg-black/85 hover:bg-zinc-900 text-white/80 hover:text-white border border-white/20 backdrop-blur-md opacity-0 group-hover/stage:opacity-100 transition-all cursor-pointer shadow-2xl hover:scale-110 active:scale-95"
+            className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-30 p-2.5 sm:p-3 rounded-full bg-black/80 hover:bg-black text-white/80 hover:text-white border border-white/20 backdrop-blur-md opacity-0 group-hover/stage:opacity-100 transition-all cursor-pointer shadow-2xl hover:scale-110 active:scale-95"
             title="Previous Lecture"
             aria-label="Previous Lecture"
           >
-            <ChevronLeft size={26} />
+            <ChevronLeft size={24} />
           </button>
         )}
 
@@ -100,15 +101,15 @@ export function PlayerSurface({
               e.stopPropagation();
               onNavigate(nextLessonId);
             }}
-            className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-30 p-2.5 sm:p-3 rounded-full bg-black/85 hover:bg-zinc-900 text-white/80 hover:text-white border border-white/20 backdrop-blur-md opacity-0 group-hover/stage:opacity-100 transition-all cursor-pointer shadow-2xl hover:scale-110 active:scale-95"
+            className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-30 p-2.5 sm:p-3 rounded-full bg-black/80 hover:bg-black text-white/80 hover:text-white border border-white/20 backdrop-blur-md opacity-0 group-hover/stage:opacity-100 transition-all cursor-pointer shadow-2xl hover:scale-110 active:scale-95"
             title="Next Lecture"
             aria-label="Next Lecture"
           >
-            <ChevronRight size={26} />
+            <ChevronRight size={24} />
           </button>
         )}
 
-        {/* Theater Video Frame: Taller, expansive 16:9 frame */}
+        {/* Theater Video Frame */}
         <div 
           data-testid="watch-player" 
           ref={controller.playerContainerRef} 
@@ -122,8 +123,7 @@ export function PlayerSurface({
     );
   }
 
-  // 2. DEFAULT YOUTUBE MODE (isPlaylistCollapsed = false):
-  // Clean rounded-2xl 16:9 video frame sitting naturally on page, full cover thumbnail, ZERO outer black strip!
+  // 2. DEFAULT WORKSPACE MODE (isPlaylistCollapsed = false):
   return (
     <div className="w-full px-3 sm:px-6 pt-3 sm:pt-4 flex-shrink-0">
       <div 
@@ -131,7 +131,7 @@ export function PlayerSurface({
         ref={controller.playerContainerRef} 
         onMouseMove={controller.handleMouseMove} 
         onMouseLeave={controller.handleMouseLeave} 
-        className={`relative aspect-video w-full max-w-7xl mx-auto rounded-2xl overflow-hidden bg-black flex items-center justify-center shadow-lg border border-border/40 group/player ${!controller.isControlsVisible && controller.isPlaying ? 'cursor-none' : ''}`}
+        className={`relative aspect-video w-full max-w-7xl mx-auto rounded-[24px] overflow-hidden bg-black flex items-center justify-center shadow-md border border-zinc-200/80 dark:border-zinc-800/80 group/player ${!controller.isControlsVisible && controller.isPlaying ? 'cursor-none' : ''}`}
       >
         {/* Prev / Next buttons inside video on hover */}
         {prevLessonId && (
@@ -145,7 +145,7 @@ export function PlayerSurface({
             title="Previous Lecture"
             aria-label="Previous Lecture"
           >
-            <ChevronLeft size={22} />
+            <ChevronLeft size={20} />
           </button>
         )}
 
@@ -160,7 +160,7 @@ export function PlayerSurface({
             title="Next Lecture"
             aria-label="Next Lecture"
           >
-            <ChevronRight size={22} />
+            <ChevronRight size={20} />
           </button>
         )}
 

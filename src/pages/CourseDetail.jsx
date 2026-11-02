@@ -18,8 +18,8 @@ import { toast } from '../components/ui/toast';
 import { trackEvent } from '../services/analytics';
 
 /**
- * Modern Course Detail & Syllabus View.
- * Sleek studio aesthetic with minimal borders, subtle shadows, and crisp typography.
+ * Editorial Bento Course Detail & Syllabus View.
+ * Matches Landing Page and Studio Dashboard minimalist editorial aesthetic.
  * @returns {React.JSX.Element}
  */
 export default function CourseDetail() {
@@ -107,16 +107,25 @@ export default function CourseDetail() {
   if (isLoading) {
     return (
       <div className="p-8 min-h-[60vh] flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-2 border-primary border-t-transparent rounded-full" />
+        <div className="animate-spin w-8 h-8 border-2 border-zinc-950 dark:border-white border-t-transparent rounded-full" />
       </div>
     );
   }
 
   if (courseNotFound) {
     return (
-      <div className="p-8 text-center space-y-3">
-        <h2 className="text-2xl font-bold text-destructive">Course Not Found</h2>
-        <Link to="/studio" className="text-primary hover:underline text-sm font-semibold">Return to Dashboard</Link>
+      <div className="p-8 sm:p-12 text-center max-w-md mx-auto my-12 rounded-[28px] border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-100/70 dark:bg-zinc-900/50 space-y-4">
+        <h2 className="text-xl sm:text-2xl font-bold text-red-500">Course Not Found</h2>
+        <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
+          The requested course could not be located in your local library.
+        </p>
+        <Link 
+          to="/studio" 
+          className="inline-flex items-center gap-2 h-9 px-4 rounded-full bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 text-xs font-medium hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors shadow-xs"
+        >
+          <ArrowLeft size={14} />
+          <span>Return to Studio</span>
+        </Link>
       </div>
     );
   }
@@ -124,40 +133,37 @@ export default function CourseDetail() {
   const resumeTargetLesson = resumeLesson || courseLessons[0];
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto space-y-6 animate-page-entry">
-      {/* Top Navigation Breadcrumbs */}
-      <div className="flex items-center justify-between">
+    <div className="p-3.5 sm:p-6 lg:p-8 max-w-5xl mx-auto space-y-6 animate-page-entry min-w-0 w-full">
+      {/* Top Navigation Breadcrumbs & Sync Action */}
+      <div className="flex items-center justify-between gap-3">
         <Link 
           to="/studio" 
-          className="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-muted-foreground hover:text-foreground transition-colors group"
+          className="inline-flex items-center gap-1.5 h-8 px-3.5 rounded-full border border-zinc-200/80 dark:border-zinc-800/80 bg-white/80 dark:bg-zinc-900/80 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs font-medium text-zinc-600 dark:text-zinc-300 transition-colors shadow-xs group"
         >
-          <ArrowLeft size={15} className="group-hover:-translate-x-0.5 transition-transform" />
-          <span>Back to Dashboard</span>
+          <ArrowLeft size={13} className="group-hover:-translate-x-0.5 transition-transform text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-zinc-100" />
+          <span>Back to Studio</span>
         </Link>
 
         {course.type === 'youtube' && (
           <button
             onClick={handleSyncPlaylist}
             disabled={isSyncing}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border/70 bg-card hover:bg-muted/60 text-xs font-medium text-muted-foreground hover:text-foreground transition cursor-pointer disabled:opacity-50 shadow-xs"
+            className="inline-flex items-center gap-1.5 h-8 px-3.5 rounded-full border border-zinc-200/80 dark:border-zinc-800/80 bg-white/80 dark:bg-zinc-900/80 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs font-medium text-zinc-700 dark:text-zinc-300 transition-colors cursor-pointer disabled:opacity-50 shadow-xs"
             title="Sync complete lecture catalog from YouTube"
           >
-            <RefreshCw size={13} className={isSyncing ? "animate-spin text-primary" : ""} />
+            <RefreshCw size={12} className={isSyncing ? "animate-spin text-emerald-500" : "text-zinc-400 dark:text-zinc-500"} />
             <span>{isSyncing ? "Syncing..." : "Sync Lectures"}</span>
           </button>
         )}
       </div>
 
-      {/* Course Hero Banner */}
-      <div className="rounded-2xl border border-border/60 bg-card p-5 sm:p-7 shadow-xs relative overflow-hidden">
-        {/* Subtle decorative background gradient */}
-        <div className="absolute -top-28 -right-28 w-80 h-80 bg-primary/[0.04] rounded-full blur-3xl pointer-events-none" />
-
+      {/* Course Hero Bento Banner */}
+      <div className="rounded-[28px] border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-100/70 dark:bg-zinc-900/50 p-5 sm:p-7 shadow-xs relative overflow-hidden backdrop-blur-xs">
         <div className="relative flex flex-col md:flex-row gap-6 lg:gap-8 items-start">
           {/* 16:9 Thumbnail preview with play hover */}
           <div 
             onClick={() => resumeTargetLesson && navigate(`/courses/${courseId}/lessons/${resumeTargetLesson.id}`)}
-            className="relative w-full md:w-72 lg:w-80 aspect-video rounded-xl overflow-hidden border border-border/50 bg-zinc-950 flex-shrink-0 group cursor-pointer shadow-xs"
+            className="relative w-full md:w-72 lg:w-80 aspect-video rounded-[20px] overflow-hidden border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-950 flex-shrink-0 group cursor-pointer shadow-xs"
           >
             <img 
               src={optimizedThumb} 
@@ -165,13 +171,13 @@ export default function CourseDetail() {
               onError={() => setThumbError(true)}
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
             />
-            <div className="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-              <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
-                <Play size={20} fill="currentColor" className="ml-0.5" />
+            <div className="absolute inset-0 bg-black/35 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+              <div className="w-12 h-12 rounded-full bg-white text-zinc-950 flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
+                <Play size={18} fill="currentColor" className="ml-0.5" />
               </div>
             </div>
             {/* Overlay badge with lecture count */}
-            <div className="absolute bottom-2 right-2 px-2 py-0.5 rounded-md bg-black/80 backdrop-blur-xs text-[11px] font-mono text-zinc-200 font-medium flex items-center gap-1 border border-white/10">
+            <div className="absolute bottom-2.5 right-2.5 px-2.5 py-1 rounded-full bg-black/80 backdrop-blur-md text-[11px] font-mono text-zinc-200 font-medium flex items-center gap-1.5 border border-white/10 shadow-xs">
               <BookOpen size={11} />
               <span>{courseLessons.length} lectures</span>
             </div>
@@ -180,24 +186,24 @@ export default function CourseDetail() {
           {/* Course Details Info */}
           <div className="flex-1 min-w-0 space-y-3.5">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full bg-primary/10 text-primary border border-primary/20">
-                {course.type === 'youtube' ? 'YouTube Course' : 'Udemy Manual'}
+              <span className="inline-flex items-center px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full bg-zinc-200/80 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 border border-zinc-300/70 dark:border-zinc-700/70">
+                {course.type === 'youtube' ? 'YouTube Course' : 'Manual Course'}
               </span>
               {totalDurationFormatted && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 text-[11px] text-muted-foreground font-mono bg-muted/60 rounded-full border border-border/40">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 text-[11px] text-zinc-600 dark:text-zinc-400 font-mono bg-white/80 dark:bg-zinc-900/80 rounded-full border border-zinc-200/80 dark:border-zinc-800/80 shadow-2xs">
                   <Clock size={11} />
                   <span>{totalDurationFormatted}</span>
                 </span>
               )}
             </div>
 
-            <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-foreground tracking-tight leading-snug">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-[#111111] dark:text-white tracking-[-0.03em] leading-snug">
               {course.title}
             </h1>
 
             {course.description && (
               <div className="space-y-1 max-w-2xl">
-                <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed">
+                <p className="text-zinc-600 dark:text-zinc-400 text-xs sm:text-sm leading-relaxed">
                   {expandedDesc 
                     ? course.description 
                     : `${course.description.slice(0, 160)}${course.description.length > 160 ? '...' : ''}`}
@@ -205,7 +211,7 @@ export default function CourseDetail() {
                 {course.description.length > 160 && (
                   <button
                     onClick={() => setExpandedDesc(!expandedDesc)}
-                    className="text-primary hover:underline text-xs font-semibold focus:outline-none cursor-pointer"
+                    className="text-zinc-950 dark:text-zinc-100 font-semibold underline underline-offset-2 text-xs focus:outline-none cursor-pointer hover:opacity-80 transition-opacity"
                   >
                     {expandedDesc ? "Show Less" : "Read More"}
                   </button>
@@ -213,11 +219,11 @@ export default function CourseDetail() {
               </div>
             )}
 
-            <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium pt-1">
-              <span className="w-5 h-5 rounded-full bg-muted border border-border/60 flex items-center justify-center font-bold text-[10px] text-foreground uppercase">
+            <div className="flex items-center gap-2 text-xs text-zinc-600 dark:text-zinc-400 font-medium pt-1">
+              <span className="w-5 h-5 rounded-full bg-zinc-200 dark:bg-zinc-800 border border-zinc-300/60 dark:border-zinc-700/60 flex items-center justify-center font-bold text-[10px] text-zinc-900 dark:text-zinc-100 uppercase">
                 {course.channelName?.charAt(0) || 'I'}
               </span>
-              <span>Instructor: <span className="text-foreground font-semibold">{course.channelName}</span></span>
+              <span>Instructor: <span className="text-zinc-950 dark:text-zinc-100 font-semibold">{course.channelName || 'Instructor'}</span></span>
             </div>
 
             {/* Action Buttons */}
@@ -233,9 +239,9 @@ export default function CourseDetail() {
                     });
                     navigate(`/courses/${courseId}/lessons/${resumeTargetLesson.id}`);
                   }}
-                  className="w-full sm:w-auto px-5 py-2.5 rounded-xl font-semibold bg-primary hover:bg-primary/90 active:scale-98 transition-all text-primary-foreground text-sm shadow-xs flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full sm:w-auto h-10 px-5 rounded-full font-medium bg-zinc-950 hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-100 transition-all text-white text-xs sm:text-sm shadow-xs flex items-center justify-center gap-2 cursor-pointer active:scale-[0.98]"
                 >
-                  {lastWatched ? <RotateCcw size={15} /> : <Play size={15} fill="currentColor" />}
+                  {lastWatched ? <RotateCcw size={14} /> : <Play size={14} fill="currentColor" />}
                   <span>{lastWatched ? 'Resume Last Video' : courseProgress > 0 ? 'Resume Course' : 'Start Course'}</span>
                 </button>
               )}
@@ -244,46 +250,46 @@ export default function CourseDetail() {
                 courseTitle={course.title}
                 label="Download Notes"
                 title={`Download ${course.title} Notes (.docx)`}
-                className="w-full sm:w-auto px-5 py-2.5 text-sm"
+                className="w-full sm:w-auto"
               />
             </div>
           </div>
         </div>
       </div>
 
-      {/* Progress & Stats Bar */}
-      <div className="rounded-2xl border border-border/60 bg-card p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-5">
+      {/* Progress & Stats Bento Bar */}
+      <div className="rounded-[24px] border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-100/70 dark:bg-zinc-900/50 p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-5 backdrop-blur-xs">
         <div className="w-full sm:w-44 flex-shrink-0">
-          <span className="text-muted-foreground text-[10px] font-bold uppercase tracking-wider block mb-1">
+          <span className="text-zinc-500 dark:text-zinc-400 text-[10px] font-bold uppercase tracking-wider block mb-1">
             Course Progress
           </span>
           <div className="flex items-baseline gap-2">
-            <span className="text-2xl sm:text-3xl font-extrabold text-foreground">{courseProgress}%</span>
-            <span className="text-muted-foreground text-xs font-medium">completed</span>
+            <span className="text-2xl sm:text-3xl font-bold text-zinc-950 dark:text-zinc-50 tracking-tight">{courseProgress}%</span>
+            <span className="text-zinc-500 dark:text-zinc-400 text-xs font-medium">completed</span>
           </div>
         </div>
 
         {/* Minimalist Progress Track */}
         <div className="flex-1 w-full space-y-1.5">
-          <div className="flex justify-between items-center text-[11px] text-muted-foreground">
-            <span>Progress Track</span>
-            <span className="font-medium font-mono">{completedCount} of {courseLessons.length} finished</span>
+          <div className="flex justify-between items-center text-[11px] text-zinc-500 dark:text-zinc-400">
+            <span className="font-medium">Curriculum Track</span>
+            <span className="font-medium font-mono text-zinc-700 dark:text-zinc-300">{completedCount} of {courseLessons.length} finished</span>
           </div>
-          <div className="w-full bg-muted/80 h-2 rounded-full overflow-hidden border border-border/30">
+          <div className="w-full bg-zinc-200/80 dark:bg-zinc-800/80 h-2 rounded-full overflow-hidden border border-zinc-300/40 dark:border-zinc-700/40">
             <div 
-              className="h-full bg-gradient-to-r from-primary via-emerald-400 to-teal-400 transition-all duration-500 ease-out rounded-full" 
+              className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-500 ease-out rounded-full" 
               style={{ width: `${courseProgress}%` }}
             />
           </div>
         </div>
 
-        <div className="w-full sm:w-auto text-left sm:text-right flex-shrink-0 border-t sm:border-t-0 sm:border-l border-border/40 pt-3 sm:pt-0 sm:pl-5">
-          <span className="text-muted-foreground text-[10px] font-bold uppercase tracking-wider block mb-1">
+        <div className="w-full sm:w-auto text-left sm:text-right flex-shrink-0 border-t sm:border-t-0 sm:border-l border-zinc-200 dark:border-zinc-800 pt-3 sm:pt-0 sm:pl-5">
+          <span className="text-zinc-500 dark:text-zinc-400 text-[10px] font-bold uppercase tracking-wider block mb-1">
             Total Lessons
           </span>
           <div className="flex items-baseline sm:justify-end gap-1.5">
-            <span className="text-xl sm:text-2xl font-extrabold text-foreground">{courseLessons.length}</span>
-            <span className="text-xs text-muted-foreground font-medium">Lectures</span>
+            <span className="text-xl sm:text-2xl font-bold text-zinc-950 dark:text-zinc-50 tracking-tight">{courseLessons.length}</span>
+            <span className="text-xs text-zinc-500 dark:text-zinc-400 font-medium">Lectures</span>
           </div>
         </div>
       </div>
@@ -292,33 +298,33 @@ export default function CourseDetail() {
       <div className="space-y-4 pt-1">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
-            <h2 className="text-lg sm:text-xl font-bold text-foreground tracking-tight">Syllabus Curriculum</h2>
-            <span className="px-2 py-0.5 rounded-full bg-muted text-[11px] font-semibold text-muted-foreground font-mono">
+            <h2 className="text-lg sm:text-xl font-bold text-zinc-950 dark:text-zinc-50 tracking-tight">Syllabus Curriculum</h2>
+            <span className="px-2.5 py-0.5 rounded-full bg-zinc-200/80 dark:bg-zinc-800 text-[11px] font-semibold text-zinc-700 dark:text-zinc-300 font-mono border border-zinc-300/60 dark:border-zinc-700/60">
               {filteredLessons.length} {filteredLessons.length === 1 ? 'lesson' : 'lessons'}
             </span>
           </div>
 
           {/* Quick search input */}
           <div className="relative w-full sm:w-64">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search lectures..."
-              className="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl border border-border/60 bg-muted/40 focus:bg-card focus:outline-none focus:ring-1 focus:ring-primary text-foreground placeholder:text-muted-foreground/70 transition"
+              className="w-full h-8.5 pl-8.5 pr-3 text-xs rounded-full border border-zinc-200/80 dark:border-zinc-800/80 bg-white/80 dark:bg-zinc-900/80 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-950 dark:focus:ring-white text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 transition shadow-2xs"
             />
           </div>
         </div>
 
         {courseLessons.length === 0 && (
-          <div className="rounded-xl border border-dashed border-border/70 p-8 text-center text-sm text-muted-foreground">
+          <div className="rounded-[24px] border border-dashed border-zinc-300 dark:border-zinc-800 p-8 text-center text-sm text-zinc-500 dark:text-zinc-400">
             This course does not contain any lessons yet.
           </div>
         )}
 
         {courseLessons.length > 0 && filteredLessons.length === 0 && (
-          <div className="rounded-xl border border-dashed border-border/70 p-8 text-center text-xs text-muted-foreground">
+          <div className="rounded-[24px] border border-dashed border-zinc-300 dark:border-zinc-800 p-8 text-center text-xs text-zinc-500 dark:text-zinc-400">
             No lessons matched "{searchQuery}".
           </div>
         )}
@@ -337,10 +343,10 @@ export default function CourseDetail() {
               <Link 
                 key={lesson.id}
                 to={`/courses/${courseId}/lessons/${lesson.id}`}
-                className={`group flex items-center justify-between gap-3 p-3 sm:p-4 rounded-xl border transition-all duration-150 ${
+                className={`group flex items-center justify-between gap-3 p-3.5 sm:p-4 rounded-2xl border transition-all duration-150 ${
                   isLastWatched 
-                    ? 'border-primary/40 bg-primary/[0.04] shadow-xs' 
-                    : 'border-border/50 bg-card hover:bg-muted/40 hover:border-border/80'
+                    ? 'border-zinc-950/25 dark:border-white/25 bg-zinc-50/90 dark:bg-zinc-900/90 shadow-2xs ring-1 ring-zinc-950/10 dark:ring-white/10' 
+                    : 'border-zinc-200/80 dark:border-zinc-800/80 bg-white/70 dark:bg-zinc-900/40 hover:bg-zinc-50/90 dark:hover:bg-zinc-800/60 hover:border-zinc-300 dark:hover:border-zinc-700'
                 }`}
               >
                 {/* Left: Index badge + Completion Icon + Title */}
@@ -348,15 +354,15 @@ export default function CourseDetail() {
                   {/* Status Indicator */}
                   <div className="flex-shrink-0">
                     {isCompleted ? (
-                      <div className="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500">
-                        <Check size={14} strokeWidth={2.5} />
+                      <div className="w-7 h-7 rounded-full bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                        <Check size={13} strokeWidth={2.5} />
                       </div>
                     ) : isLastWatched ? (
-                      <div className="w-7 h-7 rounded-lg bg-primary/10 border border-primary/30 flex items-center justify-center text-primary">
-                        <Play size={12} fill="currentColor" className="ml-0.5" />
+                      <div className="w-7 h-7 rounded-full bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 flex items-center justify-center shadow-xs">
+                        <Play size={11} fill="currentColor" className="ml-0.5" />
                       </div>
                     ) : (
-                      <div className="w-7 h-7 rounded-lg bg-muted/60 border border-border/40 flex items-center justify-center text-[11px] font-mono font-semibold text-muted-foreground group-hover:text-foreground group-hover:border-border transition-colors">
+                      <div className="w-7 h-7 rounded-full bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200/70 dark:border-zinc-700/70 flex items-center justify-center text-[11px] font-mono font-medium text-zinc-600 dark:text-zinc-400 group-hover:text-zinc-950 dark:group-hover:text-zinc-100 transition-colors">
                         {lesson.index < 10 ? `0${lesson.index}` : lesson.index}
                       </div>
                     )}
@@ -364,7 +370,7 @@ export default function CourseDetail() {
 
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <span className="block truncate text-xs sm:text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
+                      <span className="block truncate text-xs sm:text-sm font-semibold text-zinc-900 dark:text-zinc-100 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                         {lesson.title}
                       </span>
                     </div>
@@ -372,36 +378,36 @@ export default function CourseDetail() {
                     {/* In-progress mini watch time indicator */}
                     {isLastWatched && watchTimePercent !== null && (
                       <div className="mt-1.5 flex items-center gap-2">
-                        <div className="w-24 sm:w-32 h-1 bg-muted rounded-full overflow-hidden border border-border/40">
-                          <div className="h-full bg-primary rounded-full" style={{ width: `${watchTimePercent}%` }} />
+                        <div className="w-24 sm:w-32 h-1 bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden border border-zinc-300/40 dark:border-zinc-700/40">
+                          <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${watchTimePercent}%` }} />
                         </div>
-                        <span className="text-[10px] text-primary font-mono font-medium">{watchTimePercent}% watched</span>
+                        <span className="text-[10px] text-zinc-600 dark:text-zinc-400 font-mono font-medium">{watchTimePercent}% watched</span>
                       </div>
                     )}
                   </div>
                 </div>
 
                 {/* Right: Badges & Duration */}
-                <div className="flex items-center gap-3 flex-shrink-0">
+                <div className="flex items-center gap-2.5 sm:gap-3 flex-shrink-0">
                   {isLastWatched && (
-                    <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold text-primary bg-primary/10 border border-primary/20 uppercase tracking-wider">
+                    <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold text-zinc-900 dark:text-zinc-100 bg-zinc-200/80 dark:bg-zinc-800 border border-zinc-300/70 dark:border-zinc-700/70 uppercase tracking-wider">
                       In Progress
                     </span>
                   )}
 
                   {lesson.duration && lesson.duration !== '0:00' ? (
-                    <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground font-mono bg-muted/40 px-2.5 py-1 rounded-md border border-border/30 group-hover:bg-muted/70 transition-colors">
-                      <Clock size={12} />
+                    <span className="inline-flex items-center gap-1.5 text-xs text-zinc-600 dark:text-zinc-400 font-mono bg-zinc-100/80 dark:bg-zinc-800/70 px-2.5 py-1 rounded-full border border-zinc-200/70 dark:border-zinc-700/70 group-hover:bg-zinc-200/60 dark:group-hover:bg-zinc-700/60 transition-colors">
+                      <Clock size={11} />
                       <span>{lesson.duration}</span>
                     </span>
                   ) : (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-muted text-muted-foreground">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border border-zinc-200/70 dark:border-zinc-700/70">
                       Lecture
                     </span>
                   )}
 
-                  <div className="w-7 h-7 rounded-lg bg-transparent group-hover:bg-primary/10 group-hover:text-primary text-muted-foreground/40 flex items-center justify-center transition-all">
-                    <Play size={12} fill="currentColor" className="ml-0.5" />
+                  <div className="w-7 h-7 rounded-full bg-transparent group-hover:bg-zinc-200/80 dark:group-hover:bg-zinc-800 group-hover:text-zinc-950 dark:group-hover:text-zinc-100 text-zinc-400 hidden sm:flex items-center justify-center transition-all">
+                    <Play size={11} fill="currentColor" className="ml-0.5" />
                   </div>
                 </div>
               </Link>

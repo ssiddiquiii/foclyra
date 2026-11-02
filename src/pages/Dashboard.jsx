@@ -6,11 +6,9 @@ import {
   Play, 
   Clock, 
   Trash2, 
-  FileText, 
   Flame, 
   RefreshCw, 
   Loader2, 
-  CheckCircle2,
   ArrowRight,
   Link2
 } from 'lucide-react';
@@ -272,48 +270,27 @@ export default function Dashboard() {
     <div aria-busy={isLoading} className="py-5 sm:py-8 max-w-[1140px] w-full mx-auto animate-page-entry flex-1 flex flex-col">
       {sortedCourses.length === 0 ? (
         /* =========================================================================
-           EMPTY STATE: Editorial Hero + Bento Importer (Matches LandingPage.jsx)
+           EMPTY STATE: Editorial Hero + Bento Importer (Refined Minimalist)
            ========================================================================= */
-        <div className="my-auto py-4 sm:py-10 max-w-[760px] w-full mx-auto space-y-6 sm:space-y-8 text-center">
-          {/* Top Status Pill & Showcase Link */}
-          <div className="flex flex-wrap items-center justify-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#f4f4f4] dark:bg-zinc-900 border border-[#e5e5e5] dark:border-zinc-800 text-[11.5px] sm:text-[12.5px] font-medium text-[#111111] dark:text-zinc-200">
-              <span className="size-1.5 rounded-full bg-[#63d94e]" />
-              <span>Distraction-Free Study Studio</span>
-            </span>
-
-            <Link
-              to="/"
-              className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#f4f4f4] dark:bg-zinc-900 hover:bg-[#eaeaea] dark:hover:bg-zinc-800 border border-[#e5e5e5] dark:border-zinc-800 text-[11.5px] sm:text-[12.5px] font-medium text-[#666666] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white transition"
-            >
-              <span>Feature Showcase</span>
-              <ArrowRight className="size-3" />
-            </Link>
-          </div>
-
-          {/* Editorial Heading */}
-          <div className="space-y-3">
-            <h1 className="text-[clamp(24px,5.5vw,54px)] leading-[1.08] font-semibold tracking-[-0.04em] text-[#111111] dark:text-white">
-              <span className="block">
-                Import your first{' '}
-                <BrandTile bg="bg-[#FF0033]" text="text-white" rotate="-rotate-4" size="lg">
-                  <Play className="size-[46%] fill-white text-white ml-[2%]" />
-                </BrandTile>
-                YouTube
-              </span>
-              <span className="block bg-[linear-gradient(180deg,#111_0%,#111_30%,#9e9e9e_100%)] dark:bg-[linear-gradient(180deg,#fff_0%,#fff_30%,#666_100%)] bg-clip-text pb-[.08em] text-transparent">
-                playlist to start studying.
-              </span>
+        <div className="my-auto py-8 sm:py-16 max-w-[680px] w-full mx-auto space-y-6 sm:space-y-7 text-center">
+          {/* Punchy Editorial Heading & Subtitle */}
+          <div className="space-y-2.5">
+            <h1 className="text-[clamp(28px,5vw,48px)] leading-[1.1] font-semibold tracking-[-0.035em] text-[#111111] dark:text-white">
+              Study any{' '}
+              <BrandTile bg="bg-[#FF0033]" text="text-white" rotate="-rotate-4" size="lg">
+                <Play className="size-[46%] fill-white text-white ml-[2%]" />
+              </BrandTile>{' '}
+              YouTube playlist.
             </h1>
 
-            <p className="mx-auto max-w-[560px] text-[13.5px] sm:text-[15.5px] leading-[1.6] text-[#666666] dark:text-zinc-400">
-              Paste any public or unlisted YouTube playlist or video link below. Watch in Theater Mode, save timestamped notes, and export to Word (.docx).
+            <p className="mx-auto max-w-[460px] text-[13.5px] sm:text-[15px] leading-relaxed text-[#666666] dark:text-zinc-400">
+              Distraction-free lectures with timestamped notes.
             </p>
           </div>
 
           {/* Bento Importer Bar */}
-          <form onSubmit={(e) => handleDirectImport(e)} className="w-full max-w-[640px] mx-auto">
-            <div className="rounded-[20px] sm:rounded-full bg-[#f4f4f4] dark:bg-zinc-900/90 p-2 sm:p-2 border border-[#e5e5e5] dark:border-zinc-800 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+          <form onSubmit={(e) => handleDirectImport(e)} className="w-full max-w-[620px] mx-auto">
+            <div className="rounded-[20px] sm:rounded-full bg-[#f4f4f4] dark:bg-zinc-900/90 p-2 sm:p-2 border border-[#e5e5e5] dark:border-zinc-800 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 shadow-2xs">
               <div className="flex items-center gap-2.5 px-3.5 py-2 sm:py-0 flex-1 min-w-0 bg-white dark:bg-[#111113] sm:bg-transparent sm:dark:bg-transparent rounded-full border border-[#e5e5e5] dark:border-zinc-800 sm:border-0">
                 <Link2 className="size-4 text-[#6f6f6f] shrink-0" />
                 <input
@@ -329,7 +306,7 @@ export default function Dashboard() {
               <button
                 type="submit"
                 disabled={isDirectImporting || !directUrl.trim()}
-                className="inline-flex h-9 sm:h-10 items-center justify-center gap-2 rounded-full bg-[#111111] dark:bg-white px-5 sm:px-6 text-[12.5px] sm:text-[13.5px] font-medium text-white dark:text-[#111111] hover:opacity-90 transition cursor-pointer disabled:opacity-40 shrink-0 whitespace-nowrap"
+                className="inline-flex h-9 sm:h-10 items-center justify-center gap-2 rounded-full bg-[#111111] dark:bg-white px-5 sm:px-6 text-[12.5px] sm:text-[13.5px] font-medium text-white dark:text-[#111111] hover:opacity-90 transition cursor-pointer disabled:opacity-40 shrink-0 whitespace-nowrap active:scale-[0.98]"
               >
                 {isDirectImporting ? (
                   <Loader2 className="size-3.5 animate-spin" />
@@ -343,55 +320,30 @@ export default function Dashboard() {
             </div>
           </form>
 
-          {/* Starter Courses Bento Grid */}
-          <div className="space-y-3 pt-1 text-left max-w-[640px] mx-auto">
-            <div className="text-[12px] sm:text-[13px] font-medium text-[#6f6f6f] dark:text-zinc-400 text-center">
-              Or try a starter playlist with one click
+          {/* Compact Starter Quick-Pills */}
+          <div className="pt-2 flex flex-col items-center gap-2.5 max-w-[620px] mx-auto">
+            <div className="text-[11.5px] sm:text-[12px] font-medium text-[#888888] dark:text-zinc-500">
+              Or try a starter playlist:
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
+            <div className="flex flex-wrap items-center justify-center gap-2">
               {STARTER_COURSES.map((item) => (
                 <button
                   key={item.url}
                   type="button"
                   disabled={isDirectImporting}
                   onClick={() => handleQuickStart(item.url)}
-                  className="p-3.5 sm:p-4 rounded-[18px] bg-[#f4f4f4] dark:bg-zinc-900/90 border border-[#e5e5e5] dark:border-zinc-800 hover:border-[#111111]/25 dark:hover:border-white/25 transition text-left cursor-pointer group flex flex-col justify-between gap-3 disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full bg-[#f4f4f4] dark:bg-zinc-900 hover:bg-[#eaeaea] dark:hover:bg-zinc-800 border border-[#e5e5e5] dark:border-zinc-800 text-[11.5px] sm:text-[12px] font-medium text-[#111111] dark:text-zinc-200 transition cursor-pointer disabled:opacity-50 group shadow-2xs"
                   title={`Import ${item.title} by ${item.channel}`}
                 >
-                  <div className="flex items-center justify-between w-full">
-                    <span className="px-2 py-0.5 rounded-full bg-white dark:bg-zinc-800 border border-[#e5e5e5] dark:border-zinc-700 font-mono text-[10px] font-medium text-[#666666] dark:text-zinc-300">
-                      {item.tag}
-                    </span>
-                    <ArrowRight className="size-3.5 text-[#8d8d8d] group-hover:text-[#111111] dark:group-hover:text-white group-hover:translate-x-0.5 transition" />
-                  </div>
-                  <div className="min-w-0">
-                    <div className="text-[13.5px] font-semibold tracking-[-0.01em] text-[#111111] dark:text-white truncate">
-                      {item.title}
-                    </div>
-                    <div className="text-[11.5px] text-[#6f6f6f] dark:text-zinc-400 truncate mt-0.5">
-                      {item.channel}
-                    </div>
-                  </div>
+                  <span className="font-mono text-[9px] font-bold text-[#666666] dark:text-zinc-400 px-1 py-0.5 rounded bg-white dark:bg-zinc-800 border border-[#e5e5e5] dark:border-zinc-700/80">
+                    {item.tag}
+                  </span>
+                  <span className="truncate max-w-[130px] sm:max-w-none">{item.title}</span>
+                  <ArrowRight className="size-3 text-[#888888] group-hover:text-[#111111] dark:group-hover:text-white group-hover:translate-x-0.5 transition" />
                 </button>
               ))}
             </div>
-          </div>
-
-          {/* 3 Feature Trust Pills */}
-          <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#f4f4f4] dark:bg-zinc-900 text-[11.5px] sm:text-[12.5px] font-medium text-[#666666] dark:text-zinc-300 whitespace-nowrap">
-              <CheckCircle2 className="size-3.5 text-[#16a34a] shrink-0" />
-              <span>No sidebar recommendations</span>
-            </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#f4f4f4] dark:bg-zinc-900 text-[11.5px] sm:text-[12.5px] font-medium text-[#666666] dark:text-zinc-300 whitespace-nowrap">
-              <Clock className="size-3.5 text-[#F5C542] shrink-0" />
-              <span>Timestamped lecture notes</span>
-            </span>
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#f4f4f4] dark:bg-zinc-900 text-[11.5px] sm:text-[12.5px] font-medium text-[#666666] dark:text-zinc-300 whitespace-nowrap">
-              <FileText className="size-3.5 text-[#2563EB] shrink-0" />
-              <span>Word (.docx) export</span>
-            </span>
           </div>
         </div>
       ) : (
@@ -453,32 +405,32 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              <form onSubmit={(e) => handleDirectImport(e)} className="flex flex-col sm:flex-row gap-2">
-                <div className="flex items-center gap-2 flex-1 min-w-0 bg-white dark:bg-[#111113] border border-[#e5e5e5] dark:border-zinc-800 rounded-full px-3.5 h-9 sm:h-10">
-                  <Link2 className="size-3.5 text-[#8d8d8d] shrink-0" />
+              <form onSubmit={(e) => handleDirectImport(e)} className="w-full">
+                <div className="flex items-center bg-white dark:bg-[#111113] border border-[#e5e5e5] dark:border-zinc-800 rounded-full pl-3.5 sm:pl-4 pr-1.5 h-11 sm:h-12 focus-within:border-zinc-950 dark:focus-within:border-white focus-within:ring-1 focus-within:ring-zinc-950 dark:focus-within:ring-white transition shadow-2xs">
+                  <Link2 className="size-4 text-[#8d8d8d] shrink-0 mr-2" />
                   <input
                     type="text"
                     value={directUrl}
                     onChange={(e) => setDirectUrl(e.target.value)}
-                    placeholder="Paste YouTube playlist or video link..."
+                    placeholder="Paste playlist or video URL..."
                     disabled={isDirectImporting}
-                    className="w-full bg-transparent text-[12.5px] sm:text-[13.5px] text-[#111111] dark:text-white placeholder:text-[#8d8d8d] dark:placeholder:text-zinc-500 focus:outline-none"
+                    className="w-full bg-transparent text-[12.5px] sm:text-[13.5px] text-[#111111] dark:text-white placeholder:text-[#8d8d8d] dark:placeholder:text-zinc-500 focus:outline-none min-w-0 pr-2"
                   />
+                  <button
+                    type="submit"
+                    disabled={isDirectImporting || !directUrl.trim()}
+                    className="inline-flex h-8 sm:h-9 items-center justify-center gap-1.5 rounded-full bg-[#111111] dark:bg-white px-3.5 sm:px-4 text-[12px] sm:text-[12.5px] font-medium text-white dark:text-[#111111] hover:opacity-90 transition cursor-pointer disabled:opacity-40 shrink-0 whitespace-nowrap active:scale-[0.98] shadow-xs"
+                  >
+                    {isDirectImporting ? (
+                      <Loader2 className="size-3.5 animate-spin" />
+                    ) : (
+                      <>
+                        <span>Import</span>
+                        <ArrowRight className="size-3.5" />
+                      </>
+                    )}
+                  </button>
                 </div>
-                <button
-                  type="submit"
-                  disabled={isDirectImporting || !directUrl.trim()}
-                  className="inline-flex h-9 sm:h-10 items-center justify-center gap-1.5 rounded-full bg-[#111111] dark:bg-white px-4 sm:px-5 text-[12px] sm:text-[13px] font-medium text-white dark:text-[#111111] hover:opacity-90 transition cursor-pointer disabled:opacity-40 shrink-0 whitespace-nowrap self-start sm:self-auto"
-                >
-                  {isDirectImporting ? (
-                    <Loader2 className="size-3.5 animate-spin" />
-                  ) : (
-                    <>
-                      <span>Import</span>
-                      <ArrowRight className="size-3.5" />
-                    </>
-                  )}
-                </button>
               </form>
             </div>
 
