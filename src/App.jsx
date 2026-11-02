@@ -153,7 +153,7 @@ function AppContent() {
   return (
     <div
       className={`relative flex bg-white dark:bg-[#0a0a0c] text-[#111111] dark:text-[#f5f5f7] font-sans antialiased selection:bg-[#F5C542]/40 transition-colors duration-150 ${
-        isWatchPage ? 'h-screen xl:h-dvh overflow-hidden' : 'min-h-screen'
+        isWatchPage ? 'min-h-screen xl:h-dvh xl:overflow-hidden' : 'min-h-screen'
       }`}
     >
       {/* Mobile Backdrop Overlay when Drawer is Open */}
@@ -166,8 +166,9 @@ function AppContent() {
         />
       )}
 
-      {/* Mobile Top Header Bar — Matches Landing Page Navbar */}
-      <header className="safe-area-header fixed inset-x-0 top-0 z-40 flex h-14 items-center justify-between border-b border-[#efefef] dark:border-zinc-800/70 bg-white/85 dark:bg-[#0a0a0c]/85 px-3.5 backdrop-blur-xl lg:hidden">
+      {/* Mobile Top Header Bar — Matches Landing Page Navbar (Hidden on Watch page) */}
+      {!isWatchPage && (
+        <header className="safe-area-header fixed inset-x-0 top-0 z-40 flex h-14 items-center justify-between border-b border-[#efefef] dark:border-zinc-800/70 bg-white/85 dark:bg-[#0a0a0c]/85 px-3.5 backdrop-blur-xl lg:hidden">
         <div className="flex items-center gap-2">
           <button
             ref={menuButtonRef}
@@ -224,6 +225,7 @@ function AppContent() {
           </button>
         </div>
       </header>
+      )}
 
       {/* Desktop Floating Vertical Navigation Dock — Editorial Pill Aesthetic */}
       <aside
@@ -338,6 +340,17 @@ function AppContent() {
                 </Link>
               );
             })}
+                      <button
+              type="button"
+              onClick={() => {
+                closeMobileSidebar();
+                openFeedbackModal();
+              }}
+              className="w-full flex h-11 items-center gap-3 rounded-full px-4 text-[13.5px] font-medium transition text-[#666666] dark:text-zinc-400 hover:bg-[#f4f4f4] dark:hover:bg-zinc-900 hover:text-[#111111] dark:hover:text-white cursor-pointer"
+            >
+              <MessageSquarePlus className="size-4" />
+              <span>Feedback & Help</span>
+            </button>
           </nav>
         </div>
 
@@ -351,11 +364,11 @@ function AppContent() {
       <main
         className={`min-w-0 flex-1 flex flex-col ${
           isWatchPage
-            ? 'p-0 h-full overflow-hidden lg:pl-20'
+            ? 'p-0 min-h-screen xl:h-full xl:overflow-hidden lg:pl-20'
             : 'safe-area-main pt-14 lg:pt-0 lg:pl-20 xl:pl-22 justify-between'
         }`}
       >
-        <div className={`w-full min-w-0 flex flex-col ${isWatchPage ? 'h-full overflow-hidden' : 'flex-1'}`}>
+        <div className={`w-full min-w-0 flex flex-col ${isWatchPage ? 'min-h-screen xl:h-full xl:overflow-hidden' : 'flex-1'}`}>
           {/* Desktop Top Header Bar — Matches Landing Page Header */}
           {!isWatchPage && (
             <header className="hidden lg:block w-full border-b border-[#efefef] dark:border-zinc-800/70 bg-white/85 dark:bg-[#0a0a0c]/85 backdrop-blur-xl sticky top-0 z-30">
@@ -470,7 +483,7 @@ function AppContent() {
 
       {/* Floating Feedback Trigger Pill (Left bottom, mirroring Pomodoro on Right) */}
       {!location.pathname.includes('/lessons/') && (
-        <aside aria-label="Feedback and suggestions" className="fixed bottom-3 left-3 sm:left-4 z-40 will-change-transform">
+        <aside aria-label="Feedback and suggestions" className="fixed bottom-3 left-3 sm:left-4 z-40 will-change-transform hidden lg:block">
           <button
             type="button"
             onClick={openFeedbackModal}

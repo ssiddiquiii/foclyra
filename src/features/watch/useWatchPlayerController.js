@@ -133,7 +133,7 @@ export function useWatchPlayerController({ courseId, lessonId, lesson, progressL
         setIsPlaying(false);
         stopTracking();
         if (state === window.YT.PlayerState.PAUSED) persistPlayer();
-        if (state === window.YT.PlayerState.ENDED) persistPlayer({ ended: true });
+        if (state === window.YT.PlayerState.ENDED) persistPlayer({ ended: true, completed: true });
       }
     };
 

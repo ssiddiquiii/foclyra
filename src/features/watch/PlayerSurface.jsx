@@ -131,7 +131,7 @@ export function PlayerSurface({
         ref={controller.playerContainerRef} 
         onMouseMove={controller.handleMouseMove} 
         onMouseLeave={controller.handleMouseLeave} 
-        className={`relative aspect-video w-full max-w-7xl mx-auto rounded-[24px] overflow-hidden bg-black flex items-center justify-center shadow-md border border-zinc-200/80 dark:border-zinc-800/80 group/player ${!controller.isControlsVisible && controller.isPlaying ? 'cursor-none' : ''}`}
+        className={`relative aspect-video w-full landscape:w-auto landscape:max-h-[72vh] max-w-7xl mx-auto rounded-[20px] sm:rounded-[24px] overflow-hidden bg-black flex items-center justify-center shadow-md border border-zinc-200/80 dark:border-zinc-800/80 group/player ${!controller.isControlsVisible && controller.isPlaying ? 'cursor-none' : ''}`}
       >
         {/* Prev / Next buttons inside video on hover */}
         {prevLessonId && (

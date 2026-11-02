@@ -22,7 +22,8 @@ export function createPlaybackPersistenceSession({ courseId, lessonId, writeProg
   function persist({ seconds, duration, completed = false, ended = false }) {
     const boundedSeconds = ended ? Math.max(0, duration || seconds || 0) : clampPlaybackTime(seconds, duration);
     const roundedSeconds = Math.max(0, Math.round(boundedSeconds));
-    const stickyCompletionSignal = ended || completed ||
+    // Udemy-style: automatic completion upon video end or reaching 90%+ duration
+    const stickyCompletionSignal = completed || ended ||
       (Number.isFinite(duration) && duration > 0 && boundedSeconds / duration >= COMPLETION_THRESHOLD);
     const signature = `${roundedSeconds}:${stickyCompletionSignal}`;
     if (signature === lastRequested) return writeQueue;

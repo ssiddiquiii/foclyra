@@ -133,22 +133,22 @@ export default function CourseDetail() {
   const resumeTargetLesson = resumeLesson || courseLessons[0];
 
   return (
-    <div className="p-3.5 sm:p-6 lg:p-8 max-w-5xl mx-auto space-y-6 animate-page-entry min-w-0 w-full">
+    <div className="p-3.5 sm:p-6 lg:p-8 pb-24 sm:pb-16 max-w-5xl mx-auto space-y-6 animate-page-entry min-w-0 w-full">
       {/* Top Navigation Breadcrumbs & Sync Action */}
       <div className="flex items-center justify-between gap-3">
         <Link 
           to="/studio" 
-          className="inline-flex items-center gap-1.5 h-8 px-3.5 rounded-full border border-zinc-200/80 dark:border-zinc-800/80 bg-white/80 dark:bg-zinc-900/80 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs font-medium text-zinc-600 dark:text-zinc-300 transition-colors shadow-xs group"
+          className="inline-flex items-center gap-1.5 h-8 px-3 sm:px-3.5 rounded-full border border-zinc-200/80 dark:border-zinc-800/80 bg-white/80 dark:bg-zinc-900/80 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs font-medium text-zinc-600 dark:text-zinc-300 transition-colors shadow-xs group shrink-0 whitespace-nowrap"
         >
           <ArrowLeft size={13} className="group-hover:-translate-x-0.5 transition-transform text-zinc-400 dark:text-zinc-500 group-hover:text-zinc-900 dark:group-hover:text-zinc-100" />
-          <span>Back to Studio</span>
+          <span><span className="hidden xs:inline">Back to </span>Studio</span>
         </Link>
 
         {course.type === 'youtube' && (
           <button
             onClick={handleSyncPlaylist}
             disabled={isSyncing}
-            className="inline-flex items-center gap-1.5 h-8 px-3.5 rounded-full border border-zinc-200/80 dark:border-zinc-800/80 bg-white/80 dark:bg-zinc-900/80 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs font-medium text-zinc-700 dark:text-zinc-300 transition-colors cursor-pointer disabled:opacity-50 shadow-xs"
+            className="inline-flex items-center gap-1.5 h-8 px-3 sm:px-3.5 rounded-full border border-zinc-200/80 dark:border-zinc-800/80 bg-white/80 dark:bg-zinc-900/80 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs font-medium text-zinc-700 dark:text-zinc-300 transition-colors cursor-pointer disabled:opacity-50 shadow-xs shrink-0 whitespace-nowrap"
             title="Sync complete lecture catalog from YouTube"
           >
             <RefreshCw size={12} className={isSyncing ? "animate-spin text-emerald-500" : "text-zinc-400 dark:text-zinc-500"} />
@@ -257,25 +257,38 @@ export default function CourseDetail() {
         </div>
       </div>
 
-      {/* Progress & Stats Bento Bar */}
-      <div className="rounded-[24px] border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-100/70 dark:bg-zinc-900/50 p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-5 backdrop-blur-xs">
-        <div className="w-full sm:w-44 flex-shrink-0">
-          <span className="text-zinc-500 dark:text-zinc-400 text-[10px] font-bold uppercase tracking-wider block mb-1">
-            Course Progress
-          </span>
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl sm:text-3xl font-bold text-zinc-950 dark:text-zinc-50 tracking-tight">{courseProgress}%</span>
-            <span className="text-zinc-500 dark:text-zinc-400 text-xs font-medium">completed</span>
+      {/* Progress & Stats Bento Bar — Compact on mobile */}
+      <div className="rounded-[22px] sm:rounded-[24px] border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-100/70 dark:bg-zinc-900/50 p-4 sm:p-6 shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-5 backdrop-blur-xs">
+        {/* Header row on mobile: Progress left, Total lessons right */}
+        <div className="flex items-center justify-between sm:justify-start gap-4">
+          <div className="sm:w-44 flex-shrink-0">
+            <span className="text-zinc-500 dark:text-zinc-400 text-[10px] font-bold uppercase tracking-wider block mb-0.5">
+              Course Progress
+            </span>
+            <div className="flex items-baseline gap-1.5 sm:gap-2">
+              <span className="text-xl sm:text-3xl font-bold text-zinc-950 dark:text-zinc-50 tracking-tight">{courseProgress}%</span>
+              <span className="text-zinc-500 dark:text-zinc-400 text-[11px] sm:text-xs font-medium">completed</span>
+            </div>
+          </div>
+
+          <div className="sm:hidden text-right flex-shrink-0">
+            <span className="text-zinc-500 dark:text-zinc-400 text-[10px] font-bold uppercase tracking-wider block mb-0.5">
+              Total Lessons
+            </span>
+            <div className="flex items-baseline justify-end gap-1">
+              <span className="text-xl font-bold text-zinc-950 dark:text-zinc-50 tracking-tight">{courseLessons.length}</span>
+              <span className="text-[11px] text-zinc-500 dark:text-zinc-400 font-medium">Lectures</span>
+            </div>
           </div>
         </div>
 
         {/* Minimalist Progress Track */}
-        <div className="flex-1 w-full space-y-1.5">
-          <div className="flex justify-between items-center text-[11px] text-zinc-500 dark:text-zinc-400">
+        <div className="flex-1 w-full space-y-1 sm:space-y-1.5">
+          <div className="flex justify-between items-center text-[10.5px] sm:text-[11px] text-zinc-500 dark:text-zinc-400">
             <span className="font-medium">Curriculum Track</span>
             <span className="font-medium font-mono text-zinc-700 dark:text-zinc-300">{completedCount} of {courseLessons.length} finished</span>
           </div>
-          <div className="w-full bg-zinc-200/80 dark:bg-zinc-800/80 h-2 rounded-full overflow-hidden border border-zinc-300/40 dark:border-zinc-700/40">
+          <div className="w-full bg-zinc-200/80 dark:bg-zinc-800/80 h-1.5 sm:h-2 rounded-full overflow-hidden border border-zinc-300/40 dark:border-zinc-700/40">
             <div 
               className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-500 ease-out rounded-full" 
               style={{ width: `${courseProgress}%` }}
@@ -283,12 +296,13 @@ export default function CourseDetail() {
           </div>
         </div>
 
-        <div className="w-full sm:w-auto text-left sm:text-right flex-shrink-0 border-t sm:border-t-0 sm:border-l border-zinc-200 dark:border-zinc-800 pt-3 sm:pt-0 sm:pl-5">
+        {/* Desktop Total Lessons */}
+        <div className="hidden sm:block text-right flex-shrink-0 border-l border-zinc-200 dark:border-zinc-800 pl-5">
           <span className="text-zinc-500 dark:text-zinc-400 text-[10px] font-bold uppercase tracking-wider block mb-1">
             Total Lessons
           </span>
-          <div className="flex items-baseline sm:justify-end gap-1.5">
-            <span className="text-xl sm:text-2xl font-bold text-zinc-950 dark:text-zinc-50 tracking-tight">{courseLessons.length}</span>
+          <div className="flex items-baseline justify-end gap-1.5">
+            <span className="text-2xl font-bold text-zinc-950 dark:text-zinc-50 tracking-tight">{courseLessons.length}</span>
             <span className="text-xs text-zinc-500 dark:text-zinc-400 font-medium">Lectures</span>
           </div>
         </div>
@@ -297,9 +311,9 @@ export default function CourseDetail() {
       {/* Syllabus Curriculum Section */}
       <div className="space-y-4 pt-1">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5">
-            <h2 className="text-lg sm:text-xl font-bold text-zinc-950 dark:text-zinc-50 tracking-tight">Syllabus Curriculum</h2>
-            <span className="px-2.5 py-0.5 rounded-full bg-zinc-200/80 dark:bg-zinc-800 text-[11px] font-semibold text-zinc-700 dark:text-zinc-300 font-mono border border-zinc-300/60 dark:border-zinc-700/60">
+          <div className="flex items-center justify-between sm:justify-start gap-2.5 min-w-0">
+            <h2 className="text-base sm:text-xl font-bold text-zinc-950 dark:text-zinc-50 tracking-tight whitespace-nowrap">Syllabus Curriculum</h2>
+            <span className="px-2.5 py-0.5 rounded-full bg-zinc-200/80 dark:bg-zinc-800 text-[10.5px] sm:text-[11px] font-semibold text-zinc-700 dark:text-zinc-300 font-mono border border-zinc-300/60 dark:border-zinc-700/60 shrink-0 whitespace-nowrap">
               {filteredLessons.length} {filteredLessons.length === 1 ? 'lesson' : 'lessons'}
             </span>
           </div>
@@ -354,7 +368,7 @@ export default function CourseDetail() {
                   {/* Status Indicator */}
                   <div className="flex-shrink-0">
                     {isCompleted ? (
-                      <div className="w-7 h-7 rounded-full bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                      <div className="w-7 h-7 rounded-full bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 flex items-center justify-center shadow-xs">
                         <Check size={13} strokeWidth={2.5} />
                       </div>
                     ) : isLastWatched ? (

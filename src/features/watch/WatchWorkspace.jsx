@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { CheckCircle2, Circle, Clock, FileText, ListVideo, Search, ChevronRight } from 'lucide-react';
+import { Check, CheckCircle2, Circle, Clock, FileText, ListVideo, Search, ChevronRight } from 'lucide-react';
 import { NotesPanel } from './NotesPanel';
 
 /**
@@ -57,7 +57,9 @@ export function PlaylistSyllabusList({ courseId, lessonId, lessons, progressList
             >
               <div className="flex items-center gap-2.5 min-w-0">
                 {isCompleted ? (
-                  <CheckCircle2 className="text-emerald-500 flex-shrink-0" size={15} fill="currentColor" />
+                  <div className="w-4 h-4 rounded-full bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 flex items-center justify-center flex-shrink-0 shadow-2xs">
+                    <Check size={10} strokeWidth={3} />
+                  </div>
                 ) : (
                   <Circle className="text-zinc-300 dark:text-zinc-600 group-hover:text-zinc-400 dark:group-hover:text-zinc-500 flex-shrink-0" size={15} />
                 )}
