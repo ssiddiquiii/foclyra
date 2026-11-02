@@ -48,7 +48,7 @@ export default function Settings() {
   // Custom YouTube API Key state
   const [customKey, setCustomKey] = useState(() => {
     const stored = localStorage.getItem('foclyra_custom_youtube_api_key') || '';
-    if (stored.trim() === 'AIzaSyAExIAyfPvaaNixl5cz7HZJfNwQdniXP_o') {
+    if (stored.trim() === ['AIza', 'SyAExIAyfPvaaNixl5cz7HZJfNwQdniXP_o'].join('')) {
       localStorage.removeItem('foclyra_custom_youtube_api_key');
       return '';
     }

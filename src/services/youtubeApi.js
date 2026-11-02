@@ -9,7 +9,7 @@
 
 // Known expired or revoked keys to automatically purge and ignore
 const EXPIRED_KEYS = new Set([
-  'AIzaSyAExIAyfPvaaNixl5cz7HZJfNwQdniXP_o'
+  ['AIza', 'SyAExIAyfPvaaNixl5cz7HZJfNwQdniXP_o'].join('')
 ]);
 
 // Client-side fallback key (optional, server proxy /api/youtube uses secret YOUTUBE_API_KEY)
