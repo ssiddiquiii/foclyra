@@ -22,6 +22,7 @@ export default function AuthModal({ isOpen: propIsOpen, onClose: propOnClose, co
   
   // Default to signup when opening from guest limit, otherwise signin
   const [authMode, setAuthMode] = useState(() => (context === 'guest_limit' ? 'signup' : 'signin'));
+  const isReturningUser = context === 'returning_user';
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
@@ -34,6 +35,8 @@ export default function AuthModal({ isOpen: propIsOpen, onClose: propOnClose, co
       trackEvent('auth_modal_opened', { context: context || 'default' });
       if (context === 'guest_limit') {
         setAuthMode('signup');
+      } else if (context === 'returning_user') {
+        setAuthMode('signin');
       }
       setErrorMsg(null);
       setSuccessMsg(null);
@@ -139,7 +142,9 @@ export default function AuthModal({ isOpen: propIsOpen, onClose: propOnClose, co
               <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 text-zinc-950 dark:text-zinc-50 text-[10.5px] font-semibold mb-2">
                 <Sparkles size={11} />
                 <span>
-                  {isGuestLimit 
+                  {isReturningUser
+                    ? 'Welcome Back'
+                    : isGuestLimit 
                     ? 'Guest Trial Complete' 
                     : isRegisteredLimit 
                     ? 'Quota Limit Reached' 
@@ -150,7 +155,9 @@ export default function AuthModal({ isOpen: propIsOpen, onClose: propOnClose, co
               </div>
               
               <h2 className="text-xl sm:text-[22px] font-semibold text-[#111111] dark:text-white tracking-[-0.025em] leading-snug">
-                {isGuestLimit 
+                {isReturningUser
+                  ? 'Sign in to your Foclyra Account'
+                  : isGuestLimit 
                   ? 'Unlock 5 Free Course Slots' 
                   : isRegisteredLimit 
                   ? '5/5 Study Playlists In Use' 
@@ -160,7 +167,9 @@ export default function AuthModal({ isOpen: propIsOpen, onClose: propOnClose, co
               </h2>
               
               <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1 leading-relaxed">
-                {isGuestLimit
+                {isReturningUser
+                  ? 'Welcome back! Sign in to import this playlist directly into your account and access all your saved courses and notes.'
+                  : isGuestLimit
                   ? "Create a free account to unlock up to 5 study courses, automatic cloud backup, and multi-device notes."
                   : isRegisteredLimit
                   ? 'You have reached the 5-playlist quota. You can delete or archive a course in Studio anytime to make space!'

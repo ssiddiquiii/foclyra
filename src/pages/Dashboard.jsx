@@ -17,7 +17,7 @@ import ExportNotesButton from '../components/ExportNotesButton';
 import { calculateStreak, getActiveDateSet } from '../utils/streakUtils';
 import { fetchYouTubePlaylistData, validateYouTubeUrlOrId } from '../services/youtubeApi';
 import { deleteCourse, importCourse } from '../services/dataCommands';
-import { checkPlaylistImportQuota, trackCourseImport, trackCourseRemoval } from '../services/quotaService';
+import { checkPlaylistImportQuota, trackCourseImport, trackCourseRemoval, isReturningRegisteredUser } from '../services/quotaService';
 import { useAuth } from '../hooks/useAuth';
 import { DeleteCourseDialog } from '../features/dashboard/DashboardSections';
 import { toast } from '../components/ui/toast';
@@ -132,6 +132,18 @@ export default function Dashboard() {
     try {
       const quota = await checkPlaylistImportQuota({ user, playlistId: validation.id || urlToUse });
       if (!quota.allowed) {
+        if (quota.reason === 'RETURNING_USER_SIGNIN_REQUIRED') {
+          trackEvent('returning_user_quota_blocked');
+          sessionStorage.setItem('foclyra_pending_import_url', urlToUse);
+          openAuthModal('returning_user');
+          toast.add({
+            title: 'Sign in to continue',
+            description: 'You have an active Foclyra account! Please sign in to import this course and access your library.',
+            type: 'info',
+            timeout: 6000,
+          });
+          return;
+        }
         if (quota.reason === 'GUEST_LIMIT_REACHED') {
           trackEvent('guest_trial_exhausted');
           openAuthModal('guest_limit');
@@ -294,6 +306,20 @@ export default function Dashboard() {
            ========================================================================= */
         <div className="my-auto py-8 sm:py-16 max-w-[680px] w-full mx-auto space-y-6 sm:space-y-7 text-center">
           {/* Punchy Editorial Heading & Subtitle */}
+          {!user && isReturningRegisteredUser() && (
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#f4f4f4] dark:bg-zinc-900 border border-[#e5e5e5] dark:border-zinc-800 text-[#111111] dark:text-zinc-200 text-[11.5px] sm:text-[12px] font-medium mx-auto shadow-2xs">
+              <span className="size-1.5 rounded-full bg-[#63d94e]" />
+              <span>Welcome back! You have an existing account.</span>
+              <button
+                type="button"
+                onClick={() => openAuthModal('returning_user')}
+                className="font-semibold underline hover:no-underline cursor-pointer text-[#111111] dark:text-white ml-0.5"
+              >
+                Sign in to your library →
+              </button>
+            </div>
+          )}
+
           <div className="space-y-2.5">
             <h1 className="text-[clamp(28px,5vw,48px)] leading-[1.1] font-semibold tracking-[-0.035em] text-[#111111] dark:text-white">
               Study any{' '}

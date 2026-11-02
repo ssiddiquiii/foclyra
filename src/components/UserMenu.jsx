@@ -5,7 +5,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useUIStore } from '../hooks/useUIStore';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db/FoclyraDB';
-import { REGISTERED_MAX_PLAYLISTS, GUEST_MAX_PLAYLISTS, getGuestImportHistory } from '../services/quotaService';
+import { REGISTERED_MAX_PLAYLISTS, GUEST_MAX_PLAYLISTS, getGuestImportHistory, isReturningRegisteredUser } from '../services/quotaService';
 
 export default function UserMenu({ onOpenAuth }) {
   const navigate = useNavigate();
@@ -32,17 +32,23 @@ export default function UserMenu({ onOpenAuth }) {
   }, []);
 
   if (!user) {
+    const isReturning = isReturningRegisteredUser();
     const guestHistory = getGuestImportHistory();
-    const isGuestExhausted = guestHistory.length >= GUEST_MAX_PLAYLISTS;
+    const isGuestExhausted = !isReturning && guestHistory.length >= GUEST_MAX_PLAYLISTS;
 
     return (
       <div className="flex items-center gap-2">
-        {isGuestExhausted && (
+        {isReturning ? (
+          <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#f4f4f4] dark:bg-zinc-900 border border-[#e5e5e5] dark:border-zinc-800 text-[#111111] dark:text-zinc-200 text-[11px] font-medium">
+            <span className="size-1.5 rounded-full bg-[#63d94e]" />
+            <span>Welcome Back</span>
+          </span>
+        ) : isGuestExhausted ? (
           <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#f4f4f4] dark:bg-zinc-900 border border-[#e5e5e5] dark:border-zinc-800 text-[#111111] dark:text-zinc-200 text-[11px] font-medium">
             <span className="size-1.5 rounded-full bg-[#F5C542]" />
             <span>Trial Used</span>
           </span>
-        )}
+        ) : null}
         <button
           type="button"
           onClick={handleOpenAuth}

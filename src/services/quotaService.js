@@ -2,8 +2,35 @@ import { supabase, isSupabaseConfigured } from './supabaseClient.js';
 import { db } from '../db/FoclyraDB.js';
 
 const GUEST_IMPORTS_STORAGE_KEY = 'foclyra_guest_imported_playlists';
+const RETURNING_USER_STORAGE_KEY = 'foclyra_has_registered_account';
 export const GUEST_MAX_PLAYLISTS = 1;
 export const REGISTERED_MAX_PLAYLISTS = 5;
+
+/**
+ * Checks if this browser belongs to an active user who previously signed up or logged in.
+ */
+export function isReturningRegisteredUser() {
+  try {
+    return localStorage.getItem(RETURNING_USER_STORAGE_KEY) === 'true';
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Marks or unmarks this browser as belonging to an active registered user.
+ */
+export function setReturningRegisteredUser(status = true) {
+  try {
+    if (status) {
+      localStorage.setItem(RETURNING_USER_STORAGE_KEY, 'true');
+    } else {
+      localStorage.removeItem(RETURNING_USER_STORAGE_KEY);
+    }
+  } catch (err) {
+    console.warn('Failed to update returning registered user state:', err);
+  }
+}
 
 /**
  * Extracts and normalizes a clean YouTube playlist ID from raw ID or full URL.
@@ -95,6 +122,18 @@ export async function checkPlaylistImportQuota({ user, playlistId }) {
 
   // GUEST USER CHECKS
   if (!user) {
+    // If the browser belongs to a previously registered user who signed out, require sign-in to prevent ghost guest sessions
+    if (isReturningRegisteredUser()) {
+      return {
+        allowed: false,
+        reason: 'RETURNING_USER_SIGNIN_REQUIRED',
+        currentCount: 0,
+        currentActiveCount: 0,
+        maxLimit: REGISTERED_MAX_PLAYLISTS,
+        isReimport: false
+      };
+    }
+
     const guestHistory = getGuestImportHistory();
     const currentCourses = await db.courses.count();
     const isReimport = guestHistory.includes(cleanId);

@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { supabase, isSupabaseConfigured } from '../services/supabaseClient';
 import { hydrateFromCloud, subscribeToProgressRealtime, migrateGuestPlaylistToAccount, flushPendingProgressSync } from '../services/cloudSyncService';
 import { db } from '../db/FoclyraDB';
-import { clearGuestImportHistory } from '../services/quotaService';
+import { clearGuestImportHistory, setReturningRegisteredUser } from '../services/quotaService';
 import { identifyUser, resetUser, trackEvent } from '../services/analytics';
 
 let progressUnsub = null;
@@ -44,6 +44,7 @@ export const useAuth = create((set, get) => ({
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
         set({ session, user: session.user });
+        setReturningRegisteredUser(true);
         await get().fetchProfile(session.user.id);
         identifyUser(session.user.id, {
           email: session.user.email,
@@ -69,8 +70,10 @@ export const useAuth = create((set, get) => ({
           // Different user signed in! Clean up previous user's local database first
           await db.resetDatabase().catch(() => {});
           clearGuestImportHistory();
+    setReturningRegisteredUser(false);
         }
         set({ session, user: session.user, isLoading: false });
+        setReturningRegisteredUser(true);
         await get().fetchProfile(session.user.id);
         identifyUser(session.user.id, {
           email: session.user.email,
@@ -233,6 +236,7 @@ export const useAuth = create((set, get) => ({
     }
 
     clearGuestImportHistory();
+    setReturningRegisteredUser(false);
     try {
       localStorage.removeItem('foclyra_custom_youtube_api_key');
     } catch {}
