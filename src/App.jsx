@@ -9,6 +9,7 @@ import FeedbackModal from './components/FeedbackModal';
 import BetaModal from './components/BetaModal';
 import UserMenu from './components/UserMenu';
 import AuthModal from './components/AuthModal';
+import QuotaModal from './components/QuotaModal';
 import { useAuth } from './hooks/useAuth';
 import { useUIStore } from './hooks/useUIStore';
 import { useTheme } from './hooks/useTheme';
@@ -35,13 +36,19 @@ function AppContent() {
     closeFeedbackModal,
     betaModalOpen,
     openBetaModal,
-    closeBetaModal
+    closeBetaModal,
+    quotaModalOpen,
+    quotaModalData,
+    closeQuotaModal
   } = useUIStore();
   const { isDark, toggleTheme } = useTheme();
   const { user, isLoading, initAuth } = useAuth();
 
   useEffect(() => {
     initAuth();
+    if (typeof window !== 'undefined') {
+      window.__openQuotaModal = (data) => useUIStore.getState().openQuotaModal(data);
+    }
   }, [initAuth]);
 
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
@@ -147,6 +154,10 @@ function AppContent() {
           <LandingPage />
         </Suspense>
         <AuthModal />
+
+      <QuotaModal isOpen={quotaModalOpen} onClose={closeQuotaModal} data={quotaModalData} />
+
+      <QuotaModal isOpen={quotaModalOpen} onClose={closeQuotaModal} data={quotaModalData} />
         <BetaModal />
         <Toaster />
       </div>
@@ -493,6 +504,8 @@ function AppContent() {
       <BetaModal isOpen={betaModalOpen} onClose={closeBetaModal} />
 
       <AuthModal />
+
+      <QuotaModal isOpen={quotaModalOpen} onClose={closeQuotaModal} data={quotaModalData} />
 
       {/* Floating Feedback Trigger Pill (Left bottom, mirroring Pomodoro on Right) */}
       {!location.pathname.includes('/lessons/') && (

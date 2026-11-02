@@ -20,6 +20,12 @@ export const useUIStore = create((set, get) => ({
   openFeedbackModal: () => set({ feedbackModalOpen: true }),
   closeFeedbackModal: () => set({ feedbackModalOpen: false }),
 
+  // Quota Modal global state
+  quotaModalOpen: false,
+  quotaModalData: { current: 5, max: 5 },
+  openQuotaModal: (data = { current: 5, max: 5 }) => set({ quotaModalOpen: true, quotaModalData: data }),
+  closeQuotaModal: () => set({ quotaModalOpen: false }),
+
   // Auth Modal global state
   authModalOpen: false,
   authModalContext: 'default',

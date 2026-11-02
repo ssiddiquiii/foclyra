@@ -221,6 +221,37 @@ export function extractVideoId(inputUrlOrId) {
 /**
  * Converts ISO 8601 duration (e.g. PT1H2M34S) to digital string (1:02:34 or 15:20)
  */
+/**
+ * Minimum duration in seconds required for single standalone videos (20 minutes).
+ */
+export const MIN_SINGLE_VIDEO_DURATION_SECONDS = 1200; // 20 minutes
+
+/**
+ * Converts ISO 8601 duration or digital duration string (e.g. 14:22 or 1:04:12) to total seconds.
+ * @param {string} duration 
+ * @returns {number} seconds
+ */
+export function parseDurationToSeconds(duration) {
+  if (!duration || typeof duration !== 'string') return 0;
+  if (duration.startsWith('PT')) {
+    const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+    if (!match) return 0;
+    const hours = parseInt(match[1] || '0', 10);
+    const minutes = parseInt(match[2] || '0', 10);
+    const seconds = parseInt(match[3] || '0', 10);
+    return hours * 3600 + minutes * 60 + seconds;
+  }
+  const parts = duration.split(':').map(p => parseInt(p, 10));
+  if (parts.some(isNaN)) return 0;
+  if (parts.length === 3) {
+    return parts[0] * 3600 + parts[1] * 60 + parts[2];
+  }
+  if (parts.length === 2) {
+    return parts[0] * 60 + parts[1];
+  }
+  return 0;
+}
+
 export function parseISODuration(durationISO) {
   if (!durationISO) return '0:00';
   const match = durationISO.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
@@ -376,6 +407,10 @@ async function executeSingleVideoDirectClient(videoId, apiKey) {
   const item = data.items[0];
   const snippet = item.snippet;
   const duration = parseISODuration(item.contentDetails?.duration);
+  const durationSecs = parseDurationToSeconds(item.contentDetails?.duration);
+  if (durationSecs > 0 && durationSecs < MIN_SINGLE_VIDEO_DURATION_SECONDS) {
+    throw new Error('Single videos must be at least 20 minutes long. Foclyra is designed for comprehensive study lectures and crash courses, not short videos.');
+  }
 
   const course = {
     id: videoId,
@@ -605,6 +640,7 @@ export async function fetchYouTubePlaylistData(inputUrlOrId) {
   // If it's a single video tutorial (e.g. 1-hour to 12-hour crash courses)
   const videoId = extractVideoId(inputUrlOrId);
   if (videoId) {
+    let result = null;
     // 1. Try serverless proxy
     try {
       const endpointUrl = `/api/youtube?videoId=${encodeURIComponent(videoId)}&apiKey=${encodeURIComponent(apiKey || '')}`;
@@ -614,22 +650,47 @@ export async function fetchYouTubePlaylistData(inputUrlOrId) {
       if (response.ok && contentType.includes('application/json')) {
         const data = await response.json();
         if (data.course && Array.isArray(data.lessons) && data.lessons.length > 0) {
-          return { course: data.course, lessons: data.lessons };
+          result = { course: data.course, lessons: data.lessons };
+        }
+      } else if (response.status === 400) {
+        const errData = await response.json().catch(() => ({}));
+        if (errData.error && errData.error.includes('20 minutes')) {
+          throw new Error(errData.error);
         }
       }
-    } catch (_) {
-      // Fallback
+    } catch (proxyErr) {
+      if (proxyErr.message && proxyErr.message.includes('20 minutes')) {
+        throw proxyErr;
+      }
     }
 
     // 2. Client-side API fallback (with automatic key rotation to DEFAULT_API_KEY)
-    try {
-      return await fetchSingleVideoDirectClient(videoId, apiKey);
-    } catch (err) {
-      console.warn('Direct client video fetch error:', err.message);
+    if (!result) {
+      try {
+        result = await fetchSingleVideoDirectClient(videoId, apiKey);
+      } catch (err) {
+        if (err.message && err.message.includes('20 minutes')) {
+          throw err;
+        }
+        console.warn('Direct client video fetch error:', err.message);
+      }
     }
 
     // 3. Zero-Key Public oEmbed Fallback (Zero quota, zero key required)
-    return await fetchZeroKeyVideoClient(videoId);
+    if (!result) {
+      result = await fetchZeroKeyVideoClient(videoId);
+    }
+
+    // Strict 20-minute check on single video result
+    if (result && Array.isArray(result.lessons) && result.lessons.length === 1) {
+      const singleLesson = result.lessons[0];
+      const durSecs = parseDurationToSeconds(singleLesson.duration);
+      if (durSecs > 0 && durSecs < MIN_SINGLE_VIDEO_DURATION_SECONDS) {
+        throw new Error('Single videos must be at least 20 minutes long. Foclyra is designed for comprehensive study lectures and crash courses, not short videos.');
+      }
+    }
+
+    return result;
   }
 
   throw new Error('Please enter a valid YouTube playlist URL or video tutorial link.');

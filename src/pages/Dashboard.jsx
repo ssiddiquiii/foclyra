@@ -64,7 +64,7 @@ const STARTER_COURSES = [
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const { openAuthModal } = useUIStore();
+  const { openAuthModal, openQuotaModal } = useUIStore();
   const navigate = useNavigate();
   const {
     isLoading,
@@ -157,11 +157,11 @@ export default function Dashboard() {
         }
         if (quota.reason === 'REGISTERED_LIMIT_REACHED') {
           trackEvent('registered_limit_hit');
-          openAuthModal('registered_limit');
+          openQuotaModal({ current: quota.currentCount || 5, max: quota.maxLimit || 5 });
           toast.add({
-            title: 'Playlist limit reached',
-            description: 'You have reached your limit of 5 study playlists. Re-importing existing courses is always free!',
-            type: 'error',
+            title: '5 Study Slots In Use',
+            description: 'You have filled all 5 course slots. Delete or complete an existing course anytime to make space!',
+            type: 'info',
             timeout: 6000,
           });
           return;

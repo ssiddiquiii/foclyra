@@ -108,6 +108,7 @@ export default function AuthModal({ isOpen: propIsOpen, onClose: propOnClose, co
 
   const isGuestLimit = context === 'guest_limit';
   const isRegisteredLimit = context === 'registered_limit';
+  if (isRegisteredLimit) return null;
 
   return (
     <AnimatePresence>

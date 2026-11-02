@@ -66,6 +66,16 @@ function resolveCandidateKeys(clientKey = '') {
 /**
  * Converts ISO 8601 duration (e.g. PT1H2M10S) into standard MM:SS or HH:MM:SS.
  */
+function getDurationSeconds(durationISO) {
+  if (!durationISO) return 0;
+  const match = durationISO.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+  if (!match) return 0;
+  const hours = parseInt(match[1] || 0, 10);
+  const minutes = parseInt(match[2] || 0, 10);
+  const seconds = parseInt(match[3] || 0, 10);
+  return hours * 3600 + minutes * 60 + seconds;
+}
+
 function parseISODuration(durationISO) {
   if (!durationISO) return '0:00';
   const match = durationISO.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
@@ -304,6 +314,12 @@ export default async function handler(request, response) {
           if (data.items && data.items.length > 0) {
             const item = data.items[0];
             const snippet = item.snippet;
+            const durationSecs = getDurationSeconds(item.contentDetails?.duration);
+            if (durationSecs > 0 && durationSecs < 1200) {
+              return response.status(400).json({
+                error: 'Single videos must be at least 20 minutes long. Foclyra is designed for comprehensive study lectures and crash courses, not short videos.'
+              });
+            }
             const duration = parseISODuration(item.contentDetails?.duration);
 
             const course = {
