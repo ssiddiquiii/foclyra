@@ -134,11 +134,14 @@ export async function deleteCourse(courseId) {
   removeGuestImport(courseId);
 
   // Clean up course slot, progress and notes in cloud
-  getAuthUser().then(user => {
+  try {
+    const user = await getAuthUser();
     if (user) {
-      deleteCourseFromCloud(user, courseId);
+      await deleteCourseFromCloud(user, courseId);
     }
-  }).catch(() => {});
+  } catch (err) {
+    console.warn('Failed to delete course from cloud:', err);
+  }
 }
 
 export async function createNote({ courseId, lessonId, timestamp, content }) {
