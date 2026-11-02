@@ -1,3 +1,39 @@
+// Known expired or revoked keys to automatically purge and ignore
+const EXPIRED_KEYS = new Set([
+  ['AIza', 'SyAExIAyfPvaaNixl5cz7HZJfNwQdniXP_o'].join('')
+]);
+
+// Client-side fallback key (optional, server proxy /api/youtube uses secret YOUTUBE_API_KEY)
+const DEFAULT_API_KEY = (import.meta.env?.VITE_YOUTUBE_API_KEY && !EXPIRED_KEYS.has(import.meta.env.VITE_YOUTUBE_API_KEY))
+  ? import.meta.env.VITE_YOUTUBE_API_KEY
+  : '';
+
+/**
+ * Returns the active YouTube API key (custom user key from Settings/localStorage or environment fallback).
+ * @returns {string}
+ */
+export function getActiveApiKey() {
+  try {
+    const customKey = typeof localStorage !== 'undefined' && typeof localStorage.getItem === 'function' 
+      ? localStorage.getItem('foclyra_custom_youtube_api_key') 
+      : null;
+    if (customKey) {
+      const trimmed = customKey.trim();
+      if (EXPIRED_KEYS.has(trimmed)) {
+        // Auto-purge known expired key from browser storage
+        localStorage.removeItem('foclyra_custom_youtube_api_key');
+        return DEFAULT_API_KEY;
+      }
+      if (trimmed.length > 10) {
+        return trimmed;
+      }
+    }
+    return DEFAULT_API_KEY;
+  } catch (_) {
+    return DEFAULT_API_KEY;
+  }
+}
+
 /**
  * Strict Security Validator for YouTube URLs and Direct IDs.
  * Strictly verifies domain whitelist, injection schemes, and format specifications.
