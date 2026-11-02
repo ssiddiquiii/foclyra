@@ -137,3 +137,4 @@ export default function QuotaModal({ isOpen, onClose, data = { current: 5, max: 
     </Dialog>
   );
 }
+

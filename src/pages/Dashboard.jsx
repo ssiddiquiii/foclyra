@@ -20,6 +20,8 @@ import { deleteCourse, importCourse } from '../services/dataCommands';
 import { checkPlaylistImportQuota, trackCourseImport, trackCourseRemoval, isReturningRegisteredUser } from '../services/quotaService';
 import { useAuth } from '../hooks/useAuth';
 import { DeleteCourseDialog } from '../features/dashboard/DashboardSections';
+import EducationalPolicyModal from '../components/EducationalPolicyModal';
+import { classifyEducationalContent } from '../services/contentClassifier';
 import { toast } from '../components/ui/toast';
 import { trackEvent } from '../services/analytics';
 
@@ -83,6 +85,7 @@ export default function Dashboard() {
 
   const [directUrl, setDirectUrl] = useState('');
   const [isDirectImporting, setIsDirectImporting] = useState(false);
+  const [policyNotice, setPolicyNotice] = useState(null);
 
   const streakCount = useMemo(() => {
     return calculateStreak(progressList, practiceProgressList);
@@ -180,6 +183,53 @@ export default function Dashboard() {
 
     try {
       const { course, lessons } = await fetchYouTubePlaylistData(urlToUse);
+
+      // 🛡️ Foclyra Educational Content Classification Engine
+      const classification = classifyEducationalContent({ course, lessons });
+      if (classification.decision === 'REJECT') {
+        trackEvent('course_import_rejected_non_educational', {
+          courseId: course.id,
+          title: course.title,
+          violations: classification.violations,
+          reason: classification.reason
+        });
+        toast.update(loadingToastId, {
+          title: 'Educational Policy Notice',
+          description: classification.reason || 'This content does not meet Foclyra educational guidelines.',
+          type: 'error',
+          timeout: 6000,
+        });
+        setPolicyNotice({
+          title: course.title,
+          decision: classification.decision,
+          reason: classification.reason,
+          violations: classification.violations,
+          categories: classification.categories
+        });
+        return;
+      }
+
+      if (classification.decision === 'REVIEW') {
+        trackEvent('course_import_review_ambiguous', {
+          courseId: course.id,
+          title: course.title,
+          reason: classification.reason
+        });
+        toast.update(loadingToastId, {
+          title: 'Educational Verification Failed',
+          description: 'Unable to verify that this content is an educational course or tutorial.',
+          type: 'error',
+          timeout: 6000,
+        });
+        setPolicyNotice({
+          title: course.title,
+          decision: classification.decision,
+          reason: classification.reason,
+          violations: classification.violations,
+          categories: classification.categories
+        });
+        return;
+      }
       await importCourse(course, lessons);
       await trackCourseImport({ user, course, lessonCount: lessons.length });
       trackEvent('course_imported', {
@@ -637,6 +687,11 @@ export default function Dashboard() {
         stats={{ ...stats, totalCourses: sortedCourses.length }}
         streakCount={streakCount}
         activeDates={activeDates}
+      />
+      <EducationalPolicyModal
+        isOpen={Boolean(policyNotice)}
+        onClose={() => setPolicyNotice(null)}
+        data={policyNotice || {}}
       />
     </div>
   );

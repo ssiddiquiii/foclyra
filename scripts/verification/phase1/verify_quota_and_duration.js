@@ -68,3 +68,4 @@ console.log(`FAILED: ${failed}`);
 console.log('======================================================\n');
 
 if (failed > 0) process.exit(1);
+
