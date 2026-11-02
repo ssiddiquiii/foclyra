@@ -127,14 +127,14 @@ export default function LandingPage() {
       {
         time: '04:12',
         secs: 252,
-        tag: 'Core System Decoupling',
-        desc: 'Separate high-throughput read pipelines from transactional writes to keep latency predictable as usage scales.'
+        tag: 'Key Takeaway',
+        desc: 'Break complex problems into smaller, reusable steps.'
       },
       {
         time: '09:45',
         secs: 585,
-        tag: 'Unit Economics & Margin',
-        desc: 'Track gross margin per active workspace alongside infrastructure cost to maintain a sustainable 3x+ LTV/CAC ratio.'
+        tag: 'Important Note',
+        desc: 'Review this concept before starting the practical exercise.'
       }
     ]
   };
@@ -595,13 +595,13 @@ export default function LandingPage() {
                       <span>04:12</span>
                     </span>
                     <span className="text-[12px] sm:text-[13px] font-semibold text-[#111111] dark:text-white tracking-[-0.01em]">
-                      DCF Valuation
+                      Key Concept
                     </span>
                   </div>
                   <span className="text-[11px] font-mono text-[#16a34a] dark:text-[#4ade80] font-medium">Jump to 04:12</span>
                 </div>
                 <p className="mt-2 text-[12px] sm:text-[13px] leading-relaxed text-[#555555] dark:text-zinc-400">
-                  Effective cost of debt = Rd × (1 − Tax Rate).
+                  Break down complex topics into small, manageable steps.
                 </p>
               </div>
             </div>
