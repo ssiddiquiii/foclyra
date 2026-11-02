@@ -436,26 +436,39 @@ export default function LandingPage() {
                         </span>
                       </div>
 
-                      {PREVIEW_COURSE.notes.map((note) => (
-                        <div
-                          key={note.time}
-                          onClick={() => { setSelectedTimestamp(note.time); setProgressSec(note.secs); }}
-                          className={`p-2.5 sm:p-3 rounded-[10px] sm:rounded-[12px] border transition cursor-pointer text-left ${
-                            selectedTimestamp === note.time
-                              ? 'bg-white dark:bg-zinc-800 border-[#111111]/20 dark:border-white/20 shadow-2xs'
-                              : 'bg-white/60 dark:bg-zinc-900/40 border-[#e5e5e5] dark:border-zinc-800 hover:bg-white'
-                          }`}
-                        >
-                          <div className="flex flex-wrap items-center gap-1.5 text-[11px] sm:text-[12px] font-mono font-medium text-[#111111] dark:text-white">
-                            <Clock className={`size-3 shrink-0 ${selectedTimestamp === note.time ? 'text-[#16a34a]' : 'text-[#6f6f6f]'}`} />
-                            <span className="underline">{note.time}</span>
-                            <span className="text-[#6f6f6f] font-sans">• {note.tag}</span>
+                      {PREVIEW_COURSE.notes.map((note) => {
+                        const isSelected = selectedTimestamp === note.time;
+                        return (
+                          <div
+                            key={note.time}
+                            onClick={() => { setSelectedTimestamp(note.time); setProgressSec(note.secs); }}
+                            className={`group p-2.5 sm:p-3 rounded-[12px] sm:rounded-[14px] border transition-all duration-200 cursor-pointer text-left ${
+                              isSelected
+                                ? 'bg-white dark:bg-zinc-800/90 border-[#111111]/20 dark:border-white/20 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.06)]'
+                                : 'bg-white/50 dark:bg-zinc-900/40 border-zinc-200/80 dark:border-zinc-800/80 hover:bg-white dark:hover:bg-zinc-800/50 hover:border-zinc-300 dark:hover:border-zinc-700'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2">
+                              <span
+                                className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10.5px] sm:text-[11px] font-mono font-medium transition shrink-0 ${
+                                  isSelected
+                                    ? 'bg-[#16a34a]/10 text-[#15803d] dark:text-[#4ade80] border border-[#16a34a]/25'
+                                    : 'bg-[#111111]/5 dark:bg-white/5 text-[#666666] dark:text-zinc-400 border border-transparent group-hover:border-zinc-300/60 dark:group-hover:border-zinc-700'
+                                }`}
+                              >
+                                <Clock className={`size-2.5 sm:size-3 shrink-0 ${isSelected ? 'text-[#15803d] dark:text-[#4ade80]' : 'text-[#888888] dark:text-zinc-400'}`} />
+                                <span>{note.time}</span>
+                              </span>
+                              <span className="text-[12px] sm:text-[12.5px] font-semibold tracking-[-0.01em] text-[#111111] dark:text-white truncate">
+                                {note.tag}
+                              </span>
+                            </div>
+                            <p className="mt-1.5 text-[11.5px] sm:text-[12.5px] leading-[1.55] text-[#555555] dark:text-zinc-400 font-normal">
+                              {note.desc}
+                            </p>
                           </div>
-                          <p className="mt-1 text-[11.5px] sm:text-[12.5px] leading-[1.5] text-[#444444] dark:text-zinc-300 bg-[#f4f4f4] dark:bg-zinc-950 p-2 rounded-lg font-sans">
-                            {note.desc}
-                          </p>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
 
                     <div className="pt-1 sm:pt-2 flex justify-center lg:block">
@@ -574,15 +587,20 @@ export default function LandingPage() {
                 </p>
               </div>
 
-              <div className="mt-4 sm:mt-6 rounded-[14px] sm:rounded-[18px] bg-white dark:bg-zinc-800 p-3 sm:p-4">
-                <div className="flex flex-wrap items-center justify-between gap-1 text-[11px] sm:text-[12px] font-mono text-[#111111] dark:text-white font-medium">
-                  <span className="inline-flex items-center gap-1.5">
-                    <Clock className="size-3 text-[#16a34a] shrink-0" />
-                    <span>04:12 • DCF Valuation</span>
-                  </span>
-                  <span className="text-[#16a34a] dark:text-[#63d94e] shrink-0">Jump to 04:12</span>
+              <div className="mt-4 sm:mt-6 rounded-[14px] sm:rounded-[18px] bg-white dark:bg-zinc-800/90 border border-zinc-200/70 dark:border-zinc-700/60 p-3.5 sm:p-4 shadow-2xs">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="inline-flex items-center gap-2">
+                    <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-mono font-medium bg-[#16a34a]/10 text-[#15803d] dark:text-[#4ade80] border border-[#16a34a]/20">
+                      <Clock className="size-2.5 shrink-0" />
+                      <span>04:12</span>
+                    </span>
+                    <span className="text-[12px] sm:text-[13px] font-semibold text-[#111111] dark:text-white tracking-[-0.01em]">
+                      DCF Valuation
+                    </span>
+                  </div>
+                  <span className="text-[11px] font-mono text-[#16a34a] dark:text-[#4ade80] font-medium">Jump to 04:12</span>
                 </div>
-                <p className="mt-1.5 text-[11.5px] sm:text-[12.5px] text-[#666666] dark:text-zinc-400">
+                <p className="mt-2 text-[12px] sm:text-[13px] leading-relaxed text-[#555555] dark:text-zinc-400">
                   Effective cost of debt = Rd × (1 − Tax Rate).
                 </p>
               </div>
