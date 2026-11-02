@@ -30,6 +30,7 @@ import { toast } from '../components/ui/toast';
  * @returns {React.JSX.Element}
  */
 export default function Settings() {
+  const navigate = useNavigate();
   const { openFeedbackModal, openAuthModal } = useUIStore();
   const { user, profile, signOut, signOutAllDevices, deleteAccount } = useAuth();
   
@@ -300,7 +301,7 @@ export default function Settings() {
             <div className="flex items-center gap-2 flex-wrap shrink-0">
               <button
                 type="button"
-                onClick={signOut}
+                onClick={async () => { await signOut(); navigate('/studio'); }}
                 className="h-9 px-4 rounded-full border border-zinc-200/80 dark:border-zinc-800/80 bg-white/90 dark:bg-zinc-900/90 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs font-medium text-zinc-800 dark:text-zinc-200 transition flex items-center gap-1.5 cursor-pointer shadow-2xs"
                 title="Sign out from this device"
               >

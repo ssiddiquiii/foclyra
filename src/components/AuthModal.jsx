@@ -1,5 +1,6 @@
 import { migrateGuestPlaylistToAccount } from '../services/cloudSyncService';
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Sparkles, Cloud, ShieldCheck, Mail, ArrowRight, Lock, CheckCircle2, AlertCircle, Check, User } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
@@ -17,6 +18,7 @@ export default function AuthModal({ isOpen: propIsOpen, onClose: propOnClose, co
   const onClose = propOnClose !== undefined ? propOnClose : closeAuthModal;
   const context = propContext !== undefined ? propContext : authModalContext;
   const { signInWithGoogle, signInWithEmail, signUpWithEmail, isConfigured } = useAuth();
+  const navigate = useNavigate();
   
   // Default to signup when opening from guest limit, otherwise signin
   const [authMode, setAuthMode] = useState(() => (context === 'guest_limit' ? 'signup' : 'signin'));
@@ -74,15 +76,25 @@ export default function AuthModal({ isOpen: propIsOpen, onClose: propOnClose, co
       if (authMode === 'signup') {
         const result = await signUpWithEmail(email, password, fullName);
         trackEvent('user_signed_up', { method: 'email', context });
-        if (result?.session) {
+        if (result?.session?.user) {
+          await migrateGuestPlaylistToAccount(result.session.user).catch(() => {});
           onClose();
+          const intended = sessionStorage.getItem('foclyra_intended_path');
+          sessionStorage.removeItem('foclyra_intended_path');
+          navigate(intended || '/studio');
         } else {
           setSuccessMsg('Account created! Please check your email to confirm registration, or sign in now.');
         }
       } else {
-        await signInWithEmail(email, password);
+        const result = await signInWithEmail(email, password);
         trackEvent('user_signed_in', { method: 'email', context });
+        if (result?.session?.user) {
+          await migrateGuestPlaylistToAccount(result.session.user).catch(() => {});
+        }
         onClose();
+        const intended = sessionStorage.getItem('foclyra_intended_path');
+        sessionStorage.removeItem('foclyra_intended_path');
+        navigate(intended || '/studio');
       }
     } catch (err) {
       setErrorMsg(err.message || 'Authentication failed. Please verify credentials.');

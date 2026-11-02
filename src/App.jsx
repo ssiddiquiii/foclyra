@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { Menu, Search, X, Sun, Moon, MessageSquarePlus } from 'lucide-react';
 import PomodoroTimer from './components/PomodoroTimer';
@@ -38,7 +38,7 @@ function AppContent() {
     closeBetaModal
   } = useUIStore();
   const { isDark, toggleTheme } = useTheme();
-  const { initAuth } = useAuth();
+  const { user, isLoading, initAuth } = useAuth();
 
   useEffect(() => {
     initAuth();
@@ -132,6 +132,9 @@ function AppContent() {
   }, [commandPaletteOpen, openCommandPalette, closeCommandPalette, navigate]);
 
   if (isLandingPage) {
+    if (!isLoading && user) {
+      return <Navigate to="/studio" replace />;
+    }
     return (
       <div className="min-h-screen bg-white dark:bg-[#0a0a0c] text-[#111111] dark:text-[#f5f5f7]">
         <Suspense
@@ -440,14 +443,24 @@ function AppContent() {
                   }`}
                 >
                   <Routes location={location}>
-                    <Route path="/" element={<LandingPage />} />
-                    <Route path="/landing" element={<LandingPage />} />
-                    <Route path="/welcome" element={<LandingPage />} />
+                    <Route
+                      path="/"
+                      element={!isLoading && user ? <Navigate to="/studio" replace /> : <LandingPage />}
+                    />
+                    <Route
+                      path="/landing"
+                      element={!isLoading && user ? <Navigate to="/studio" replace /> : <LandingPage />}
+                    />
+                    <Route
+                      path="/welcome"
+                      element={!isLoading && user ? <Navigate to="/studio" replace /> : <LandingPage />}
+                    />
                     <Route path="/studio" element={<Dashboard />} />
+                    <Route path="/import" element={<Navigate to="/studio" replace />} />
                     <Route path="/courses/:courseId" element={<CourseDetail />} />
                     <Route path="/courses/:courseId/lessons/:lessonId" element={<Watch />} />
                     <Route path="/settings" element={<Settings />} />
-                    <Route path="*" element={<Dashboard />} />
+                    <Route path="*" element={<Navigate to="/studio" replace />} />
                   </Routes>
                 </motion.div>
               </AnimatePresence>

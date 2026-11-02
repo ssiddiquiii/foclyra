@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { LogOut, Cloud, ChevronDown, Layers } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useUIStore } from '../hooks/useUIStore';
@@ -7,6 +8,7 @@ import { db } from '../db/FoclyraDB';
 import { REGISTERED_MAX_PLAYLISTS, GUEST_MAX_PLAYLISTS, getGuestImportHistory } from '../services/quotaService';
 
 export default function UserMenu({ onOpenAuth }) {
+  const navigate = useNavigate();
   const { openAuthModal } = useUIStore();
   const handleOpenAuth = () => {
     if (onOpenAuth) onOpenAuth();
@@ -111,9 +113,10 @@ export default function UserMenu({ onOpenAuth }) {
           {/* Sign Out Button */}
           <button
             type="button"
-            onClick={() => {
+            onClick={async () => {
               setDropdownOpen(false);
-              signOut();
+              await signOut();
+              navigate('/studio');
             }}
             className="w-full flex items-center gap-2 px-3 py-2 rounded-full text-[12px] text-[#e11d48] dark:text-rose-400 hover:bg-rose-500/10 font-medium transition cursor-pointer"
           >
