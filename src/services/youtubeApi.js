@@ -1,40 +1,161 @@
 /**
- * Foclyra Resilient YouTube Integration Service.
- * Supports:
- * - Full Playlist URLs & IDs (e.g. https://www.youtube.com/playlist?list=...)
- * - Single Video Crash Courses (e.g. https://www.youtube.com/watch?v=... or https://youtu.be/...)
- * - Serverless API proxy (/api/youtube) with automatic direct client-side fallback
- * - Custom user API keys from Settings / localStorage
+ * Strict Security Validator for YouTube URLs and Direct IDs.
+ * Strictly verifies domain whitelist, injection schemes, and format specifications.
+ * 
+ * @param {string} inputUrlOrId 
+ * @returns {{
+ *   isValid: boolean,
+ *   type?: 'playlist' | 'video',
+ *   id?: string,
+ *   playlistId?: string | null,
+ *   videoId?: string | null,
+ *   error?: string
+ * }}
  */
+export function validateYouTubeUrlOrId(inputUrlOrId) {
+  if (!inputUrlOrId || typeof inputUrlOrId !== 'string') {
+    return { isValid: false, error: 'Please enter a YouTube link or ID.' };
+  }
 
-// Known expired or revoked keys to automatically purge and ignore
-const EXPIRED_KEYS = new Set([
-  ['AIza', 'SyAExIAyfPvaaNixl5cz7HZJfNwQdniXP_o'].join('')
-]);
+  const trimmed = inputUrlOrId.trim();
+  if (!trimmed) {
+    return { isValid: false, error: 'Please enter a YouTube link or ID.' };
+  }
 
-// Client-side fallback key (optional, server proxy /api/youtube uses secret YOUTUBE_API_KEY)
-const DEFAULT_API_KEY = (import.meta.env?.VITE_YOUTUBE_API_KEY && !EXPIRED_KEYS.has(import.meta.env.VITE_YOUTUBE_API_KEY))
-  ? import.meta.env.VITE_YOUTUBE_API_KEY
-  : '';
+  // Length safeguard against memory bloat / buffer abuse
+  if (trimmed.length > 500) {
+    return { isValid: false, error: 'Link is too long. Please provide a valid YouTube link.' };
+  }
 
-export function getActiveApiKey() {
-  try {
-    const customKey = typeof localStorage !== 'undefined' && typeof localStorage.getItem === 'function' 
-      ? localStorage.getItem('foclyra_custom_youtube_api_key') 
-      : null;
-    if (customKey) {
-      const trimmed = customKey.trim();
-      if (EXPIRED_KEYS.has(trimmed)) {
-        // Auto-purge known expired key from browser storage
-        localStorage.removeItem('foclyra_custom_youtube_api_key');
-        return DEFAULT_API_KEY;
-      }
-      if (trimmed.length > 10) {
-        return trimmed;
-      }
+  // Security guard against XSS, HTML, script tags, SQLi quotes, null bytes, control characters
+  if (/[<>"'`\\{}|^~\[\]\0\r\n\t]/.test(trimmed)) {
+    return { isValid: false, error: 'Invalid characters detected. Only genuine YouTube links or IDs are permitted.' };
+  }
+
+  const lower = trimmed.toLowerCase();
+  if (
+    lower.startsWith('javascript:') ||
+    lower.startsWith('data:') ||
+    lower.startsWith('file:') ||
+    lower.startsWith('vbscript:') ||
+    lower.startsWith('blob:') ||
+    lower.startsWith('ftp:')
+  ) {
+    return { isValid: false, error: 'Dangerous URL scheme detected.' };
+  }
+
+  // Direct Raw ID Check (No slashes, colons, dots, or query params)
+  if (!trimmed.includes('/') && !trimmed.includes(':') && !trimmed.includes('.') && !trimmed.includes('?')) {
+    // 11-char video ID (e.g. dQw4w9WgXcQ)
+    if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) {
+      return { isValid: true, type: 'video', id: trimmed, videoId: trimmed, playlistId: null };
     }
-  } catch (_) {}
-  return DEFAULT_API_KEY;
+    // Direct Playlist ID (YouTube playlist IDs start with known prefixes like PL, UU, RD, OL, etc.)
+    if (/^(PL|UU|FL|LL|RD|OL|TL|CL|WL|EC)[a-zA-Z0-9_-]{10,62}$/i.test(trimmed)) {
+      return { isValid: true, type: 'playlist', id: trimmed, playlistId: trimmed, videoId: null };
+    }
+    return { isValid: false, error: 'Invalid YouTube ID format. Video IDs are 11 characters; playlist IDs start with PL/UU/RD and are 12-64 characters.' };
+  }
+
+  // URL Parsing
+  let urlObj;
+  try {
+    const urlToParse = /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+    urlObj = new URL(urlToParse);
+  } catch (_) {
+    return { isValid: false, error: 'Malformed URL. Please check the YouTube link format.' };
+  }
+
+  if (urlObj.protocol !== 'http:' && urlObj.protocol !== 'https:') {
+    return { isValid: false, error: 'Only http and https protocols are supported.' };
+  }
+
+  // Strict Domain Whitelist
+  const host = urlObj.hostname.toLowerCase();
+  const isYouTubeDomain = 
+    host === 'youtube.com' ||
+    host === 'www.youtube.com' ||
+    host === 'm.youtube.com' ||
+    host === 'music.youtube.com' ||
+    host === 'gaming.youtube.com' ||
+    host.endsWith('.youtube.com');
+
+  const isShortDomain = host === 'youtu.be' || host === 'www.youtu.be';
+
+  if (!isYouTubeDomain && !isShortDomain) {
+    return { isValid: false, error: 'Only genuine YouTube links (youtube.com or youtu.be) are supported.' };
+  }
+
+  // Extract query parameters
+  const listParam = urlObj.searchParams.get('list');
+  const vParam = urlObj.searchParams.get('v');
+
+  const cleanList = listParam && /^[a-zA-Z0-9_-]{10,64}$/.test(listParam.trim()) ? listParam.trim() : null;
+  const cleanV = vParam && /^[a-zA-Z0-9_-]{11}$/.test(vParam.trim()) ? vParam.trim() : null;
+
+  // Short domain (youtu.be/<videoId>)
+  if (isShortDomain) {
+    const pathVideoId = urlObj.pathname.replace(/^\/+/, '').split('/')[0]?.split('?')[0];
+    const validShortV = pathVideoId && /^[a-zA-Z0-9_-]{11}$/.test(pathVideoId) ? pathVideoId : null;
+
+    if (cleanList) {
+      return {
+        isValid: true,
+        type: 'playlist',
+        id: cleanList,
+        playlistId: cleanList,
+        videoId: validShortV || cleanV || null
+      };
+    }
+    if (validShortV) {
+      return {
+        isValid: true,
+        type: 'video',
+        id: validShortV,
+        videoId: validShortV,
+        playlistId: null
+      };
+    }
+    return { isValid: false, error: 'Invalid youtu.be link. Expected 11-character video ID.' };
+  }
+
+  // Full YouTube domain
+  if (cleanList) {
+    return {
+      isValid: true,
+      type: 'playlist',
+      id: cleanList,
+      playlistId: cleanList,
+      videoId: cleanV || null
+    };
+  }
+
+  if (cleanV) {
+    return {
+      isValid: true,
+      type: 'video',
+      id: cleanV,
+      videoId: cleanV,
+      playlistId: null
+    };
+  }
+
+  // Shorts, embed, live paths: /shorts/12345678901, /embed/12345678901, etc.
+  const pathParts = urlObj.pathname.split('/').filter(Boolean);
+  if (pathParts.length >= 2 && ['shorts', 'embed', 'v', 'live'].includes(pathParts[0].toLowerCase())) {
+    const pathId = pathParts[1];
+    if (pathId && /^[a-zA-Z0-9_-]{11}$/.test(pathId)) {
+      return {
+        isValid: true,
+        type: 'video',
+        id: pathId,
+        videoId: pathId,
+        playlistId: null
+      };
+    }
+  }
+
+  return { isValid: false, error: 'Could not find a valid YouTube playlist or video ID in the provided link.' };
 }
 
 /**
@@ -42,20 +163,9 @@ export function getActiveApiKey() {
  */
 export function extractPlaylistId(inputUrlOrId) {
   if (!inputUrlOrId) return null;
-  const trimmed = inputUrlOrId.trim();
-  
-  // Direct playlist ID format check (starts with PL, RD, UU, etc.)
-  if (/^[a-zA-Z0-9_-]{18,}$/.test(trimmed) && !trimmed.includes('http')) {
-    return trimmed;
-  }
-
-  try {
-    const urlObj = new URL(trimmed);
-    const listId = urlObj.searchParams.get('list');
-    if (listId) return listId;
-  } catch (_) {
-    const match = trimmed.match(/[&?]list=([a-zA-Z0-9_-]+)/);
-    if (match) return match[1];
+  const validation = validateYouTubeUrlOrId(inputUrlOrId);
+  if (validation.isValid && validation.playlistId) {
+    return validation.playlistId;
   }
   return null;
 }
@@ -65,24 +175,9 @@ export function extractPlaylistId(inputUrlOrId) {
  */
 export function extractVideoId(inputUrlOrId) {
   if (!inputUrlOrId) return null;
-  const trimmed = inputUrlOrId.trim();
-
-  // Direct 11-char video ID
-  if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) {
-    return trimmed;
-  }
-
-  try {
-    const urlObj = new URL(trimmed);
-    if (urlObj.hostname.includes('youtu.be')) {
-      const pathId = urlObj.pathname.replace(/^\//, '');
-      if (pathId.length >= 11) return pathId.slice(0, 11);
-    }
-    const vParam = urlObj.searchParams.get('v');
-    if (vParam) return vParam;
-  } catch (_) {
-    const match = trimmed.match(/(?:youtu\.be\/|watch\?v=)([a-zA-Z0-9_-]{11})/);
-    if (match) return match[1];
+  const validation = validateYouTubeUrlOrId(inputUrlOrId);
+  if (validation.isValid && validation.videoId) {
+    return validation.videoId;
   }
   return null;
 }
@@ -418,6 +513,11 @@ async function fetchZeroKeyPlaylistClient(playlistId) {
 export async function fetchYouTubePlaylistData(inputUrlOrId) {
   if (!inputUrlOrId) {
     throw new Error('YouTube URL or ID is required.');
+  }
+
+  const validation = validateYouTubeUrlOrId(inputUrlOrId);
+  if (!validation.isValid) {
+    throw new Error(validation.error || 'Please enter a valid YouTube playlist URL or video tutorial link.');
   }
 
   const apiKey = getActiveApiKey();

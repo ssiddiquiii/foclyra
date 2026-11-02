@@ -15,7 +15,7 @@ import {
 import StreakModal from '../components/StreakModal';
 import ExportNotesButton from '../components/ExportNotesButton';
 import { calculateStreak, getActiveDateSet } from '../utils/streakUtils';
-import { fetchYouTubePlaylistData } from '../services/youtubeApi';
+import { fetchYouTubePlaylistData, validateYouTubeUrlOrId } from '../services/youtubeApi';
 import { deleteCourse, importCourse } from '../services/dataCommands';
 import { checkPlaylistImportQuota, trackCourseImport, trackCourseRemoval } from '../services/quotaService';
 import { useAuth } from '../hooks/useAuth';
@@ -107,10 +107,30 @@ export default function Dashboard() {
   const handleDirectImport = async (e, overrideUrl) => {
     if (e) e.preventDefault();
     const urlToUse = (overrideUrl || directUrl).trim();
-    if (!urlToUse) return;
+    if (!urlToUse) {
+      toast.add({
+        title: 'Input required',
+        description: 'Please paste a YouTube playlist or video link.',
+        type: 'info',
+        timeout: 4000,
+      });
+      return;
+    }
+
+    // STRICT SECURITY VALIDATION BEFORE ANY QUOTA CHECK OR NETWORK REQUEST
+    const validation = validateYouTubeUrlOrId(urlToUse);
+    if (!validation.isValid) {
+      toast.add({
+        title: 'Invalid YouTube link',
+        description: validation.error || 'Please enter a genuine YouTube playlist or video link.',
+        type: 'error',
+        timeout: 5000,
+      });
+      return;
+    }
 
     try {
-      const quota = await checkPlaylistImportQuota({ user, playlistId: urlToUse });
+      const quota = await checkPlaylistImportQuota({ user, playlistId: validation.id || urlToUse });
       if (!quota.allowed) {
         if (quota.reason === 'GUEST_LIMIT_REACHED') {
           trackEvent('guest_trial_exhausted');

@@ -11,7 +11,7 @@
     "test": "node scripts/verification/run-suite.js all",
     "test:unit": "node scripts/verification/run-suite.js unit",
     "test:browser": "node scripts/verification/run-suite.js browser",
-    "test:security": "node scripts/verification/phase1/scan_bundle_keys.js",
+    "test:security": "node scripts/verification/phase1/scan_bundle_keys.js && node scripts/verification/phase1/verify_rls_security_penetration.js && node scripts/verification/phase1/verify_course_import_security.js",
     "test:runner": "node scripts/verification/phase3/verify_runner_failure.js",
     "test:phase4": "node scripts/verification/run-suite.js phase4",
     "test:phase5": "node scripts/verification/run-suite.js phase5",

@@ -1,5 +1,5 @@
 import Dexie from 'dexie';
-import { BackupSchema, parseBackupForImport } from '../types/schemas';
+import { BackupSchema, parseBackupForImport } from '../types/schemas.js';
 
 /**
  * Foclyra Local-First Browser Database

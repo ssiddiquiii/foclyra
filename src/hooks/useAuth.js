@@ -1,7 +1,26 @@
 import { create } from 'zustand';
 import { supabase, isSupabaseConfigured } from '../services/supabaseClient';
-import { hydrateFromCloud } from '../services/cloudSyncService';
+import { hydrateFromCloud, subscribeToProgressRealtime } from '../services/cloudSyncService';
 import { identifyUser, resetUser, trackEvent } from '../services/analytics';
+
+let progressUnsub = null;
+
+function setupRealtime(user) {
+  if (progressUnsub) {
+    progressUnsub();
+    progressUnsub = null;
+  }
+  if (user) {
+    progressUnsub = subscribeToProgressRealtime(user);
+  }
+}
+
+function cleanupRealtime() {
+  if (progressUnsub) {
+    progressUnsub();
+    progressUnsub = null;
+  }
+}
 
 /**
  * Global Authentication Store with Supabase Auth & Google OAuth.
@@ -29,6 +48,7 @@ export const useAuth = create((set, get) => ({
           provider: session.user.app_metadata?.provider || 'email'
         });
         hydrateFromCloud(session.user).catch(() => {});
+        setupRealtime(session.user);
       } else {
         set({ session: null, user: null, profile: null });
       }
@@ -48,7 +68,9 @@ export const useAuth = create((set, get) => ({
           provider: session.user.app_metadata?.provider || 'email'
         });
         hydrateFromCloud(session.user).catch(() => {});
+        setupRealtime(session.user);
       } else {
+        cleanupRealtime();
         set({ session: null, user: null, profile: null, isLoading: false });
       }
     });
@@ -118,6 +140,7 @@ export const useAuth = create((set, get) => ({
 
   signOut: async () => {
     if (!supabase) return;
+    cleanupRealtime();
     trackEvent('user_signed_out');
     resetUser();
     try {
@@ -130,6 +153,7 @@ export const useAuth = create((set, get) => ({
 
   signOutAllDevices: async () => {
     if (!supabase) return;
+    cleanupRealtime();
     try {
       await supabase.auth.signOut({ scope: 'global' });
     } catch (err) {
@@ -143,6 +167,7 @@ export const useAuth = create((set, get) => ({
     const { user } = get();
     if (!user) throw new Error('No user is currently signed in.');
 
+    cleanupRealtime();
     // Attempt secure RPC delete_user execution
     const { error } = await supabase.rpc('delete_user');
     if (error) {

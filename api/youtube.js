@@ -4,10 +4,11 @@
  * System Design Protections:
  * 1. API Key Isolation: Server-side environment variables only (never sent to client).
  * 2. Rate Limiting: IP-based sliding window (max 15 requests/min per IP) to prevent DoS.
- * 3. Multi-Tier Caching: In-memory cache + Vercel Edge CDN headers (24h cache, 7d stale-while-revalidate).
- * 4. Circuit Breaker: Automatically trips if Google quota is reached to protect account.
- * 5. Zero-Key Fallback Engine: Official YouTube RSS & oEmbed public feeds (zero key, zero quota).
- * 6. Dual Format Support: Full playlists (up to 200 lectures) + Single video crash courses.
+ * 3. Multi-Tier Caching: In-memory cache + Edge CDN headers (s-maxage=3600, stale-while-revalidate=86400).
+ * 4. Resilient Error Mapping: Proper 404, 429, 502, and 504 gateway mappings.
+ * 5. Large Playlist Support: Pagination up to 200 lectures, clean 400 rejection above 200.
+ * 6. Video Cleaning: Automatic purging of private and deleted videos.
+ * 7. Zero-Key Fallback Engine: Official YouTube RSS & oEmbed public feeds.
  */
 
 // In-Memory Rate Limiting (per serverless instance)
@@ -81,6 +82,22 @@ function parseISODuration(durationISO) {
 }
 
 /**
+ * Checks if a video title or snippet indicates a private or deleted video.
+ */
+function isPrivateOrDeleted(snippet, item) {
+  const title = (snippet?.title || '').trim().toLowerCase();
+  return (
+    !title ||
+    title === 'private video' ||
+    title === 'deleted video' ||
+    title === '[private video]' ||
+    title === '[deleted video]' ||
+    item?.status?.privacyStatus === 'private' ||
+    item?.status?.privacyStatus === 'privacyStatusUnspecified'
+  );
+}
+
+/**
  * Zero-Key Fallback: Fetches single video details via public YouTube oEmbed API.
  */
 async function fetchZeroKeyVideo(videoId) {
@@ -144,10 +161,15 @@ async function fetchZeroKeyPlaylist(playlistId, apiKey = '') {
 
     if (videoIdMatch) {
       const vId = videoIdMatch[1].trim();
+      const rawTitle = videoTitleMatch ? videoTitleMatch[1].replace(/<!\[CDATA\[|\]\]>/g, '').trim() : `Lesson ${index}`;
+      if (rawTitle.toLowerCase().includes('private video') || rawTitle.toLowerCase().includes('deleted video')) {
+        continue;
+      }
+
       lessons.push({
         id: vId,
         courseId: playlistId,
-        title: videoTitleMatch ? videoTitleMatch[1].replace(/<!\[CDATA\[|\]\]>/g, '').trim() : `Lesson ${index}`,
+        title: rawTitle,
         description: descMatch ? descMatch[1].trim() : '',
         thumbnailUrl: thumbMatch ? thumbMatch[1] : `https://i.ytimg.com/vi/${vId}/hqdefault.jpg`,
         duration: '0:00',
@@ -229,12 +251,23 @@ export default async function handler(request, response) {
     return response.status(400).json({ error: 'Missing playlistId or videoId parameter.' });
   }
 
-  const targetId = (playlistId || videoId).trim();
-  if (playlistId && (playlistId.trim().length < 10 || !/^[a-zA-Z0-9_-]{10,64}$/.test(playlistId.trim()))) {
-    return response.status(400).json({ error: 'Invalid or missing playlistId parameter.' });
+  if (playlistId) {
+    const trimmedPl = String(playlistId).trim();
+    if (!/^[a-zA-Z0-9_-]{10,64}$/.test(trimmedPl)) {
+      return response.status(400).json({ error: 'Invalid playlistId parameter. Must be 10-64 alphanumeric characters, underscores, or dashes.' });
+    }
   }
 
-  // Unit test mock check for unconfigured API
+  if (videoId) {
+    const trimmedVid = String(videoId).trim();
+    if (!/^[a-zA-Z0-9_-]{11}$/.test(trimmedVid)) {
+      return response.status(400).json({ error: 'Invalid videoId parameter. Expected an 11-character YouTube video ID.' });
+    }
+  }
+
+  const targetId = (playlistId || videoId).trim();
+
+  // Configuration check
   if (process.env.YOUTUBE_API_KEY === undefined && !process.env.VITE_YOUTUBE_API_KEY && !clientApiKey && !process.env.VERCEL) {
     return response.status(503).json({ error: 'YouTube API service unconfigured on server.' });
   }
@@ -246,7 +279,7 @@ export default async function handler(request, response) {
   const cachedResult = getCached(cacheKey);
   if (cachedResult && cachedResult.lessons && cachedResult.lessons.length > 0) {
     response.setHeader('X-Cache', 'HIT');
-    response.setHeader('Cache-Control', 'public, s-maxage=86400, stale-while-revalidate=604800');
+    response.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
     return response.status(200).json(cachedResult);
   }
 
@@ -258,6 +291,13 @@ export default async function handler(request, response) {
       try {
         const videoUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id=${encodeURIComponent(targetId)}&key=${apiKey}`;
         const res = await fetch(videoUrl, { signal: AbortSignal.timeout(8000) });
+
+        if (res.status === 404) {
+          return response.status(404).json({ error: 'Video not found or private.' });
+        }
+        if (res.status === 403 || res.status === 429) {
+          return response.status(429).json({ error: 'YouTube API quota exceeded or rate limited.' });
+        }
 
         if (res.ok) {
           const data = await res.json();
@@ -292,12 +332,17 @@ export default async function handler(request, response) {
             const result = { course, lessons };
             setCache(cacheKey, result);
             response.setHeader('X-Cache', 'MISS');
-            response.setHeader('Cache-Control', 'public, s-maxage=86400, stale-while-revalidate=604800');
+            response.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
             return response.status(200).json(result);
           }
         }
-      } catch (_) {
-        // Try next candidate key
+      } catch (err) {
+        if (err.name === 'AbortError') {
+          return response.status(504).json({ error: 'Upstream YouTube request timed out.' });
+        }
+        if (err instanceof TypeError || err.message?.includes('fetch')) {
+          return response.status(502).json({ error: 'Upstream network failure connecting to YouTube.' });
+        }
       }
     }
 
@@ -306,7 +351,7 @@ export default async function handler(request, response) {
       const result = await fetchZeroKeyVideo(targetId);
       setCache(cacheKey, result);
       response.setHeader('X-Cache', 'FALLBACK-OEMBED');
-      response.setHeader('Cache-Control', 'public, s-maxage=86400, stale-while-revalidate=604800');
+      response.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
       return response.status(200).json(result);
     } catch (err) {
       return response.status(404).json({ error: `Video not found or unavailable: ${err.message}` });
@@ -319,6 +364,13 @@ export default async function handler(request, response) {
       // Fetch Playlist Snippet
       const plUrl = `https://www.googleapis.com/youtube/v3/playlists?part=snippet&id=${encodeURIComponent(targetId)}&key=${apiKey}`;
       const plRes = await fetch(plUrl, { signal: AbortSignal.timeout(8000) });
+
+      if (plRes.status === 404) {
+        return response.status(404).json({ error: 'Playlist not found or private.' });
+      }
+      if (plRes.status === 403 || plRes.status === 429) {
+        return response.status(429).json({ error: 'YouTube API quota exceeded or rate limited.' });
+      }
 
       if (plRes.ok) {
         const plData = await plRes.json();
@@ -334,27 +386,42 @@ export default async function handler(request, response) {
             udemyUrl: ''
           };
 
-          // Fetch Playlist Items (max 500)
+          // Fetch Playlist Items with Pagination (Supports 100+ videos up to 200)
           let rawLessons = [];
           let nextPageToken = '';
           let hasNextPage = true;
           let index = 1;
-          const MAX_ITEMS = 500;
+          const MAX_ITEMS = 200;
 
           while (hasNextPage) {
             const itemsUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet,contentDetails&maxResults=50&playlistId=${encodeURIComponent(targetId)}&key=${apiKey}${nextPageToken ? `&pageToken=${nextPageToken}` : ''}`;
             const itemsRes = await fetch(itemsUrl, { signal: AbortSignal.timeout(8000) });
 
+            if (itemsRes.status === 404) {
+              return response.status(404).json({ error: 'Playlist items not found.' });
+            }
+            if (itemsRes.status === 403 || itemsRes.status === 429) {
+              return response.status(429).json({ error: 'YouTube API quota exceeded or rate limited.' });
+            }
+
             if (!itemsRes.ok) break;
 
             const itemsData = await itemsRes.json();
             if (itemsData.items) {
+              // Edge case: Reject playlists exceeding 200 videos to protect user experience and memory
+              if (rawLessons.length + itemsData.items.length > MAX_ITEMS) {
+                return response.status(400).json({ 
+                  error: `Playlists exceeding 200 videos are not supported (found ${rawLessons.length + itemsData.items.length}+). Please choose a playlist with 200 or fewer videos.` 
+                });
+              }
+
               for (const item of itemsData.items) {
-                if (item.snippet?.title !== 'Private video' && item.snippet?.title !== 'Deleted video') {
+                // Filter private and deleted videos cleanly
+                if (!isPrivateOrDeleted(item.snippet, item)) {
                   rawLessons.push({
                     id: item.contentDetails?.videoId || item.snippet?.resourceId?.videoId,
                     courseId: targetId,
-                    title: item.snippet?.title || 'Untitled Video',
+                    title: item.snippet?.title || `Lesson ${index}`,
                     description: item.snippet?.description || '',
                     thumbnailUrl: item.snippet?.thumbnails?.high?.url || item.snippet?.thumbnails?.medium?.url || '',
                     duration: '0:00',
@@ -365,13 +432,12 @@ export default async function handler(request, response) {
               }
             }
 
-            if (rawLessons.length >= MAX_ITEMS) break;
             nextPageToken = itemsData.nextPageToken;
             hasNextPage = !!nextPageToken;
           }
 
           if (rawLessons.length > 0) {
-            // Batch fetch durations (max 50 per batch)
+            // Batch fetch durations (chunks of 50 for large playlists of 100+ videos)
             const videoIds = rawLessons.map(l => l.id).filter(Boolean);
             const durationMap = {};
 
@@ -397,13 +463,19 @@ export default async function handler(request, response) {
             const result = { course, lessons };
             setCache(cacheKey, result);
             response.setHeader('X-Cache', 'MISS');
-            response.setHeader('Cache-Control', 'public, s-maxage=86400, stale-while-revalidate=604800');
+            response.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
             return response.status(200).json(result);
           }
         }
       }
-    } catch (_) {
-      // Try next candidate key
+    } catch (err) {
+      if (err.name === 'AbortError') {
+        return response.status(504).json({ error: 'Upstream 10s timeout connecting to YouTube.' });
+      }
+      if (err instanceof TypeError || err.message?.includes('fetch')) {
+        return response.status(502).json({ error: 'Upstream network failure connecting to YouTube.' });
+      }
+      // If other unexpected error, attempt next candidate key
     }
   }
 
@@ -411,9 +483,8 @@ export default async function handler(request, response) {
   try {
     const activeKey = candidateKeys[0] || VERIFIED_FALLBACK_KEY;
     const result = await fetchZeroKeyPlaylist(targetId, activeKey);
-    // Don't cache short-lived RSS fallbacks long term if incomplete
     response.setHeader('X-Cache', 'FALLBACK-RSS');
-    response.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    response.setHeader('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
     return response.status(200).json(result);
   } catch (err) {
     return response.status(404).json({ error: `Playlist not found or private: ${err.message}` });

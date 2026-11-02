@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Play, 
   Pause,
@@ -8,6 +9,7 @@ import {
   Volume2,
   Maximize2,
   ArrowRight,
+  ArrowUp,
   FileText,
   Clock,
   CheckCircle2,
@@ -51,6 +53,48 @@ export default function LandingPage() {
   const [selectedTimestamp, setSelectedTimestamp] = useState('04:12');
   const [pomodoroSec, setPomodoroSec] = useState(1305); // 21:45 remaining
   const [activeFaq, setActiveFaq] = useState(0);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 350);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
+
+  const scrollToSection = (e, targetId) => {
+    if (e) e.preventDefault();
+    const el = document.getElementById(targetId);
+    if (el) {
+      const headerOffset = 72;
+      const elementPosition = el.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+      window.history.pushState(null, '', `#${targetId}`);
+    }
+  };
+
+  useEffect(() => {
+    if (window.location.hash) {
+      const id = window.location.hash.replace('#', '');
+      const timer = setTimeout(() => {
+        scrollToSection(null, id);
+      }, 150);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   const PREVIEW_COURSE = {
     header: 'Product Strategy & Systems • 4 of 18 lectures completed',
@@ -141,10 +185,10 @@ export default function LandingPage() {
             </Link>
 
             <nav className="hidden md:flex items-center gap-5 lg:gap-6 text-[13.5px] lg:text-[14px] font-normal text-[#666666] dark:text-zinc-400">
-              <a href="#studio" className="hover:text-[#111111] dark:hover:text-white transition-colors whitespace-nowrap">Workspace</a>
-              <a href="#features" className="hover:text-[#111111] dark:hover:text-white transition-colors whitespace-nowrap">Features</a>
-              <a href="#workflow" className="hover:text-[#111111] dark:hover:text-white transition-colors whitespace-nowrap">How It Works</a>
-              <a href="#faq" className="hover:text-[#111111] dark:hover:text-white transition-colors whitespace-nowrap">FAQ</a>
+              <a href="#studio" onClick={(e) => scrollToSection(e, 'studio')} className="hover:text-[#111111] dark:hover:text-white transition-colors whitespace-nowrap cursor-pointer">Workspace</a>
+              <a href="#features" onClick={(e) => scrollToSection(e, 'features')} className="hover:text-[#111111] dark:hover:text-white transition-colors whitespace-nowrap cursor-pointer">Features</a>
+              <a href="#workflow" onClick={(e) => scrollToSection(e, 'workflow')} className="hover:text-[#111111] dark:hover:text-white transition-colors whitespace-nowrap cursor-pointer">How It Works</a>
+              <a href="#faq" onClick={(e) => scrollToSection(e, 'faq')} className="hover:text-[#111111] dark:hover:text-white transition-colors whitespace-nowrap cursor-pointer">FAQ</a>
             </nav>
           </div>
 
@@ -831,6 +875,28 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+
+      {/* =========================================================================
+          8. Bottom-Left Floating Scroll-To-Top Button
+          Positioned on the bottom-left to leave bottom-right clear for Pomodoro timer & toasts
+         ========================================================================= */}
+      <AnimatePresence>
+        {showScrollTop && (
+          <motion.button
+            type="button"
+            onClick={scrollToTop}
+            initial={{ opacity: 0, y: 16, scale: 0.85 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 16, scale: 0.85 }}
+            transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+            aria-label="Scroll to top"
+            className="fixed bottom-5 left-4 sm:bottom-6 sm:left-6 z-40 size-10 sm:size-11 rounded-full bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border border-zinc-200/90 dark:border-zinc-800/90 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:shadow-[0_12px_28px_rgba(0,0,0,0.18)] hover:border-zinc-300 dark:hover:border-zinc-700 transition-all flex items-center justify-center cursor-pointer active:scale-90 group"
+            title="Scroll to top"
+          >
+            <ArrowUp className="size-4 sm:size-4.5 transition-transform duration-200 group-hover:-translate-y-0.5 text-current" strokeWidth={2.4} />
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
