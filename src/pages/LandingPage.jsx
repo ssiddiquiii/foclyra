@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -54,14 +54,36 @@ export default function LandingPage() {
   const [pomodoroSec, setPomodoroSec] = useState(1305); // 21:45 remaining
   const [activeFaq, setActiveFaq] = useState(0);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [bottomOffset, setBottomOffset] = useState(24);
+  const githubRef = useRef(null);
 
   useEffect(() => {
     const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 350);
+      const scrollY = window.scrollY || window.pageYOffset;
+      setShowScrollTop(scrollY > 350);
+
+      if (githubRef.current) {
+        const rect = githubRef.current.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
+        const distFromBottom = windowHeight - rect.top;
+        if (distFromBottom > 0) {
+          // GitHub icon has entered the viewport: dynamically push button up to stick cleanly 16px above it
+          const neededBottom = distFromBottom + 16;
+          setBottomOffset(Math.max(24, Math.round(neededBottom)));
+        } else {
+          setBottomOffset(24);
+        }
+      }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('resize', handleScroll, { passive: true });
+    handleScroll();
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
+    };
   }, []);
 
   const scrollToTop = () => {
@@ -858,7 +880,7 @@ export default function LandingPage() {
               © {new Date().getFullYear()} Foclyra. All rights reserved.
             </div>
 
-            <div className="flex items-center gap-2 shrink-0">
+            <div ref={githubRef} className="flex items-center gap-2 shrink-0">
               <a
                 href="https://github.com/ssiddiquiii/foclyra"
                 target="_blank"
@@ -885,12 +907,13 @@ export default function LandingPage() {
           <motion.button
             type="button"
             onClick={scrollToTop}
-            initial={{ opacity: 0, y: 16, scale: 0.85 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 16, scale: 0.85 }}
-            transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+            initial={{ opacity: 0, scale: 0.85 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.85 }}
+            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            style={{ bottom: `${bottomOffset}px` }}
             aria-label="Scroll to top"
-            className="fixed bottom-5 left-4 sm:bottom-6 sm:left-6 z-40 size-10 sm:size-11 rounded-full bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border border-zinc-200/90 dark:border-zinc-800/90 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:shadow-[0_12px_28px_rgba(0,0,0,0.18)] hover:border-zinc-300 dark:hover:border-zinc-700 transition-all flex items-center justify-center cursor-pointer active:scale-90 group"
+            className="fixed right-4 sm:right-6 z-40 size-10 sm:size-11 rounded-full bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md border border-zinc-200/90 dark:border-zinc-800/90 text-zinc-700 dark:text-zinc-300 hover:text-zinc-950 dark:hover:text-white shadow-[0_8px_24px_rgba(0,0,0,0.12)] hover:shadow-[0_12px_28px_rgba(0,0,0,0.18)] hover:border-zinc-300 dark:hover:border-zinc-700 transition-[border-color,background-color,color,box-shadow,transform] flex items-center justify-center cursor-pointer active:scale-90 group"
             title="Scroll to top"
           >
             <ArrowUp className="size-4 sm:size-4.5 transition-transform duration-200 group-hover:-translate-y-0.5 text-current" strokeWidth={2.4} />
