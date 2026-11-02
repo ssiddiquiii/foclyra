@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Play, 
+  GraduationCap,
   Pause,
   Sun, 
   Moon,
@@ -247,8 +248,16 @@ export default function LandingPage() {
             </BrandTile>
             YouTube playlists
           </span>
-          <span className="block bg-[linear-gradient(180deg,#111_0%,#111_30%,#9e9e9e_100%)] dark:bg-[linear-gradient(180deg,#fff_0%,#fff_30%,#666_100%)] bg-clip-text pb-[.08em] text-transparent">
-            into structured courses.
+          <span className="block">
+            <span className="bg-[linear-gradient(180deg,#111_0%,#111_30%,#9e9e9e_100%)] dark:bg-[linear-gradient(180deg,#fff_0%,#fff_30%,#666_100%)] bg-clip-text pb-[.08em] text-transparent">
+              into{' '}
+            </span>
+            <BrandTile bg="bg-[#F5C542]" text="text-[#111111]" rotate="rotate-3" size="lg">
+              <GraduationCap className="size-[54%]" strokeWidth={2.2} />
+            </BrandTile>
+            <span className="bg-[linear-gradient(180deg,#111_0%,#111_30%,#9e9e9e_100%)] dark:bg-[linear-gradient(180deg,#fff_0%,#fff_30%,#666_100%)] bg-clip-text pb-[.08em] text-transparent">
+              structured courses.
+            </span>
           </span>
         </h1>
 

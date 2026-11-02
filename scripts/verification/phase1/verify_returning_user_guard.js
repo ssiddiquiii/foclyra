@@ -238,3 +238,4 @@ runReturningUserGuardTests().catch(err => {
   console.error('Returning user verification error:', err);
   process.exit(1);
 });
+
