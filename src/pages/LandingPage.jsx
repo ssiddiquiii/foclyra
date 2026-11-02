@@ -120,21 +120,21 @@ export default function LandingPage() {
   }, []);
 
   const PREVIEW_COURSE = {
-    header: 'Product Strategy & Systems • 4 of 18 lectures completed',
-    lectureTitle: 'Lecture 04: Modular Architecture & Unit Economics',
-    docName: 'Course_Study_Notes.docx',
+    header: 'Python for Beginners • 4 of 18 lectures completed',
+    lectureTitle: 'Lecture 04: Functions, Loops & Return Values',
+    docName: 'Python_Course_Notes.docx',
     notes: [
       {
         time: '04:12',
         secs: 252,
-        tag: 'Key Takeaway',
-        desc: 'Break complex problems into smaller, reusable steps.'
+        tag: 'Functions & def',
+        desc: 'Functions group code into reusable blocks so you do not repeat logic.'
       },
       {
         time: '09:45',
         secs: 585,
-        tag: 'Important Note',
-        desc: 'Review this concept before starting the practical exercise.'
+        tag: 'For Loops',
+        desc: 'Use for loops to iterate through lists and process items step by step.'
       }
     ]
   };
@@ -351,16 +351,68 @@ export default function LandingPage() {
                       onClick={() => setIsPlaying(!isPlaying)}
                       className="group relative aspect-video rounded-[10px] sm:rounded-[16px] bg-[#0b1311] overflow-hidden flex flex-col justify-between p-2.5 sm:p-4 cursor-pointer"
                     >
-                      {/* Foclyra Watch -> Done Task Product Illustration */}
-                      <img
-                        src="/foclyra-watch-done.jpg"
-                        alt="Watch lectures and complete course tasks"
-                        className="absolute inset-0 w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-[1.02] select-none pointer-events-none"
-                      />
-                      {/* Subtle Top & Bottom Edge Scrims Keeping Center Graphic 100% Clear */}
+                      {/* Clean Minimalist Lecture Code Screen */}
+                      <div className="absolute inset-0 bg-[#0c0e14] flex items-center justify-center p-3 sm:p-6 select-none overflow-hidden">
+                        {/* Soft subtle radial ambient glow */}
+                        <div
+                          aria-hidden="true"
+                          className="absolute -top-20 -left-20 size-64 rounded-full bg-[#10b981]/10 blur-3xl pointer-events-none"
+                        />
+                        <div
+                          aria-hidden="true"
+                          className="absolute -bottom-20 -right-20 size-64 rounded-full bg-[#F5C542]/10 blur-3xl pointer-events-none"
+                        />
+
+                        {/* Minimalist Code Window Card */}
+                        <div className="relative w-full max-w-[440px] rounded-[10px] sm:rounded-[14px] bg-[#141720]/95 border border-white/10 shadow-[0_12px_36px_-6px_rgba(0,0,0,0.5)] p-3 sm:p-4 backdrop-blur-md">
+                          {/* Window Titlebar */}
+                          <div className="flex items-center justify-between pb-2 sm:pb-2.5 border-b border-white/5 text-[9.5px] sm:text-[11px] font-mono">
+                            <div className="flex items-center gap-1.5">
+                              <span className="size-2 rounded-full bg-[#ff5f56]" />
+                              <span className="size-2 rounded-full bg-[#ffbd2e]" />
+                              <span className="size-2 rounded-full bg-[#27c93f]" />
+                              <span className="ml-2 text-zinc-400 font-sans font-medium text-[10px] sm:text-[11px]">
+                                main.py
+                              </span>
+                            </div>
+                            <span className="text-zinc-500 text-[9px] sm:text-[10px]">Python 3.12</span>
+                          </div>
+
+                          {/* Syntax Highlighted Clean Code */}
+                          <div className="mt-2.5 sm:mt-3 font-mono text-[10px] sm:text-[12px] leading-[1.65] text-zinc-300 overflow-hidden text-left space-y-0.5">
+                            <div className="text-zinc-500"># Lecture 04: Functions & Loops</div>
+                            <div>
+                              <span className="text-[#f43f5e] font-medium">def </span>
+                              <span className="text-[#38bdf8] font-semibold">calculate_total</span>
+                              <span className="text-zinc-300">(items, discount=</span>
+                              <span className="text-[#a78bfa]">0.1</span>
+                              <span className="text-zinc-300">):</span>
+                            </div>
+                            <div className="pl-4">
+                              <span>total = </span>
+                              <span className="text-[#fbbf24]">sum</span>
+                              <span>(item[</span>
+                              <span className="text-[#34d399]">'price'</span>
+                              <span>] </span>
+                              <span className="text-[#f43f5e]">for </span>
+                              <span>item </span>
+                              <span className="text-[#f43f5e]">in </span>
+                              <span>items)</span>
+                            </div>
+                            <div className="pl-4">
+                              <span className="text-[#f43f5e] font-medium">return </span>
+                              <span>total * (</span>
+                              <span className="text-[#a78bfa]">1</span>
+                              <span> - discount)</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Subtle Top & Bottom Edge Scrims for Controls Contrast */}
                       <div
                         aria-hidden="true"
-                        className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.45)_0%,transparent_28%,transparent_68%,rgba(0,0,0,0.75)_100%)] pointer-events-none"
+                        className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.5)_0%,transparent_24%,transparent_72%,rgba(0,0,0,0.7)_100%)] pointer-events-none"
                       />
 
                       <div className="flex items-center justify-between z-10 gap-2">
