@@ -1,6 +1,7 @@
 import { getGuestImportHistory, clearGuestImportHistory, normalizePlaylistId } from './quotaService.js';
 import { supabase, isSupabaseConfigured } from './supabaseClient.js';
 import { db } from '../db/FoclyraDB.js';
+import { fetchYouTubePlaylistData } from './youtubeApi.js';
 
 /**
  * Generates a deterministic RFC 4122 v5-compliant UUID from a seed string.
@@ -43,6 +44,20 @@ export async function generateDeterministicUuid(seed) {
 const progressDebounceMap = new Map();
 
 /**
+ * Flushes all pending in-flight debounced progress writes immediately to cloud.
+ */
+export async function flushPendingProgressSync() {
+  const pending = Array.from(progressDebounceMap.values());
+  progressDebounceMap.clear();
+  const promises = pending.map(({ timer, performSync }) => {
+    clearTimeout(timer);
+    return performSync().catch(() => {});
+  });
+  await Promise.all(promises);
+}
+
+
+/**
  * Syncs a single lecture's watch progress & completion to Supabase user_progress.
  * Supports debounced watch time updates and immediate completion updates.
  */
@@ -72,20 +87,21 @@ export async function syncProgressToCloud(user, progress, immediate = false) {
 
   if (immediate || progress.completed) {
     if (progressDebounceMap.has(key)) {
-      clearTimeout(progressDebounceMap.get(key));
+      clearTimeout(progressDebounceMap.get(key).timer);
       progressDebounceMap.delete(key);
     }
     return performSync();
   }
 
   // Debounce regular watch-time ticks (save at most once every 5 seconds per lesson)
-  if (!progressDebounceMap.has(key)) {
-    const timer = setTimeout(() => {
-      progressDebounceMap.delete(key);
-      performSync();
-    }, 5000);
-    progressDebounceMap.set(key, timer);
+  if (progressDebounceMap.has(key)) {
+    clearTimeout(progressDebounceMap.get(key).timer);
   }
+  const timer = setTimeout(() => {
+    progressDebounceMap.delete(key);
+    performSync();
+  }, 5000);
+  progressDebounceMap.set(key, { timer, performSync });
 }
 
 /**
@@ -275,6 +291,30 @@ export async function hydrateCoursesFromCloud(user) {
           totalLessons: cc.total_lessons || 0,
           createdAt: Date.now()
         });
+      }
+
+      // Restore course syllabus and lessons if missing locally
+      const localLessonCount = await db.lessons.where('courseId').equals(cc.course_id).count();
+      if (localLessonCount === 0 && cc.course_id) {
+        try {
+          const playlistData = await fetchYouTubePlaylistData(cc.course_id);
+          if (playlistData?.lessons?.length > 0) {
+            await db.transaction('rw', [db.courses, db.lessons], async () => {
+              await db.courses.put({
+                id: cc.course_id,
+                title: playlistData.title || cc.title,
+                thumbnailUrl: playlistData.thumbnailUrl || cc.thumbnail_url || '',
+                channelName: playlistData.channelName || '',
+                type: 'youtube',
+                totalLessons: playlistData.lessons.length,
+                createdAt: Date.now()
+              });
+              await db.lessons.bulkPut(playlistData.lessons);
+            });
+          }
+        } catch (fetchErr) {
+          console.warn(`Could not background-fetch lessons for course ${cc.course_id}:`, fetchErr);
+        }
       }
     }
   } catch (err) {

@@ -1,4 +1,5 @@
 import { db } from '../db/FoclyraDB';
+import { removeGuestImport } from './quotaService';
 import { CourseSchema, LessonSchema } from '../types/schemas';
 import { supabase, isSupabaseConfigured } from './supabaseClient';
 import {
@@ -128,6 +129,9 @@ export async function deleteCourse(courseId) {
     await db.notes.where('courseId').equals(courseId).delete();
     await db.practiceProgress.where('courseId').equals(courseId).delete();
   });
+
+  // Remove from guest history quota if guest
+  removeGuestImport(courseId);
 
   // Clean up course slot, progress and notes in cloud
   getAuthUser().then(user => {

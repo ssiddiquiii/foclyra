@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { supabase, isSupabaseConfigured } from '../services/supabaseClient';
-import { hydrateFromCloud, subscribeToProgressRealtime, migrateGuestPlaylistToAccount } from '../services/cloudSyncService';
+import { hydrateFromCloud, subscribeToProgressRealtime, migrateGuestPlaylistToAccount, flushPendingProgressSync } from '../services/cloudSyncService';
+import { db } from '../db/FoclyraDB';
+import { clearGuestImportHistory } from '../services/quotaService';
 import { identifyUser, resetUser, trackEvent } from '../services/analytics';
 
 let progressUnsub = null;
@@ -62,6 +64,12 @@ export const useAuth = create((set, get) => ({
     // Real-time listener for OAuth logins, token refreshes, and logouts
     supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session?.user) {
+        const currentUser = get().user;
+        if (currentUser && currentUser.id !== session.user.id) {
+          // Different user signed in! Clean up previous user's local database first
+          await db.resetDatabase().catch(() => {});
+          clearGuestImportHistory();
+        }
         set({ session, user: session.user, isLoading: false });
         await get().fetchProfile(session.user.id);
         identifyUser(session.user.id, {
@@ -73,6 +81,10 @@ export const useAuth = create((set, get) => ({
         setupRealtime(session.user);
       } else {
         cleanupRealtime();
+        if (_event === 'SIGNED_OUT') {
+          await db.resetDatabase().catch(() => {});
+          clearGuestImportHistory();
+        }
         set({ session: null, user: null, profile: null, isLoading: false });
       }
     });
@@ -143,6 +155,7 @@ export const useAuth = create((set, get) => ({
   signOut: async () => {
     if (!supabase) return;
     cleanupRealtime();
+    await flushPendingProgressSync().catch(() => {});
     trackEvent('user_signed_out');
     resetUser();
     try {
@@ -150,17 +163,45 @@ export const useAuth = create((set, get) => ({
     } catch (err) {
       console.warn('Sign out warning:', err);
     }
+
+    // Wipe local database completely to guarantee session isolation
+    try {
+      await db.resetDatabase();
+    } catch (dbErr) {
+      console.warn('Reset database on signout error:', dbErr);
+    }
+
+    clearGuestImportHistory();
+    try {
+      localStorage.removeItem('foclyra_custom_youtube_api_key');
+    } catch {}
+
     set({ user: null, profile: null, session: null });
   },
 
   signOutAllDevices: async () => {
     if (!supabase) return;
     cleanupRealtime();
+    await flushPendingProgressSync().catch(() => {});
+    trackEvent('user_signed_out_all_devices');
+    resetUser();
     try {
       await supabase.auth.signOut({ scope: 'global' });
     } catch (err) {
       console.warn('Sign out global warning:', err);
     }
+
+    try {
+      await db.resetDatabase();
+    } catch (dbErr) {
+      console.warn('Reset database on signout error:', dbErr);
+    }
+
+    clearGuestImportHistory();
+    try {
+      localStorage.removeItem('foclyra_custom_youtube_api_key');
+    } catch {}
+
     set({ user: null, profile: null, session: null });
   },
 
@@ -170,20 +211,32 @@ export const useAuth = create((set, get) => ({
     if (!user) throw new Error('No user is currently signed in.');
 
     cleanupRealtime();
+    await flushPendingProgressSync().catch(() => {});
+
     // Attempt secure RPC delete_user execution
     const { error } = await supabase.rpc('delete_user');
     if (error) {
       console.warn('RPC delete_user failed or not yet deployed, fallback to profiles purge:', error);
-      // Clean up profile directly
       await supabase.from('profiles').delete().eq('id', user.id);
     }
 
     trackEvent('account_deleted');
     resetUser();
-    // Sign out client session
     try {
       await supabase.auth.signOut({ scope: 'global' });
     } catch {}
+
+    try {
+      await db.resetDatabase();
+    } catch (dbErr) {
+      console.warn('Reset database on delete account error:', dbErr);
+    }
+
+    clearGuestImportHistory();
+    try {
+      localStorage.removeItem('foclyra_custom_youtube_api_key');
+    } catch {}
+
     set({ user: null, profile: null, session: null });
   }
 }));
