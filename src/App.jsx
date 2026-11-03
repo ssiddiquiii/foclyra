@@ -20,7 +20,7 @@ import {
 } from './components/routing/RouteGuards';
 import { useUIStore } from './hooks/useUIStore';
 import { useTheme } from './hooks/useTheme';
-import { isNavigationActive, navigationItems } from './components/shell/navigation';
+import { isNavigationActive, getNavigationItems } from './components/shell/navigation';
 import { Toaster } from './components/ui/toast';
 import { trackPageView } from './services/analytics';
 
@@ -67,6 +67,7 @@ function AppContent() {
   const isLandingPage = location.pathname === '/' || location.pathname === '/landing' || location.pathname === '/welcome';
   const navigate = useNavigate();
   const reduceMotion = useReducedMotion();
+  const visibleNavItems = useMemo(() => getNavigationItems(user), [user]);
 
   const closeMobileSidebar = useCallback(() => setMobileSidebarOpen(false), []);
 
@@ -262,7 +263,7 @@ function AppContent() {
 
         <div className="w-5 h-px bg-[#e5e5e5] dark:bg-zinc-800 my-0.5" />
 
-        {navigationItems.map((item) => {
+        {visibleNavItems.map((item) => {
           const isActive = isNavigationActive(location.pathname, item.path);
           const Icon = item.icon;
           const handleHover = item.path === '/studio' ? preloadDashboard : undefined;
@@ -338,7 +339,7 @@ function AppContent() {
           </div>
 
           <nav className="space-y-1.5">
-            {navigationItems.map((item) => {
+            {visibleNavItems.map((item) => {
               const isActive = isNavigationActive(location.pathname, item.path);
               const Icon = item.icon;
               return (

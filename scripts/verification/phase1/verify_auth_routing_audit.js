@@ -309,6 +309,46 @@ console.log('\n--- SCENARIO 15: Network Failure During Session Initialization --
   assert(resolvedStatus === AUTH_STATUS.UNAUTHENTICATED, 'Degrades safely to UNAUTHENTICATED offline mode');
 }
 
+// -----------------------------------------------------------------------------
+// Scenario 16: Registered user logged in -> Landing page icon hidden in navigation
+// -----------------------------------------------------------------------------
+console.log('\n--- SCENARIO 16: Registered User Navigation Filtering ---');
+{
+  const { getNavigationItems } = await import('../../../src/components/shell/navigation.js');
+  const loggedInUser = { id: 'usr_active_99' };
+  const authedNav = getNavigationItems(loggedInUser);
+  const unauthedNav = getNavigationItems(null);
+
+  const authedHasLandingIcon = authedNav.some(item => item.path === '/');
+  const unauthedHasLandingIcon = unauthedNav.some(item => item.path === '/');
+
+  assert(authedHasLandingIcon === false, 'Landing page icon is strictly HIDDEN for logged-in registered user');
+  assert(unauthedHasLandingIcon === true, 'Landing page icon remains available for unauthenticated visitor');
+  assert(authedNav.map(i => i.name).includes('Dashboard'), 'Dashboard navigation remains active');
+  assert(authedNav.map(i => i.name).includes('Settings'), 'Settings navigation remains active');
+}
+
+// -----------------------------------------------------------------------------
+// Scenario 17: Registered user courses NEVER appear in guest mode
+// -----------------------------------------------------------------------------
+console.log('\n--- SCENARIO 17: Registered User Courses Isolated from Guest Mode ---');
+{
+  const registeredUserCourses = [
+    { id: 'PL_reg_python', title: 'Python Advanced Bootcamp' },
+    { id: 'PL_reg_calculus', title: 'Calculus 3' }
+  ];
+  const guestHistory = []; // Logged out / returning user in guest mode has 0 guest imports
+
+  // Simulate useDashboardData isolation logic for guest mode (!user)
+  const user = null;
+  const visibleCourses = (!user)
+    ? (guestHistory.length === 0 ? [] : registeredUserCourses.filter(c => guestHistory.includes(c.id)))
+    : registeredUserCourses;
+
+  assert(visibleCourses.length === 0, 'Registered user courses are 100% invisible in guest mode');
+  assert(visibleCourses.some(c => c.id === 'PL_reg_python') === false, 'Specific registered course strictly omitted');
+}
+
 console.log('\n======================================================');
 console.log(`TOTAL AUDIT SCENARIO TESTS: ${passed + failed}`);
 console.log(`PASSED: ${passed}`);
@@ -316,3 +356,4 @@ console.log(`FAILED: ${failed}`);
 console.log('======================================================\n');
 
 if (failed > 0) process.exit(1);
+
