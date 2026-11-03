@@ -15,7 +15,9 @@ import {
   Sparkles, 
   Layers, 
   Cloud, 
-  AlertTriangle
+  AlertTriangle,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import { clearProgressAndNotes, exportBackup, importBackup } from '../services/dataCommands';
 import { useUIStore } from '../hooks/useUIStore';
@@ -37,6 +39,7 @@ export default function Settings() {
   
   const [showConfirmReset, setShowConfirmReset] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
+  const [showApiKey, setShowApiKey] = useState(false);
   
   // Account Deletion States
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -392,13 +395,24 @@ export default function Settings() {
               Personal API Key
             </label>
             <div className="flex flex-col sm:flex-row gap-2">
-              <input
-                type="password"
-                value={customKey}
-                onChange={(e) => setCustomKey(e.target.value)}
-                placeholder="AIzaSy... (Leave empty to use built-in proxy)"
-                className="w-full sm:flex-1 min-w-0 h-10 px-4 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 text-zinc-950 dark:text-zinc-50 text-xs font-mono focus:outline-none focus:ring-1 focus:ring-zinc-950 dark:focus:ring-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 transition shadow-2xs"
-              />
+              <div className="relative w-full sm:flex-1 min-w-0">
+                <input
+                  type={showApiKey ? 'text' : 'password'}
+                  value={customKey}
+                  onChange={(e) => setCustomKey(e.target.value)}
+                  placeholder="AIzaSy... (Leave empty to use built-in proxy)"
+                  className="w-full h-10 pl-4 pr-10 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 text-zinc-950 dark:text-zinc-50 text-xs font-mono focus:outline-none focus:ring-1 focus:ring-zinc-950 dark:focus:ring-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 transition shadow-2xs"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowApiKey((prev) => !prev)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition cursor-pointer p-0.5"
+                  aria-label={showApiKey ? 'Hide API key' : 'Show API key'}
+                  tabIndex={-1}
+                >
+                  {showApiKey ? <EyeOff size={14} /> : <Eye size={14} />}
+                </button>
+              </div>
               <button
                 type="submit"
                 className="h-10 px-5 rounded-full bg-zinc-950 hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-100 text-white text-xs font-medium transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs flex-shrink-0 active:scale-[0.98]"
