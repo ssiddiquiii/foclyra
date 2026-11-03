@@ -366,15 +366,9 @@ export default function LandingPage() {
           </span>
         </h1>
 
-        {/* Two-tier clear hierarchy without duplicating the headline */}
-        <div className="mx-auto mt-3.5 sm:mt-5 max-w-[560px] text-center space-y-1 sm:space-y-1.5 px-1">
-          <p className="text-[13.5px] sm:text-[15.5px] md:text-[17px] font-medium text-[#222222] dark:text-zinc-200 leading-snug">
-            A distraction-free study workspace for YouTube.
-          </p>
-          <p className="text-[12px] sm:text-[13.5px] md:text-[14.5px] text-[#6f6f6f] dark:text-zinc-400 leading-relaxed">
-            Watch without recommendations, take timestamped notes, and export to Word (.docx).
-          </p>
-        </div>
+        <p className="mx-auto mt-3 sm:mt-4.5 max-w-[520px] text-[12.5px] sm:text-[14.5px] md:text-[15.5px] text-[#666666] dark:text-zinc-400 leading-relaxed px-1">
+          Watch without recommendations, take timestamped notes, and export to Word (.docx).
+        </p>
 
         <div className="relative mt-5 sm:mt-7 w-full inline-flex flex-col items-center">
           <button
@@ -635,14 +629,15 @@ export default function LandingPage() {
                     })}
                   </div>
 
-                  <div className="pt-1 sm:pt-2">
+                  <div className="pt-1.5 sm:pt-2">
                     <button
                       type="button"
                       onClick={() => handleLaunchApp('demo_export')}
-                      className="w-full h-10 sm:h-11 rounded-full bg-[#111111] dark:bg-white text-white dark:text-[#111111] text-[12.5px] sm:text-[13.5px] font-medium flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition cursor-pointer shadow-xs whitespace-nowrap"
+                      className="w-full h-9.5 sm:h-10.5 rounded-full bg-[#111111] dark:bg-white text-white dark:text-[#111111] text-[12px] sm:text-[13px] font-medium flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition cursor-pointer shadow-xs px-4 sm:px-6 whitespace-nowrap"
                     >
                       <Download className="size-3.5 sm:size-4 shrink-0" />
-                      <span>Download {PREVIEW_COURSE.docName}</span>
+                      <span className="sm:hidden">Download Notes (.docx)</span>
+                      <span className="hidden sm:inline truncate">Download {PREVIEW_COURSE.docName}</span>
                     </button>
                   </div>
                 </div>
