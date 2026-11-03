@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Foclyra Feedback Received</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f5;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      color: #18181b;
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrapper {
+      width: 100%;
+      table-layout: fixed;
+      background-color: #f4f4f5;
+      padding: 40px 16px;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #ffffff;
+      border-radius: 24px;
+      border: 1px solid #e4e4e7;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+    }
+    .header {
+      padding: 32px 32px 16px 32px;
+      border-bottom: 1px solid #f4f4f5;
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .badge-bug { background-color: #fee2e2; color: #991b1b; }
+    .badge-feature { background-color: #fef3c7; color: #92400e; }
+    .badge-general { background-color: #e0f2fe; color: #075985; }
+    .content {
+      padding: 24px 32px 32px 32px;
+    }
+    .message-box {
+      background-color: #fafafa;
+      border: 1px solid #e4e4e7;
+      border-radius: 16px;
+      padding: 20px;
+      font-size: 14.5px;
+      line-height: 1.6;
+      color: #18181b;
+      white-space: pre-wrap;
+      margin: 16px 0 24px 0;
+    }
+    .telemetry-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin-top: 16px;
+    }
+    .telemetry-table td {
+      padding: 8px 12px;
+      border-bottom: 1px solid #f4f4f5;
+    }
+    .telemetry-label {
+      color: #71717a;
+      font-weight: 600;
+      width: 30%;
+    }
+    .telemetry-val {
+      color: #27272a;
+      word-break: break-all;
+    }
+    .footer {
+      border-top: 1px solid #f4f4f5;
+      padding: 20px 32px;
+      text-align: center;
+      font-size: 11px;
+      color: #a1a1aa;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="container">
+      <div class="header">
+        <span class="badge badge-{{categoryClass}}">{{category}}</span>
+        <h2 style="margin: 12px 0 4px 0; font-size: 20px; color: #09090b; letter-spacing: -0.02em;">New User Submission</h2>
+        <p style="margin: 0; font-size: 13px; color: #71717a;">From: <strong>{{name}}</strong> ({{email}})</p>
+      </div>
+
+      <div class="content">
+        <h3 style="font-size: 12px; text-transform: uppercase; color: #71717a; letter-spacing: 0.05em; margin: 0;">User Message:</h3>
+        <div class="message-box">{{message}}</div>
+
+        {{screenshotSection}}
+
+        <h3 style="font-size: 12px; text-transform: uppercase; color: #71717a; letter-spacing: 0.05em; margin: 24px 0 8px 0;">Diagnostic Telemetry:</h3>
+        <table class="telemetry-table">
+          <tr><td class="telemetry-label">Page URL</td><td class="telemetry-val">{{url}}</td></tr>
+          <tr><td class="telemetry-label">Screen Resolution</td><td class="telemetry-val">{{screenSize}}</td></tr>
+          <tr><td class="telemetry-label">Browser / OS</td><td class="telemetry-val">{{userAgent}}</td></tr>
+          <tr><td class="telemetry-label">Timestamp</td><td class="telemetry-val">{{timestamp}}</td></tr>
+        </table>
+
+        <div style="text-align: center; margin-top: 28px;">
+          <a href="mailto:{{email}}?subject=Re:%20Your%20Foclyra%20Feedback" style="display: inline-block; background-color: #09090b; color: #ffffff; font-size: 12.5px; font-weight: 600; text-decoration: none; padding: 11px 24px; border-radius: 100px;">
+            Reply to {{name}} →
+          </a>
+        </div>
+      </div>
+
+      <div class="footer">
+        Foclyra Telemetry & Feedback Delivery Engine • Delivered to {{recipientEmail}}
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,23 +1,23 @@
-import { migrateGuestPlaylistToAccount } from '../services/cloudSyncService';
+import { migrateGuestPlaylistToAccount } from '../services/cloudSyncService.js';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Sparkles, Cloud, ShieldCheck, Mail, ArrowRight, Lock, CheckCircle2, AlertCircle, Check, User } from 'lucide-react';
-import { useAuth } from '../hooks/useAuth';
-import { useUIStore } from '../hooks/useUIStore';
-import { trackEvent } from '../services/analytics';
+import { X, Sparkles, Mail, ArrowRight, Lock, CheckCircle2, AlertCircle, User, KeyRound } from 'lucide-react';
+import { useAuth } from '../hooks/useAuth.js';
+import { useUIStore } from '../hooks/useUIStore.js';
+import { trackEvent } from '../services/analytics.js';
 
 /**
- * Editorial Cloud Sign-In & Registration Modal.
+ * Editorial Cloud Sign-In, Registration & Password Recovery Modal.
  * Matches Landing Page and Studio Dashboard minimalist editorial aesthetic.
- * Fully responsive across all devices (320px mobile to 4K desktop, landscape & portrait).
+ * Fully responsive across all devices (320px mobile to 4K desktop).
  */
 export default function AuthModal({ isOpen: propIsOpen, onClose: propOnClose, context: propContext }) {
   const { authModalOpen, closeAuthModal, authModalContext } = useUIStore();
   const isOpen = propIsOpen !== undefined ? propIsOpen : authModalOpen;
   const onClose = propOnClose !== undefined ? propOnClose : closeAuthModal;
   const context = propContext !== undefined ? propContext : authModalContext;
-  const { signInWithGoogle, signInWithEmail, signUpWithEmail, isConfigured } = useAuth();
+  const { signInWithGoogle, signInWithEmail, signUpWithEmail, sendPasswordResetEmail, isConfigured } = useAuth();
   const navigate = useNavigate();
   
   // Default to signup when opening from guest limit, otherwise signin
@@ -67,17 +67,39 @@ export default function AuthModal({ isOpen: propIsOpen, onClose: propOnClose, co
       setErrorMsg('Supabase is not configured yet. Add VITE_SUPABASE_URL in .env.');
       return;
     }
-    if (!email || !password) {
-      setErrorMsg('Please enter both email and password.');
+    if (!email) {
+      setErrorMsg('Please enter your email address.');
       return;
     }
+
+    if (authMode === 'forgot') {
+      setLoading(true);
+      setErrorMsg(null);
+      setSuccessMsg(null);
+      try {
+        await sendPasswordResetEmail(email.trim());
+        trackEvent('password_reset_requested', { email: email.trim() });
+        setSuccessMsg('Password reset link sent! Please check your email inbox and spam folder.');
+      } catch (err) {
+        setErrorMsg(err.message || 'Failed to send password reset email. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
+    if (!password) {
+      setErrorMsg('Please enter your password.');
+      return;
+    }
+
     setLoading(true);
     setErrorMsg(null);
     setSuccessMsg(null);
 
     try {
       if (authMode === 'signup') {
-        const result = await signUpWithEmail(email, password, fullName);
+        const result = await signUpWithEmail(email.trim(), password, fullName.trim());
         trackEvent('user_signed_up', { method: 'email', context });
         if (result?.session?.user) {
           await migrateGuestPlaylistToAccount(result.session.user).catch(() => {});
@@ -86,10 +108,10 @@ export default function AuthModal({ isOpen: propIsOpen, onClose: propOnClose, co
           sessionStorage.removeItem('foclyra_intended_path');
           navigate(intended || '/studio');
         } else {
-          setSuccessMsg('Account created! Please check your email to confirm registration, or sign in now.');
+          setSuccessMsg('Account created! Please check your email to verify your registration, then sign in.');
         }
       } else {
-        const result = await signInWithEmail(email, password);
+        const result = await signInWithEmail(email.trim(), password);
         trackEvent('user_signed_in', { method: 'email', context });
         if (result?.session?.user) {
           await migrateGuestPlaylistToAccount(result.session.user).catch(() => {});
@@ -100,7 +122,7 @@ export default function AuthModal({ isOpen: propIsOpen, onClose: propOnClose, co
         navigate(intended || '/studio');
       }
     } catch (err) {
-      setErrorMsg(err.message || 'Authentication failed. Please verify credentials.');
+      setErrorMsg(err.message || 'Authentication failed. Please check your credentials.');
     } finally {
       setLoading(false);
     }
@@ -141,22 +163,33 @@ export default function AuthModal({ isOpen: propIsOpen, onClose: propOnClose, co
             {/* Header */}
             <div className="pr-6">
               <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 text-zinc-950 dark:text-zinc-50 text-[10.5px] font-semibold mb-2">
-                <Sparkles size={11} />
-                <span>
-                  {isReturningUser
-                    ? 'Welcome Back'
-                    : isGuestLimit 
-                    ? 'Guest Trial Complete' 
-                    : isRegisteredLimit 
-                    ? 'Quota Limit Reached' 
-                    : authMode === 'signup' 
-                    ? 'Get Started Free' 
-                    : 'Welcome to Foclyra'}
-                </span>
+                {authMode === 'forgot' ? (
+                  <>
+                    <KeyRound size={11} className="text-amber-500" />
+                    <span>Password Recovery</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles size={11} />
+                    <span>
+                      {isReturningUser
+                        ? 'Welcome Back'
+                        : isGuestLimit 
+                        ? 'Guest Trial Complete' 
+                        : isRegisteredLimit 
+                        ? 'Quota Limit Reached' 
+                        : authMode === 'signup' 
+                        ? 'Get Started Free' 
+                        : 'Welcome to Foclyra'}
+                    </span>
+                  </>
+                )}
               </div>
               
               <h2 className="text-xl sm:text-[22px] font-semibold text-[#111111] dark:text-white tracking-[-0.025em] leading-snug">
-                {isReturningUser
+                {authMode === 'forgot'
+                  ? 'Reset your Password'
+                  : isReturningUser
                   ? 'Sign in to your Foclyra Account'
                   : isGuestLimit 
                   ? 'Unlock 5 Free Course Slots' 
@@ -168,7 +201,9 @@ export default function AuthModal({ isOpen: propIsOpen, onClose: propOnClose, co
               </h2>
               
               <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1 leading-relaxed">
-                {isReturningUser
+                {authMode === 'forgot'
+                  ? 'Enter the email address associated with your account, and we will send you a secure link to reset your password.'
+                  : isReturningUser
                   ? 'Welcome back! Sign in to import this playlist directly into your account and access all your saved courses and notes.'
                   : isGuestLimit
                   ? "Create a free account to unlock up to 5 study courses, automatic cloud backup, and multi-device notes."
@@ -180,57 +215,41 @@ export default function AuthModal({ isOpen: propIsOpen, onClose: propOnClose, co
               </p>
             </div>
 
-            {/* 2-Tab Mode Switcher Capsule (Sign In vs Create Account) */}
-            <div className="flex p-1 bg-zinc-100 dark:bg-zinc-900 rounded-full border border-zinc-200/80 dark:border-zinc-800/80">
-              <button
-                type="button"
-                onClick={() => {
-                  setAuthMode('signin');
-                  setErrorMsg(null);
-                  setSuccessMsg(null);
-                }}
-                className={`flex-1 h-8 rounded-full text-xs font-semibold transition cursor-pointer ${
-                  authMode === 'signin'
-                    ? 'bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 shadow-xs'
-                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-100'
-                }`}
-              >
-                Sign In
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setAuthMode('signup');
-                  setErrorMsg(null);
-                  setSuccessMsg(null);
-                }}
-                className={`flex-1 h-8 rounded-full text-xs font-semibold transition cursor-pointer ${
-                  authMode === 'signup'
-                    ? 'bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 shadow-xs'
-                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-100'
-                }`}
-              >
-                Create Account
-              </button>
-            </div>
-
-            {/* Compact Value Strip */}
-            <div className="flex items-center justify-between text-[11px] text-zinc-600 dark:text-zinc-400 font-medium px-1">
-              <span className="inline-flex items-center gap-1.5">
-                <Check size={12} className="text-zinc-900 dark:text-zinc-100 shrink-0" />
-                <span>5 Courses</span>
-              </span>
-              <span className="text-zinc-300 dark:text-zinc-700">•</span>
-              <span className="inline-flex items-center gap-1.5">
-                <Cloud size={12} className="text-zinc-900 dark:text-zinc-100 shrink-0" />
-                <span>Cloud Backup</span>
-              </span>
-              <span className="text-zinc-300 dark:text-zinc-700">•</span>
-              <span className="inline-flex items-center gap-1.5">
-                <ShieldCheck size={12} className="text-zinc-900 dark:text-zinc-100 shrink-0" />
-                <span>100% Free</span>
-              </span>
-            </div>
+            {/* Mode Switcher Capsule (Sign In vs Create Account) */}
+            {authMode !== 'forgot' && (
+              <div className="flex p-1 bg-zinc-100 dark:bg-zinc-900 rounded-full border border-zinc-200/80 dark:border-zinc-800/80">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAuthMode('signin');
+                    setErrorMsg(null);
+                    setSuccessMsg(null);
+                  }}
+                  className={`flex-1 py-1.5 text-xs font-semibold rounded-full transition-all cursor-pointer ${
+                    authMode === 'signin'
+                      ? 'bg-white dark:bg-zinc-800 text-zinc-950 dark:text-white shadow-2xs'
+                      : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200'
+                  }`}
+                >
+                  Sign In
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAuthMode('signup');
+                    setErrorMsg(null);
+                    setSuccessMsg(null);
+                  }}
+                  className={`flex-1 py-1.5 text-xs font-semibold rounded-full transition-all cursor-pointer ${
+                    authMode === 'signup'
+                      ? 'bg-white dark:bg-zinc-800 text-zinc-950 dark:text-white shadow-2xs'
+                      : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-200'
+                  }`}
+                >
+                  Create Account
+                </button>
+              </div>
+            )}
 
             {/* Error Banner */}
             {errorMsg && (
@@ -248,46 +267,50 @@ export default function AuthModal({ isOpen: propIsOpen, onClose: propOnClose, co
               </div>
             )}
 
-            {/* Google Sign In Button */}
-            <button
-              onClick={handleGoogleSignIn}
-              disabled={loading}
-              className="w-full flex items-center justify-center gap-2.5 h-10.5 rounded-full border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-900 dark:text-zinc-100 text-xs font-semibold shadow-2xs transition active:scale-[0.98] cursor-pointer disabled:opacity-50 shrink-0"
-            >
-              <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
-                <path
-                  fill="#4285F4"
-                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                />
-                <path
-                  fill="#34A853"
-                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                />
-                <path
-                  fill="#FBBC05"
-                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
-                />
-                <path
-                  fill="#EA4335"
-                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
-                />
-              </svg>
-              <span>{loading ? 'Connecting...' : authMode === 'signup' ? 'Sign up with Google' : 'Continue with Google'}</span>
-            </button>
+            {/* Google Sign In Button (Hidden in forgot mode) */}
+            {authMode !== 'forgot' && (
+              <>
+                <button
+                  onClick={handleGoogleSignIn}
+                  disabled={loading}
+                  className="w-full flex items-center justify-center gap-2.5 h-10.5 rounded-full border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-zinc-900 dark:text-zinc-100 text-xs font-semibold shadow-2xs transition active:scale-[0.98] cursor-pointer disabled:opacity-50 shrink-0"
+                >
+                  <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
+                    <path
+                      fill="#4285F4"
+                      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                    />
+                    <path
+                      fill="#34A853"
+                      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                    />
+                    <path
+                      fill="#FBBC05"
+                      d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                    />
+                    <path
+                      fill="#EA4335"
+                      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+                    />
+                  </svg>
+                  <span>{loading ? 'Connecting...' : authMode === 'signup' ? 'Sign up with Google' : 'Continue with Google'}</span>
+                </button>
 
-            {/* Divider */}
-            <div className="relative my-3">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-zinc-200/80 dark:border-zinc-800/80" />
-              </div>
-              <div className="relative flex justify-center text-[10px] uppercase">
-                <span className="bg-white dark:bg-zinc-950 px-2 text-zinc-400 dark:text-zinc-500 font-semibold tracking-wider">
-                  Or continue with email
-                </span>
-              </div>
-            </div>
+                {/* Divider */}
+                <div className="relative my-3">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-zinc-200/80 dark:border-zinc-800/80" />
+                  </div>
+                  <div className="relative flex justify-center text-[10px] uppercase">
+                    <span className="bg-white dark:bg-zinc-950 px-2 text-zinc-400 dark:text-zinc-500 font-semibold tracking-wider">
+                      Or continue with email
+                    </span>
+                  </div>
+                </div>
+              </>
+            )}
 
-            {/* Email / Password Form */}
+            {/* Email Form */}
             <form onSubmit={handleEmailAuth} className="space-y-3">
               {authMode === 'signup' && (
                 <div>
@@ -320,34 +343,71 @@ export default function AuthModal({ isOpen: propIsOpen, onClose: propOnClose, co
                 </div>
               </div>
 
-              <div>
-                <label className="block text-[11px] font-medium text-zinc-500 dark:text-zinc-400 mb-1">Password</label>
-                <div className="relative">
-                  <Lock size={13} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400" />
-                  <input
-                    type="password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="w-full h-9.5 pl-9 pr-3.5 rounded-full border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/70 dark:bg-zinc-900/60 text-zinc-950 dark:text-zinc-50 text-xs focus:outline-none focus:ring-1 focus:ring-zinc-950 dark:focus:ring-white shadow-2xs transition"
-                  />
+              {authMode !== 'forgot' && (
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-[11px] font-medium text-zinc-500 dark:text-zinc-400">Password</label>
+                    {authMode === 'signin' && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAuthMode('forgot');
+                          setErrorMsg(null);
+                          setSuccessMsg(null);
+                        }}
+                        className="text-[10.5px] text-zinc-500 hover:text-zinc-950 dark:hover:text-zinc-100 transition cursor-pointer"
+                      >
+                        Forgot password?
+                      </button>
+                    )}
+                  </div>
+                  <div className="relative">
+                    <Lock size={13} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400" />
+                    <input
+                      type="password"
+                      required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="w-full h-9.5 pl-9 pr-3.5 rounded-full border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/70 dark:bg-zinc-900/60 text-zinc-950 dark:text-zinc-50 text-xs focus:outline-none focus:ring-1 focus:ring-zinc-950 dark:focus:ring-white shadow-2xs transition"
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
 
               <button
                 type="submit"
                 disabled={loading}
                 className="w-full h-10.5 rounded-full bg-zinc-950 hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-100 text-white text-xs font-medium transition cursor-pointer disabled:opacity-50 mt-1 flex items-center justify-center gap-2 shadow-xs active:scale-[0.98]"
               >
-                <span>{loading ? 'Processing...' : authMode === 'signup' ? 'Create Account' : 'Sign In'}</span>
+                <span>
+                  {loading 
+                    ? 'Processing...' 
+                    : authMode === 'forgot'
+                    ? 'Send Reset Link'
+                    : authMode === 'signup' 
+                    ? 'Create Account' 
+                    : 'Sign In'}
+                </span>
                 <ArrowRight size={13} />
               </button>
             </form>
 
-            {/* Secondary Toggle Link */}
+            {/* Bottom Toggle Links */}
             <div className="pt-1 text-center">
-              {authMode === 'signup' ? (
+              {authMode === 'forgot' ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAuthMode('signin');
+                    setErrorMsg(null);
+                    setSuccessMsg(null);
+                  }}
+                  className="text-[11.5px] text-zinc-500 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-100 transition underline underline-offset-2 cursor-pointer"
+                >
+                  Remember your password? Sign in
+                </button>
+              ) : authMode === 'signup' ? (
                 <button
                   type="button"
                   onClick={() => {

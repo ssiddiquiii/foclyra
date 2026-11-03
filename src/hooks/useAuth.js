@@ -226,6 +226,25 @@ export const useAuth = create((set, get) => ({
     return data;
   },
 
+  sendPasswordResetEmail: async (email) => {
+    if (!supabase) throw new Error('Supabase is not configured yet.');
+    const redirectTo = `${window.location.origin}/reset-password`;
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo
+    });
+    if (error) throw error;
+    return data;
+  },
+
+  updatePassword: async (newPassword) => {
+    if (!supabase) throw new Error('Supabase is not configured yet.');
+    const { data, error } = await supabase.auth.updateUser({
+      password: newPassword
+    });
+    if (error) throw error;
+    return data;
+  },
+
   signOut: async () => {
     if (!supabase) return;
     cleanupRealtime();

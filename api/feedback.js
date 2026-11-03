@@ -32,38 +32,52 @@ export default async function handler(request, response) {
     const cleanCategory = category.toUpperCase();
     const recipientEmail = process.env.FEEDBACK_RECIPIENT_EMAIL || 'sameedsiddiqui9@gmail.com';
 
-    // Formatted HTML Email Body
+    const categoryClass = cleanCategory.toLowerCase();
+    const badgeColor = categoryClass === 'bug' ? '#fee2e2; color: #991b1b' : categoryClass === 'feature' ? '#fef3c7; color: #92400e' : '#e0f2fe; color: #075985';
+
+    // Formatted Editorial HTML Email Body
     const htmlContent = `
-      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
-        <div style="border-bottom: 2px solid #6366f1; padding-bottom: 12px; margin-bottom: 20px;">
-          <h2 style="margin: 0; color: #1e293b; font-size: 20px;">[${cleanCategory}] Foclyra Feedback</h2>
-          <p style="margin: 4px 0 0 0; color: #64748b; font-size: 13px;">Submitted by ${cleanName} (${cleanEmail})</p>
-        </div>
-
-        <div style="margin-bottom: 24px;">
-          <h3 style="font-size: 14px; text-transform: uppercase; color: #64748b; margin-bottom: 8px;">User Message:</h3>
-          <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; font-size: 14px; line-height: 1.6; color: #334155; white-space: pre-wrap;">${message.trim()}</div>
-        </div>
-
-        ${telemetry ? `
-          <div style="background-color: #f1f5f9; border-radius: 8px; padding: 14px; margin-bottom: 20px; font-size: 12px; color: #475569;">
-            <strong style="display: block; margin-bottom: 6px; color: #1e293b;">Diagnostic Telemetry:</strong>
-            <div><strong>Page URL:</strong> ${telemetry.url || 'N/A'}</div>
-            <div><strong>Browser / OS:</strong> ${telemetry.userAgent || 'N/A'}</div>
-            <div><strong>Screen Size:</strong> ${telemetry.screenSize || 'N/A'}</div>
-            <div><strong>Timestamp:</strong> ${telemetry.timestamp || new Date().toISOString()}</div>
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 32px 20px; background-color: #f4f4f5;">
+        <div style="background-color: #ffffff; border-radius: 24px; border: 1px solid #e4e4e7; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.04);">
+          <div style="padding: 28px 28px 16px 28px; border-bottom: 1px solid #f4f4f5;">
+            <span style="display: inline-block; padding: 4px 12px; border-radius: 100px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; background: ${badgeColor};">
+              ${cleanCategory}
+            </span>
+            <h2 style="margin: 12px 0 4px 0; font-size: 20px; color: #09090b; letter-spacing: -0.02em;">New User Submission</h2>
+            <p style="margin: 0; font-size: 13px; color: #71717a;">From: <strong>${cleanName}</strong> (<a href="mailto:${cleanEmail}" style="color: #09090b;">${cleanEmail}</a>)</p>
           </div>
-        ` : ''}
 
-        ${screenshot ? `
-          <div style="margin-top: 16px;">
-            <strong style="font-size: 13px; color: #1e293b; display: block; margin-bottom: 8px;">Attached Screenshot:</strong>
-            <img src="${screenshot}" alt="User Screenshot" style="max-width: 100%; height: auto; border-radius: 8px; border: 1px solid #cbd5e1;" />
+          <div style="padding: 24px 28px 28px 28px;">
+            <h3 style="font-size: 11.5px; text-transform: uppercase; color: #71717a; letter-spacing: 0.05em; margin: 0 0 8px 0;">User Message:</h3>
+            <div style="background-color: #fafafa; border: 1px solid #e4e4e7; border-radius: 16px; padding: 18px; font-size: 14px; line-height: 1.6; color: #18181b; white-space: pre-wrap;">${message.trim()}</div>
+
+            ${screenshot ? `
+              <div style="margin-top: 20px;">
+                <h3 style="font-size: 11.5px; text-transform: uppercase; color: #71717a; letter-spacing: 0.05em; margin: 0 0 8px 0;">Attached Screenshot:</h3>
+                <img src="${screenshot}" alt="User Screenshot" style="max-width: 100%; height: auto; border-radius: 12px; border: 1px solid #cbd5e1;" />
+              </div>
+            ` : ''}
+
+            ${telemetry ? `
+              <h3 style="font-size: 11.5px; text-transform: uppercase; color: #71717a; letter-spacing: 0.05em; margin: 24px 0 8px 0;">Diagnostic Telemetry:</h3>
+              <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                <tr><td style="padding: 6px 0; border-bottom: 1px solid #f4f4f5; color: #71717a; font-weight: 600; width: 35%;">Page URL</td><td style="padding: 6px 0; border-bottom: 1px solid #f4f4f5; color: #27272a; word-break: break-all;">${telemetry.url || 'N/A'}</td></tr>
+                <tr><td style="padding: 6px 0; border-bottom: 1px solid #f4f4f5; color: #71717a; font-weight: 600;">Screen Size</td><td style="padding: 6px 0; border-bottom: 1px solid #f4f4f5; color: #27272a;">${telemetry.screenSize || 'N/A'}</td></tr>
+                <tr><td style="padding: 6px 0; border-bottom: 1px solid #f4f4f5; color: #71717a; font-weight: 600;">Browser / OS</td><td style="padding: 6px 0; border-bottom: 1px solid #f4f4f5; color: #27272a; word-break: break-all;">${telemetry.userAgent || 'N/A'}</td></tr>
+                <tr><td style="padding: 6px 0; border-bottom: 1px solid #f4f4f5; color: #71717a; font-weight: 600;">Timestamp</td><td style="padding: 6px 0; border-bottom: 1px solid #f4f4f5; color: #27272a;">${telemetry.timestamp || new Date().toISOString()}</td></tr>
+              </table>
+            ` : ''}
+
+            <div style="text-align: center; margin-top: 28px;">
+              <a href="mailto:${cleanEmail}?subject=Re:%20[Foclyra%20${cleanCategory}]%20Your%20Feedback" style="display: inline-block; background-color: #09090b; color: #ffffff !important; font-size: 12.5px; font-weight: 600; text-decoration: none; padding: 11px 26px; border-radius: 100px;">
+                Reply to ${cleanName} →
+              </a>
+            </div>
           </div>
-        ` : ''}
 
-        <div style="margin-top: 30px; padding-top: 16px; border-top: 1px solid #e2e8f0; font-size: 11px; color: #94a3b8; text-align: center;">
-          Sent via Foclyra Automated Feedback Telemetry
+          <div style="border-top: 1px solid #f4f4f5; padding: 16px 28px; text-align: center; font-size: 11px; color: #a1a1aa;">
+            Foclyra Telemetry & Feedback Delivery Engine • Delivered to ${recipientEmail}
+          </div>
         </div>
       </div>
     `;
