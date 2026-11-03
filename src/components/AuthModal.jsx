@@ -2,7 +2,7 @@ import { migrateGuestPlaylistToAccount } from '../services/cloudSyncService.js';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Sparkles, Mail, ArrowRight, Lock, CheckCircle2, AlertCircle, User, KeyRound } from 'lucide-react';
+import { X, Sparkles, Mail, ArrowRight, Lock, CheckCircle2, AlertCircle, User, KeyRound, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth.js';
 import { useUIStore } from '../hooks/useUIStore.js';
 import { trackEvent } from '../services/analytics.js';
