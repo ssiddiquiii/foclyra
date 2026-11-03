@@ -1,7 +1,6 @@
 /**
- * Foclyra Production Direct Feedback & Telemetry Serverless Endpoint.
- * Transmits feedback, telemetry, and screenshots directly to the administrator inbox.
- * Powered by Resend API (Primary) and Web3Forms (Secondary).
+ * Foclyra Production Direct Feedback Serverless Endpoint.
+ * Transmits feedback and screenshot directly to the administrator inbox via Resend.
  */
 
 export default async function handler(request, response) {
@@ -33,48 +32,48 @@ export default async function handler(request, response) {
     const categoryClass = cleanCategory.toLowerCase();
     const badgeColor = categoryClass === 'bug' ? '#fee2e2; color: #991b1b' : categoryClass === 'feature' ? '#fef3c7; color: #92400e' : '#e0f2fe; color: #075985';
 
-    // Formatted Editorial HTML Email Body
+    const pageUrl = telemetry?.url || '';
+
+    // Clean Minimalist Editorial HTML Email Body (Extra noisy telemetry removed)
     const htmlContent = `
-      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 32px 20px; background-color: #f4f4f5;">
-        <div style="background-color: #ffffff; border-radius: 24px; border: 1px solid #e4e4e7; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.04);">
-          <div style="padding: 28px 28px 16px 28px; border-bottom: 1px solid #f4f4f5;">
-            <span style="display: inline-block; padding: 4px 12px; border-radius: 100px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; background: ${badgeColor};">
-              ${cleanCategory}
-            </span>
-            <h2 style="margin: 12px 0 4px 0; font-size: 20px; color: #09090b; letter-spacing: -0.02em;">New User Submission</h2>
-            <p style="margin: 0; font-size: 13px; color: #71717a;">From: <strong>${cleanName}</strong> (<a href="mailto:${cleanEmail}" style="color: #09090b;">${cleanEmail}</a>)</p>
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 580px; margin: 0 auto; padding: 24px 16px; background-color: #f4f4f5;">
+        <div style="background-color: #ffffff; border-radius: 20px; border: 1px solid #e4e4e7; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.04);">
+          
+          <!-- Header -->
+          <div style="padding: 24px 28px 16px 28px; border-bottom: 1px solid #f4f4f5;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+              <span style="display: inline-block; padding: 3px 10px; border-radius: 100px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; background: ${badgeColor};">
+                ${cleanCategory}
+              </span>
+              ${pageUrl ? `<span style="font-size: 11.5px; color: #71717a;">Page: <code style="font-family: monospace; background: #f4f4f5; padding: 2px 6px; border-radius: 6px; color: #18181b;">${pageUrl}</code></span>` : ''}
+            </div>
+            <h2 style="margin: 6px 0 2px 0; font-size: 19px; color: #09090b; letter-spacing: -0.02em;">User Feedback</h2>
+            <p style="margin: 0; font-size: 13px; color: #71717a;">From: <strong>${cleanName}</strong> (<a href="mailto:${cleanEmail}" style="color: #09090b; text-decoration: underline;">${cleanEmail}</a>)</p>
           </div>
 
-          <div style="padding: 24px 28px 28px 28px;">
-            <h3 style="font-size: 11.5px; text-transform: uppercase; color: #71717a; letter-spacing: 0.05em; margin: 0 0 8px 0;">User Message:</h3>
-            <div style="background-color: #fafafa; border: 1px solid #e4e4e7; border-radius: 16px; padding: 18px; font-size: 14px; line-height: 1.6; color: #18181b; white-space: pre-wrap;">${message.trim()}</div>
+          <!-- Body -->
+          <div style="padding: 20px 28px 24px 28px;">
+            <h3 style="font-size: 11px; text-transform: uppercase; color: #71717a; letter-spacing: 0.05em; margin: 0 0 8px 0;">Message:</h3>
+            <div style="background-color: #fafafa; border: 1px solid #e4e4e7; border-radius: 14px; padding: 16px; font-size: 14px; line-height: 1.6; color: #18181b; white-space: pre-wrap;">${message.trim()}</div>
 
             ${screenshot ? `
-              <div style="margin-top: 20px;">
-                <h3 style="font-size: 11.5px; text-transform: uppercase; color: #71717a; letter-spacing: 0.05em; margin: 0 0 8px 0;">Attached Screenshot:</h3>
-                <img src="${screenshot}" alt="User Screenshot" style="max-width: 100%; height: auto; border-radius: 12px; border: 1px solid #cbd5e1;" />
+              <div style="margin-top: 18px;">
+                <h3 style="font-size: 11px; text-transform: uppercase; color: #71717a; letter-spacing: 0.05em; margin: 0 0 8px 0;">Attached Screenshot:</h3>
+                <img src="cid:user-screenshot" alt="User Screenshot" style="max-width: 100%; height: auto; border-radius: 12px; border: 1px solid #e4e4e7; display: block;" />
               </div>
             ` : ''}
 
-            ${telemetry ? `
-              <h3 style="font-size: 11.5px; text-transform: uppercase; color: #71717a; letter-spacing: 0.05em; margin: 24px 0 8px 0;">Diagnostic Telemetry:</h3>
-              <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
-                <tr><td style="padding: 6px 0; border-bottom: 1px solid #f4f4f5; color: #71717a; font-weight: 600; width: 35%;">Page URL</td><td style="padding: 6px 0; border-bottom: 1px solid #f4f4f5; color: #27272a; word-break: break-all;">${telemetry.url || 'N/A'}</td></tr>
-                <tr><td style="padding: 6px 0; border-bottom: 1px solid #f4f4f5; color: #71717a; font-weight: 600;">Screen Size</td><td style="padding: 6px 0; border-bottom: 1px solid #f4f4f5; color: #27272a;">${telemetry.screenSize || 'N/A'}</td></tr>
-                <tr><td style="padding: 6px 0; border-bottom: 1px solid #f4f4f5; color: #71717a; font-weight: 600;">Browser / OS</td><td style="padding: 6px 0; border-bottom: 1px solid #f4f4f5; color: #27272a; word-break: break-all;">${telemetry.userAgent || 'N/A'}</td></tr>
-                <tr><td style="padding: 6px 0; border-bottom: 1px solid #f4f4f5; color: #71717a; font-weight: 600;">Timestamp</td><td style="padding: 6px 0; border-bottom: 1px solid #f4f4f5; color: #27272a;">${telemetry.timestamp || new Date().toISOString()}</td></tr>
-              </table>
-            ` : ''}
-
-            <div style="text-align: center; margin-top: 28px;">
-              <a href="mailto:${cleanEmail}?subject=Re:%20[Foclyra%20${cleanCategory}]%20Your%20Feedback" style="display: inline-block; background-color: #09090b; color: #ffffff !important; font-size: 12.5px; font-weight: 600; text-decoration: none; padding: 11px 26px; border-radius: 100px;">
+            <!-- Quick Reply Action -->
+            <div style="text-align: center; margin-top: 24px;">
+              <a href="mailto:${cleanEmail}?subject=Re:%20[Foclyra%20${cleanCategory}]%20Feedback" style="display: inline-block; background-color: #09090b; color: #ffffff !important; font-size: 12.5px; font-weight: 600; text-decoration: none; padding: 10px 24px; border-radius: 100px;">
                 Reply to ${cleanName} →
               </a>
             </div>
           </div>
 
-          <div style="border-top: 1px solid #f4f4f5; padding: 16px 28px; text-align: center; font-size: 11px; color: #a1a1aa;">
-            Foclyra Direct Telemetry & Feedback Delivery Engine • Delivered to ${recipientEmail}
+          <!-- Clean Minimal Footer -->
+          <div style="border-top: 1px solid #f4f4f5; padding: 12px 28px; text-align: center; font-size: 11px; color: #a1a1aa;">
+            Foclyra Feedback Notification
           </div>
         </div>
       </div>
@@ -89,7 +88,8 @@ export default async function handler(request, response) {
         if (base64Data) {
           attachments.push({
             filename: 'feedback-screenshot.jpg',
-            content: base64Data
+            content: base64Data,
+            contentId: 'user-screenshot'
           });
         }
       }
@@ -137,7 +137,7 @@ export default async function handler(request, response) {
           name: cleanName,
           email: cleanEmail,
           subject: `[Foclyra ${cleanCategory}] from ${cleanName}`,
-          message: `${message}\n\n--- Telemetry ---\n${JSON.stringify(telemetry || {}, null, 2)}`,
+          message: `${message}\n\nPage: ${pageUrl}`,
           from_name: 'Foclyra Feedback'
         })
       });
@@ -146,12 +146,11 @@ export default async function handler(request, response) {
         return response.status(200).json({
           success: true,
           provider: 'web3forms',
-          message: 'Feedback sent successfully.'
+          message: 'Thank you! Your feedback has been successfully submitted.'
         });
       }
     }
 
-    // If no provider is configured in environment
     return response.status(500).json({
       error: 'Email delivery service is not configured. Please add RESEND_API_KEY in Vercel Project Settings > Environment Variables.'
     });
