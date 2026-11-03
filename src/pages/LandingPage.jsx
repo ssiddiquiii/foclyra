@@ -291,7 +291,7 @@ export default function LandingPage() {
       <section id="top" className="px-3.5 sm:px-6 pt-10 sm:pt-16 md:pt-22 text-center">
         <h1
           ref={heroRef}
-          className="mx-auto max-w-[1080px] text-[clamp(23px,6.2vw,76px)] leading-[1.08] font-semibold tracking-[-0.045em] text-[#111111] dark:text-white"
+          className="mx-auto max-w-[1080px] text-[clamp(32px,7.8vw,76px)] leading-[1.12] sm:leading-[1.08] font-semibold tracking-[-0.03em] sm:tracking-[-0.045em] text-[#111111] dark:text-white"
         >
           <span className="block">
             <GradualWord
@@ -366,23 +366,26 @@ export default function LandingPage() {
           </span>
         </h1>
 
-        <p className="mx-auto mt-3.5 sm:mt-5 max-w-[660px] text-[13.5px] sm:text-[15.5px] md:text-[17px] leading-[1.6] text-[#555555] dark:text-zinc-400 font-normal">
-          Import any YouTube playlist into a distraction-free study workspace.
-          <br className="hidden sm:inline" />{' '}
-          Watch without recommendations, take timestamped notes, and export to Word (.docx).
-        </p>
+        <div className="mx-auto mt-4 sm:mt-6 max-w-[620px] text-center space-y-2 sm:space-y-2.5">
+          <p className="text-[15.5px] sm:text-[18px] md:text-[20px] font-medium tracking-[-0.015em] text-[#222222] dark:text-zinc-200 leading-[1.4]">
+            Turn any YouTube playlist into an ad-free study studio.
+          </p>
+          <p className="text-[13px] sm:text-[14.5px] md:text-[15.5px] text-[#666666] dark:text-zinc-400 leading-[1.6] max-w-[540px] mx-auto">
+            Watch without recommendation rabbit holes, take live timestamped notes, and export to Word (.docx).
+          </p>
+        </div>
 
-        <div className="relative mt-5 sm:mt-8 w-full inline-flex flex-col items-center">
+        <div className="relative mt-6 sm:mt-8 w-full inline-flex flex-col items-center">
           <button
             type="button"
             onClick={() => handleLaunchApp('hero_main_pill')}
-            className="inline-flex w-auto h-9 sm:h-11 md:h-12 items-center justify-center gap-1.5 sm:gap-2.5 rounded-full bg-[#111111] dark:bg-white px-4 sm:px-6 md:px-7 text-[12.5px] sm:text-[14.5px] md:text-[15.5px] font-medium text-white dark:text-[#111111] hover:bg-[#333333] dark:hover:bg-zinc-200 transition active:scale-[.98] cursor-pointer shadow-sm whitespace-nowrap"
+            className="inline-flex w-auto h-11 sm:h-12 md:h-12.5 items-center justify-center gap-2 sm:gap-2.5 rounded-full bg-[#111111] dark:bg-white px-6 sm:px-7 md:px-8 text-[14px] sm:text-[15px] md:text-[15.5px] font-medium text-white dark:text-[#111111] hover:bg-[#333333] dark:hover:bg-zinc-200 transition active:scale-[.98] cursor-pointer shadow-sm whitespace-nowrap"
           >
             <span>Import a Playlist Free</span>
-            <ArrowRight className="size-3.5 sm:size-4 shrink-0" />
+            <ArrowRight className="size-4 shrink-0" />
           </button>
 
-          <p className="mt-3 sm:mt-4 text-[11.5px] sm:text-[13px] md:text-[13.5px] text-[#6f6f6f] dark:text-zinc-500 text-center max-w-[290px] sm:max-w-none leading-relaxed">
+          <p className="mt-3 sm:mt-3.5 text-[12px] sm:text-[13px] md:text-[13.5px] text-[#6f6f6f] dark:text-zinc-500 text-center max-w-[320px] sm:max-w-none leading-relaxed">
             Try 1 playlist immediately without login • Up to 5 playlists with a free account
           </p>
         </div>
@@ -394,12 +397,12 @@ export default function LandingPage() {
       <section id="studio" className="px-3.5 sm:px-6 pt-7 sm:pt-11">
         <div className="mx-auto max-w-[1140px]">
           {/* Single Standard Mode Switcher Chip */}
-          <div className="flex justify-center mb-4 sm:mb-5 w-full">
-            <div className="inline-flex items-center p-0.5 sm:p-1 rounded-full bg-[#f2f2f2] dark:bg-zinc-900 border border-[#e5e5e5] dark:border-zinc-800">
+          <div className="flex justify-center mb-4 sm:mb-6 w-full">
+            <div className="inline-flex items-center p-1 rounded-full bg-[#f2f2f2] dark:bg-zinc-900 border border-[#e5e5e5] dark:border-zinc-800 shadow-2xs">
               <button
                 type="button"
                 onClick={() => setViewMode('foclyra')}
-                className={`flex h-7 sm:h-8 md:h-9 items-center justify-center gap-1.5 sm:gap-2 rounded-full px-2.5 sm:px-4 md:px-5 text-[11px] sm:text-[12.5px] md:text-[13px] font-medium transition-all duration-200 cursor-pointer whitespace-nowrap ${
+                className={`flex h-8 sm:h-9 items-center justify-center gap-1.5 sm:gap-2 rounded-full px-3.5 sm:px-5 text-[12px] sm:text-[13px] font-medium transition-all duration-200 cursor-pointer whitespace-nowrap ${
                   viewMode === 'foclyra'
                     ? 'bg-[#111111] dark:bg-white text-white dark:text-[#111111] shadow-xs'
                     : 'text-[#666666] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white'
@@ -412,7 +415,7 @@ export default function LandingPage() {
               <button
                 type="button"
                 onClick={() => setViewMode('youtube')}
-                className={`flex h-7 sm:h-8 md:h-9 items-center justify-center gap-1.5 sm:gap-2 rounded-full px-2.5 sm:px-4 md:px-5 text-[11px] sm:text-[12.5px] md:text-[13px] font-medium transition-all duration-200 cursor-pointer whitespace-nowrap ${
+                className={`flex h-8 sm:h-9 items-center justify-center gap-1.5 sm:gap-2 rounded-full px-3.5 sm:px-5 text-[12px] sm:text-[13px] font-medium transition-all duration-200 cursor-pointer whitespace-nowrap ${
                   viewMode === 'youtube'
                     ? 'bg-[#111111] dark:bg-white text-white dark:text-[#111111] shadow-xs'
                     : 'text-[#666666] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white'
@@ -423,259 +426,261 @@ export default function LandingPage() {
             </div>
           </div>
 
-          <div className="rounded-[18px] sm:rounded-[28px] bg-[#f4f4f4] dark:bg-zinc-900/90 p-2 sm:p-4 border border-[#e5e5e5] dark:border-zinc-800/80">
-            <div className="rounded-[14px] sm:rounded-[20px] bg-white dark:bg-[#111113] border border-[#e5e5e5] dark:border-zinc-800 overflow-hidden">
-              {/* Window Top Bar */}
-              <div className="h-9 sm:h-11 px-3 sm:px-4 bg-[#fafafa] dark:bg-zinc-900/80 border-b border-[#efefef] dark:border-zinc-800 flex items-center justify-between text-[11px] sm:text-[12px]">
-                <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 pr-2">
-                  <span className="size-2 sm:size-3 rounded-full bg-[#ff5f57] shrink-0" />
-                  <span className="size-2 sm:size-3 rounded-full bg-[#febc2e] shrink-0" />
-                  <span className="size-2 sm:size-3 rounded-full bg-[#28c840] shrink-0" />
-                  <span className="ml-1 sm:ml-2 text-[#6f6f6f] dark:text-zinc-400 font-medium truncate hidden md:inline">
-                    {PREVIEW_COURSE.header}
-                  </span>
+          {/* Unified Apple-Grade Chassis */}
+          <div className="rounded-[22px] sm:rounded-[32px] bg-white dark:bg-[#0c0d11] border border-[#e5e5e5] dark:border-zinc-800 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.08)] dark:shadow-[0_25px_70px_-15px_rgba(0,0,0,0.6)] overflow-hidden">
+            {/* Sleek Window Top Bar */}
+            <div className="h-10 sm:h-12 px-3.5 sm:px-5 bg-[#fafafa] dark:bg-[#111217] border-b border-[#efefef] dark:border-zinc-800/90 flex items-center justify-between text-[11.5px] sm:text-[12.5px]">
+              <div className="flex items-center gap-2 min-w-0 pr-2">
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <span className="size-2.5 sm:size-3 rounded-full bg-[#ff5f57]" />
+                  <span className="size-2.5 sm:size-3 rounded-full bg-[#febc2e]" />
+                  <span className="size-2.5 sm:size-3 rounded-full bg-[#28c840]" />
                 </div>
-
-                <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 py-0.5 sm:py-1 rounded-full bg-[#f2f2f2] dark:bg-zinc-800 font-medium text-[#111111] dark:text-zinc-200 shrink-0 text-[10.5px] sm:text-[11.5px]">
-                  <span className="size-1.5 rounded-full bg-[#f4525f] shrink-0" />
-                  <span className="font-mono">{formatTime(pomodoroSec)}</span>
-                  <span className="text-[#8d8d8d] hidden sm:inline">•</span>
-                  <span className="hidden sm:inline">Pomodoro</span>
-                </div>
-
-                <div className="hidden sm:flex items-center gap-2 text-[11.5px] md:text-[12px] text-[#666666] dark:text-zinc-400 shrink-0">
-                  <span className="text-[#16a34a] dark:text-[#63d94e] font-medium">Saved in browser</span>
-                </div>
+                <span className="ml-2 text-[#777777] dark:text-zinc-400 font-medium truncate hidden md:inline">
+                  {PREVIEW_COURSE.header}
+                </span>
               </div>
 
-              {viewMode === 'foclyra' ? (
-                <div className="p-2.5 sm:p-5 lg:p-6 grid grid-cols-1 lg:grid-cols-12 gap-3.5 sm:gap-5">
-                  {/* Left: Lecture Video Player (7 cols) */}
-                  <div className="lg:col-span-7 flex flex-col gap-2.5 sm:gap-3">
-                    <div
-                      onClick={() => setIsPlaying(!isPlaying)}
-                      className="group relative aspect-video rounded-[10px] sm:rounded-[16px] bg-[#0b1311] overflow-hidden flex flex-col justify-between p-2.5 sm:p-4 cursor-pointer"
-                    >
-                      {/* Clean Minimalist Lecture Code Screen */}
-                      <div className="absolute inset-0 bg-[#0c0e14] flex items-center justify-center p-3 sm:p-6 select-none overflow-hidden">
-                        {/* Soft subtle radial ambient glow */}
-                        <div
-                          aria-hidden="true"
-                          className="absolute -top-20 -left-20 size-64 rounded-full bg-[#10b981]/10 blur-3xl pointer-events-none"
-                        />
-                        <div
-                          aria-hidden="true"
-                          className="absolute -bottom-20 -right-20 size-64 rounded-full bg-[#F5C542]/10 blur-3xl pointer-events-none"
-                        />
+              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-[#f0f0f2] dark:bg-zinc-800/90 font-medium text-[#111111] dark:text-zinc-200 shrink-0 text-[11px] sm:text-[12px] shadow-2xs">
+                <span className="size-1.5 rounded-full bg-[#f4525f] animate-pulse shrink-0" />
+                <span className="font-mono font-semibold">{formatTime(pomodoroSec)}</span>
+                <span className="text-[#8d8d8d] hidden sm:inline">•</span>
+                <span className="text-[#555555] dark:text-zinc-400 hidden sm:inline">Pomodoro Focus</span>
+              </div>
 
-                        {/* Minimalist Code Window Card */}
-                        <div className="relative w-full max-w-[440px] rounded-[10px] sm:rounded-[14px] bg-[#141720]/95 border border-white/10 shadow-[0_12px_36px_-6px_rgba(0,0,0,0.5)] p-3 sm:p-4 backdrop-blur-md">
-                          {/* Window Titlebar */}
-                          <div className="flex items-center justify-between pb-2 sm:pb-2.5 border-b border-white/5 text-[9.5px] sm:text-[11px] font-mono">
-                            <div className="flex items-center gap-1.5">
-                              <span className="size-2 rounded-full bg-[#ff5f56]" />
-                              <span className="size-2 rounded-full bg-[#ffbd2e]" />
-                              <span className="size-2 rounded-full bg-[#27c93f]" />
-                              <span className="ml-2 text-zinc-400 font-sans font-medium text-[10px] sm:text-[11px]">
-                                main.py
-                              </span>
-                            </div>
-                            <span className="text-zinc-500 text-[9px] sm:text-[10px]">Python 3.12</span>
-                          </div>
+              <div className="hidden sm:flex items-center gap-1.5 text-[11.5px] md:text-[12px] text-[#666666] dark:text-zinc-400 shrink-0">
+                <span className="size-1.5 rounded-full bg-[#16a34a] dark:bg-[#63d94e]" />
+                <span className="text-[#16a34a] dark:text-[#63d94e] font-medium">Auto-saved</span>
+              </div>
+            </div>
 
-                          {/* Syntax Highlighted Clean Code */}
-                          <div className="mt-2.5 sm:mt-3 font-mono text-[10px] sm:text-[12px] leading-[1.65] text-zinc-300 overflow-hidden text-left space-y-0.5">
-                            <div className="text-zinc-500"># Lecture 04: Functions & Loops</div>
-                            <div>
-                              <span className="text-[#f43f5e] font-medium">def </span>
-                              <span className="text-[#38bdf8] font-semibold">calculate_total</span>
-                              <span className="text-zinc-300">(items, discount=</span>
-                              <span className="text-[#a78bfa]">0.1</span>
-                              <span className="text-zinc-300">):</span>
-                            </div>
-                            <div className="pl-4">
-                              <span>total = </span>
-                              <span className="text-[#fbbf24]">sum</span>
-                              <span>(item[</span>
-                              <span className="text-[#34d399]">'price'</span>
-                              <span>] </span>
-                              <span className="text-[#f43f5e]">for </span>
-                              <span>item </span>
-                              <span className="text-[#f43f5e]">in </span>
-                              <span>items)</span>
-                            </div>
-                            <div className="pl-4">
-                              <span className="text-[#f43f5e] font-medium">return </span>
-                              <span>total * (</span>
-                              <span className="text-[#a78bfa]">1</span>
-                              <span> - discount)</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Subtle Top & Bottom Edge Scrims for Controls Contrast */}
+            {viewMode === 'foclyra' ? (
+              <div className="p-3 sm:p-5 lg:p-6 grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5">
+                {/* Left: Cinematic Lecture Player Stage (7 cols) */}
+                <div className="lg:col-span-7 flex flex-col gap-3">
+                  <div
+                    onClick={() => setIsPlaying(!isPlaying)}
+                    className="group relative aspect-video rounded-[14px] sm:rounded-[20px] bg-[#07080b] overflow-hidden flex flex-col justify-between p-3 sm:p-4.5 cursor-pointer border border-white/[0.08] shadow-inner select-none"
+                  >
+                    {/* Lecture Screen Canvas (No nested window buttons) */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-[#0e1017] via-[#090b10] to-[#06070a] flex flex-col justify-center px-4 sm:px-8 py-3 sm:py-5 overflow-hidden">
+                      {/* Soft studio ambient light */}
                       <div
                         aria-hidden="true"
-                        className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.5)_0%,transparent_24%,transparent_72%,rgba(0,0,0,0.7)_100%)] pointer-events-none"
+                        className="absolute -top-24 -left-24 size-72 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none"
+                      />
+                      <div
+                        aria-hidden="true"
+                        className="absolute -bottom-24 -right-24 size-72 rounded-full bg-sky-500/10 blur-3xl pointer-events-none"
                       />
 
-                      <div className="flex items-center justify-between z-10 gap-2">
-                        <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-black/50 border border-white/15 text-white/95 text-[9.5px] sm:text-[11px] font-medium backdrop-blur-md whitespace-nowrap">
-                          Theater Mode
-                        </span>
-                        <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-black/60 border border-white/10 text-white/95 font-mono text-[9.5px] sm:text-[11px] backdrop-blur-md whitespace-nowrap">
-                          {formatTime(progressSec)} / 48:10
-                        </span>
-                      </div>
-
-                      <div className="w-full space-y-1.5 sm:space-y-2 z-10">
-                        <div className="w-full h-1 sm:h-1.5 bg-white/20 rounded-full overflow-hidden backdrop-blur-xs">
-                          <div
-                            className="h-full bg-[#34d399] rounded-full transition-all duration-300"
-                            style={{ width: `${(progressSec / 600) * 100}%` }}
-                          />
-                        </div>
-                        <div className="flex items-center justify-between text-[10px] sm:text-[11px] text-white/90">
-                          <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0 pr-2">
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setIsPlaying(!isPlaying);
-                              }}
-                              className="size-6 sm:size-7 rounded-full bg-white text-[#111111] flex items-center justify-center shadow-sm shrink-0 hover:scale-105 transition cursor-pointer"
-                              aria-label={isPlaying ? 'Pause preview' : 'Play preview'}
-                            >
-                              {isPlaying ? (
-                                <Pause className="size-2.5 sm:size-3 fill-[#111111]" />
-                              ) : (
-                                <Play className="size-2.5 sm:size-3 fill-[#111111] ml-0.5" />
-                              )}
-                            </button>
-                            <Volume2 className="size-3 shrink-0 hidden sm:inline" />
-                            <span className="font-mono shrink-0">{formatTime(progressSec)}</span>
+                      {/* Minimalist Lecture Stage Display */}
+                      <div className="relative w-full max-w-[480px] mx-auto text-left font-mono">
+                        <div className="flex items-center justify-between pb-2 mb-2 sm:mb-3 border-b border-white/[0.08] text-[10px] sm:text-[11.5px] text-zinc-400 font-mono">
+                          <div className="flex items-center gap-2">
+                            <span className="size-1.5 sm:size-2 rounded-full bg-emerald-400" />
+                            <span className="text-zinc-200 font-medium font-sans text-[11px] sm:text-[12px]">Lecture 04 • Python 3.12</span>
                           </div>
-                          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-                            <span className="px-1.5 py-0.5 rounded bg-black/50 border border-white/15 text-[9px] sm:text-[10px] font-mono text-white">1.25x</span>
-                            <Maximize2 className="size-2.5 sm:size-3" />
+                          <span className="text-zinc-500 font-sans text-[10px] sm:text-[11px]">1080p HD</span>
+                        </div>
+
+                        {/* Syntax Highlighted Clean Code with Line Numbers */}
+                        <div className="space-y-1 sm:space-y-1.5 text-[11px] sm:text-[12.5px] leading-[1.65] font-mono text-zinc-300">
+                          <div className="text-zinc-500">
+                            <span className="text-zinc-600 select-none mr-2 sm:mr-3 inline-block w-4 text-right">01</span># Pure functions & return values
+                          </div>
+                          <div>
+                            <span className="text-zinc-600 select-none mr-2 sm:mr-3 inline-block w-4 text-right">02</span>
+                            <span className="text-[#f43f5e] font-semibold">def </span>
+                            <span className="text-[#38bdf8] font-semibold">calculate_total</span>
+                            <span className="text-zinc-300">(items, discount=</span>
+                            <span className="text-[#a78bfa]">0.10</span>
+                            <span className="text-zinc-300">):</span>
+                          </div>
+                          <div className="pl-4 sm:pl-6">
+                            <span className="text-zinc-600 select-none mr-2 sm:mr-3 inline-block w-4 text-right">03</span>
+                            <span className="text-zinc-300">subtotal = </span>
+                            <span className="text-[#fbbf24]">sum</span>
+                            <span className="text-zinc-300">(item[</span>
+                            <span className="text-[#34d399]">'price'</span>
+                            <span className="text-zinc-300">] </span>
+                            <span className="text-[#f43f5e]">for </span>
+                            <span className="text-zinc-300">item </span>
+                            <span className="text-[#f43f5e]">in </span>
+                            <span className="text-zinc-300">items)</span>
+                          </div>
+                          <div className="pl-4 sm:pl-6">
+                            <span className="text-zinc-600 select-none mr-2 sm:mr-3 inline-block w-4 text-right">04</span>
+                            <span className="text-[#f43f5e] font-semibold">return </span>
+                            <span className="text-zinc-300">subtotal * (</span>
+                            <span className="text-[#a78bfa]">1</span>
+                            <span className="text-zinc-300"> - discount)</span>
                           </div>
                         </div>
                       </div>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between px-0.5 gap-1.5 sm:gap-2">
-                      <div className="min-w-0 flex-1">
-                        <div className="text-[13px] sm:text-[15px] font-semibold tracking-[-0.01em] text-[#111111] dark:text-white leading-snug">
-                          {PREVIEW_COURSE.lectureTitle}
-                        </div>
-                        <div className="text-[11.5px] sm:text-[13px] text-[#6f6f6f] dark:text-zinc-400">
-                          Auto-resumes where you left off
-                        </div>
-                      </div>
-                      <span className="self-start sm:self-auto inline-flex items-center gap-1 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-[#16a34a]/10 text-[#15803d] dark:text-[#63d94e] text-[10.5px] sm:text-[12px] font-medium shrink-0 whitespace-nowrap">
-                        <CheckCircle2 className="size-3 shrink-0" />
-                        <span>Completed</span>
+                    {/* Subtle Edge Scrim for Controls */}
+                    <div
+                      aria-hidden="true"
+                      className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.55)_0%,transparent_22%,transparent_68%,rgba(0,0,0,0.75)_100%)] pointer-events-none"
+                    />
+
+                    <div className="flex items-center justify-between z-10 gap-2">
+                      <span className="px-2.5 py-1 rounded-full bg-black/60 border border-white/15 text-white/95 text-[10px] sm:text-[11px] font-medium backdrop-blur-md whitespace-nowrap">
+                        Theater Mode
+                      </span>
+                      <span className="px-2.5 py-1 rounded-full bg-black/60 border border-white/10 text-white/95 font-mono text-[10px] sm:text-[11px] backdrop-blur-md whitespace-nowrap">
+                        {formatTime(progressSec)} / 48:10
                       </span>
                     </div>
-                  </div>
 
-                  {/* Right: Real Lesson Notes Panel (5 cols) */}
-                  <div className="lg:col-span-5 flex flex-col justify-between rounded-[12px] sm:rounded-[16px] bg-[#f8f8f8] dark:bg-zinc-900/70 p-3 sm:p-4 border border-[#efefef] dark:border-zinc-800 space-y-2.5 sm:space-y-3">
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between pb-2 border-b border-[#e5e5e5] dark:border-zinc-800 gap-2">
-                        <span className="inline-flex items-center gap-1.5 text-[12px] sm:text-[13px] font-semibold tracking-[-0.01em] text-[#111111] dark:text-white whitespace-nowrap">
-                          <FileText className="size-3 sm:size-3.5 text-[#6f6f6f] shrink-0" />
-                          <span>Lesson Notes ({PREVIEW_COURSE.notes.length})</span>
-                        </span>
-                        <span className="text-[10px] sm:text-[11px] text-[#6f6f6f] dark:text-zinc-400 font-mono whitespace-nowrap">
-                          Enter to save
-                        </span>
+                    <div className="w-full space-y-1.5 sm:space-y-2 z-10">
+                      <div className="w-full h-1 sm:h-1.5 bg-white/20 rounded-full overflow-hidden backdrop-blur-xs">
+                        <div
+                          className="h-full bg-emerald-400 rounded-full transition-all duration-300"
+                          style={{ width: `${(progressSec / 600) * 100}%` }}
+                        />
                       </div>
-
-                      {PREVIEW_COURSE.notes.map((note) => {
-                        const isSelected = selectedTimestamp === note.time;
-                        return (
-                          <div
-                            key={note.time}
-                            onClick={() => { setSelectedTimestamp(note.time); setProgressSec(note.secs); }}
-                            className={`group p-2.5 sm:p-3 rounded-[12px] sm:rounded-[14px] border transition-all duration-200 cursor-pointer text-left ${
-                              isSelected
-                                ? 'bg-white dark:bg-zinc-800/90 border-[#111111]/20 dark:border-white/20 shadow-[0_2px_8px_-2px_rgba(0,0,0,0.06)]'
-                                : 'bg-white/50 dark:bg-zinc-900/40 border-zinc-200/80 dark:border-zinc-800/80 hover:bg-white dark:hover:bg-zinc-800/50 hover:border-zinc-300 dark:hover:border-zinc-700'
-                            }`}
+                      <div className="flex items-center justify-between text-[11px] sm:text-[12px] text-white/90">
+                        <div className="flex items-center gap-2 sm:gap-3 min-w-0 pr-2">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setIsPlaying(!isPlaying);
+                            }}
+                            className="size-7 sm:size-8 rounded-full bg-white text-[#111111] flex items-center justify-center shadow-md shrink-0 hover:scale-105 active:scale-95 transition cursor-pointer"
+                            aria-label={isPlaying ? 'Pause preview' : 'Play preview'}
                           >
-                            <div className="flex items-center gap-2">
-                              <span
-                                className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10.5px] sm:text-[11px] font-mono font-medium transition shrink-0 ${
-                                  isSelected
-                                    ? 'bg-[#16a34a]/10 text-[#15803d] dark:text-[#4ade80] border border-[#16a34a]/25'
-                                    : 'bg-[#111111]/5 dark:bg-white/5 text-[#666666] dark:text-zinc-400 border border-transparent group-hover:border-zinc-300/60 dark:group-hover:border-zinc-700'
-                                }`}
-                              >
-                                <Clock className={`size-2.5 sm:size-3 shrink-0 ${isSelected ? 'text-[#15803d] dark:text-[#4ade80]' : 'text-[#888888] dark:text-zinc-400'}`} />
-                                <span>{note.time}</span>
-                              </span>
-                              <span className="text-[12px] sm:text-[12.5px] font-semibold tracking-[-0.01em] text-[#111111] dark:text-white truncate">
-                                {note.tag}
-                              </span>
-                            </div>
-                            <p className="mt-1.5 text-[11.5px] sm:text-[12.5px] leading-[1.55] text-[#555555] dark:text-zinc-400 font-normal">
-                              {note.desc}
-                            </p>
-                          </div>
-                        );
-                      })}
+                            {isPlaying ? (
+                              <Pause className="size-3 fill-[#111111]" />
+                            ) : (
+                              <Play className="size-3 fill-[#111111] ml-0.5" />
+                            )}
+                          </button>
+                          <Volume2 className="size-3.5 shrink-0 hidden sm:inline opacity-80" />
+                          <span className="font-mono shrink-0">{formatTime(progressSec)}</span>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span className="px-2 py-0.5 rounded-md bg-black/60 border border-white/15 text-[10px] sm:text-[11px] font-mono text-white">1.25x</span>
+                          <Maximize2 className="size-3 sm:size-3.5 opacity-80" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between px-1 gap-1.5 sm:gap-2">
+                    <div className="min-w-0 flex-1">
+                      <div className="text-[14px] sm:text-[15.5px] font-semibold tracking-[-0.015em] text-[#111111] dark:text-white leading-snug">
+                        {PREVIEW_COURSE.lectureTitle}
+                      </div>
+                      <div className="text-[12px] sm:text-[13px] text-[#6f6f6f] dark:text-zinc-400">
+                        Auto-resumes where you left off • No recommendation rabbit holes
+                      </div>
+                    </div>
+                    <span className="self-start sm:self-auto inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-[11px] sm:text-[12px] font-medium shrink-0 border border-emerald-500/20 whitespace-nowrap">
+                      <CheckCircle2 className="size-3.5 shrink-0" />
+                      <span>Completed</span>
+                    </span>
+                  </div>
+                </div>
+
+                {/* Right: Apple Notes Style Lesson Notes Panel (5 cols) */}
+                <div className="lg:col-span-5 flex flex-col justify-between rounded-[16px] sm:rounded-[20px] bg-[#fafafa] dark:bg-[#121318] p-3.5 sm:p-5 border border-[#eaeaea] dark:border-zinc-800/80 gap-3">
+                  <div className="space-y-2.5">
+                    <div className="flex items-center justify-between pb-2.5 border-b border-[#e5e5e5] dark:border-zinc-800 gap-2">
+                      <span className="inline-flex items-center gap-2 text-[13px] sm:text-[14px] font-semibold tracking-[-0.01em] text-[#111111] dark:text-white whitespace-nowrap">
+                        <FileText className="size-3.5 sm:size-4 text-[#666666] dark:text-zinc-400 shrink-0" />
+                        <span>Lesson Notes ({PREVIEW_COURSE.notes.length})</span>
+                      </span>
+                      <span className="text-[10.5px] sm:text-[11px] text-[#888888] dark:text-zinc-500 font-mono whitespace-nowrap">
+                        Auto-synced
+                      </span>
                     </div>
 
-                    <div className="pt-1 sm:pt-2 flex justify-center lg:block">
-                      <button
-                        type="button"
-                        onClick={() => handleLaunchApp('demo_export')}
-                        className="inline-flex lg:w-full h-8 sm:h-9 lg:h-10 rounded-full bg-[#111111] dark:bg-white text-white dark:text-[#111111] text-[11px] sm:text-[12.5px] lg:text-[13px] font-medium items-center justify-center gap-1.5 sm:gap-2 hover:opacity-90 transition cursor-pointer px-3.5 sm:px-5 lg:px-3 whitespace-nowrap"
-                      >
-                        <Download className="size-3 sm:size-3.5 shrink-0" />
-                        <span>Download {PREVIEW_COURSE.docName}</span>
-                      </button>
-                    </div>
+                    {PREVIEW_COURSE.notes.map((note) => {
+                      const isSelected = selectedTimestamp === note.time;
+                      return (
+                        <div
+                          key={note.time}
+                          onClick={() => { setSelectedTimestamp(note.time); setProgressSec(note.secs); }}
+                          className={`group p-3 sm:p-3.5 rounded-[14px] sm:rounded-[16px] border transition-all duration-200 cursor-pointer text-left ${
+                            isSelected
+                              ? 'bg-white dark:bg-zinc-800/90 border-[#111111]/25 dark:border-white/20 shadow-[0_4px_16px_-4px_rgba(0,0,0,0.08)]'
+                              : 'bg-white/70 dark:bg-zinc-900/40 border-zinc-200/80 dark:border-zinc-800/70 hover:bg-white dark:hover:bg-zinc-800/50 hover:border-zinc-300 dark:hover:border-zinc-700'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2">
+                            <span
+                              className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-mono font-semibold transition shrink-0 ${
+                                isSelected
+                                  ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30'
+                                  : 'bg-zinc-100 dark:bg-white/5 text-[#666666] dark:text-zinc-400 border border-transparent group-hover:border-zinc-300/60 dark:group-hover:border-zinc-700'
+                              }`}
+                            >
+                              <Clock className={`size-3 shrink-0 ${isSelected ? 'text-emerald-600 dark:text-emerald-400' : 'text-zinc-400 dark:text-zinc-500'}`} />
+                              <span>{note.time}</span>
+                            </span>
+                            <span className="text-[12.5px] sm:text-[13px] font-semibold tracking-[-0.01em] text-[#111111] dark:text-white truncate">
+                              {note.tag}
+                            </span>
+                          </div>
+                          <p className="mt-1.5 text-[12px] sm:text-[13px] leading-[1.55] text-[#555555] dark:text-zinc-400 font-normal">
+                            {note.desc}
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <div className="pt-1 sm:pt-2">
+                    <button
+                      type="button"
+                      onClick={() => handleLaunchApp('demo_export')}
+                      className="w-full h-10 sm:h-11 rounded-full bg-[#111111] dark:bg-white text-white dark:text-[#111111] text-[12.5px] sm:text-[13.5px] font-medium flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition cursor-pointer shadow-xs whitespace-nowrap"
+                    >
+                      <Download className="size-3.5 sm:size-4 shrink-0" />
+                      <span>Download {PREVIEW_COURSE.docName}</span>
+                    </button>
                   </div>
                 </div>
-              ) : (
-                /* Grounded Comparison: What Standard YouTube Shows vs Foclyra */
-                <div className="p-4 sm:p-8 lg:p-10 text-center space-y-4 sm:space-y-5">
-                  <h3 className="text-[17px] sm:text-[21px] leading-[1.25] font-semibold tracking-[-0.02em] text-[#111111] dark:text-white">
-                    What gets in your way on a standard YouTube tab
-                  </h3>
-                  <div className="max-w-2xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 text-left">
-                    <div className="p-3.5 sm:p-4 rounded-[12px] sm:rounded-[16px] bg-[#f4f4f4] dark:bg-zinc-900 space-y-1">
-                      <div className="text-[13px] sm:text-[14px] font-semibold text-[#111111] dark:text-white">Recommended Sidebar</div>
-                      <p className="text-[12px] sm:text-[13px] text-[#666666] dark:text-zinc-400 leading-[1.5]">
-                        Unrelated videos and Shorts sit right next to your lecture player.
-                      </p>
-                    </div>
-                    <div className="p-3.5 sm:p-4 rounded-[12px] sm:rounded-[16px] bg-[#f4f4f4] dark:bg-zinc-900 space-y-1">
-                      <div className="text-[13px] sm:text-[14px] font-semibold text-[#111111] dark:text-white">No Course Progress</div>
-                      <p className="text-[12px] sm:text-[13px] text-[#666666] dark:text-zinc-400 leading-[1.5]">
-                        No clear checklist showing how many lectures in a 50-video playlist you have completed.
-                      </p>
-                    </div>
-                    <div className="p-3.5 sm:p-4 rounded-[12px] sm:rounded-[16px] bg-[#f4f4f4] dark:bg-zinc-900 space-y-1">
-                      <div className="text-[13px] sm:text-[14px] font-semibold text-[#111111] dark:text-white">Separate Note Apps</div>
-                      <p className="text-[12px] sm:text-[13px] text-[#666666] dark:text-zinc-400 leading-[1.5]">
-                        Switching windows to write notes without clickable video timestamps.
-                      </p>
-                    </div>
+              </div>
+            ) : (
+              /* Grounded Comparison: What Standard YouTube Shows vs Foclyra */
+              <div className="p-5 sm:p-8 lg:p-10 text-center space-y-5 sm:space-y-6">
+                <h3 className="text-[18px] sm:text-[22px] leading-[1.25] font-semibold tracking-[-0.02em] text-[#111111] dark:text-white">
+                  What gets in your way on a standard YouTube tab
+                </h3>
+                <div className="max-w-2xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-3.5 text-left">
+                  <div className="p-4 rounded-[14px] sm:rounded-[18px] bg-[#f4f4f4] dark:bg-zinc-900 space-y-1.5 border border-[#e5e5e5] dark:border-zinc-800/80">
+                    <div className="text-[13px] sm:text-[14px] font-semibold text-[#111111] dark:text-white">Recommended Sidebar</div>
+                    <p className="text-[12px] sm:text-[13px] text-[#666666] dark:text-zinc-400 leading-[1.5]">
+                      Unrelated videos and Shorts sit right next to your lecture player.
+                    </p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => setViewMode('foclyra')}
-                    className="inline-flex h-8 sm:h-9 md:h-10 items-center justify-center gap-2 rounded-full bg-[#111111] dark:bg-white px-3.5 sm:px-5 text-[11.5px] sm:text-[13px] font-medium text-white dark:text-[#111111] cursor-pointer whitespace-nowrap"
-                  >
-                    <span>Switch back to Foclyra Workspace</span>
-                  </button>
+                  <div className="p-4 rounded-[14px] sm:rounded-[18px] bg-[#f4f4f4] dark:bg-zinc-900 space-y-1.5 border border-[#e5e5e5] dark:border-zinc-800/80">
+                    <div className="text-[13px] sm:text-[14px] font-semibold text-[#111111] dark:text-white">No Course Progress</div>
+                    <p className="text-[12px] sm:text-[13px] text-[#666666] dark:text-zinc-400 leading-[1.5]">
+                      No clear checklist showing how many lectures in a 50-video playlist you have completed.
+                    </p>
+                  </div>
+                  <div className="p-4 rounded-[14px] sm:rounded-[18px] bg-[#f4f4f4] dark:bg-zinc-900 space-y-1.5 border border-[#e5e5e5] dark:border-zinc-800/80">
+                    <div className="text-[13px] sm:text-[14px] font-semibold text-[#111111] dark:text-white">Separate Note Apps</div>
+                    <p className="text-[12px] sm:text-[13px] text-[#666666] dark:text-zinc-400 leading-[1.5]">
+                      Switching windows to write notes without clickable video timestamps.
+                    </p>
+                  </div>
                 </div>
-              )}
-            </div>
+                <button
+                  type="button"
+                  onClick={() => setViewMode('foclyra')}
+                  className="inline-flex h-9 sm:h-10 md:h-11 items-center justify-center gap-2 rounded-full bg-[#111111] dark:bg-white px-5 sm:px-6 text-[12.5px] sm:text-[13.5px] font-medium text-white dark:text-[#111111] cursor-pointer whitespace-nowrap active:scale-[0.98] transition"
+                >
+                  <span>Switch back to Foclyra Workspace</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </section>

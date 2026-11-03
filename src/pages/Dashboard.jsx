@@ -357,13 +357,15 @@ export default function Dashboard() {
         <div className="my-auto py-8 sm:py-16 max-w-[680px] w-full mx-auto space-y-6 sm:space-y-7 text-center">
           {/* Punchy Editorial Heading & Subtitle */}
           {!user && isReturningRegisteredUser() && (
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#f4f4f4] dark:bg-zinc-900 border border-[#e5e5e5] dark:border-zinc-800 text-[#111111] dark:text-zinc-200 text-[11.5px] sm:text-[12px] font-medium mx-auto shadow-2xs">
-              <span className="size-1.5 rounded-full bg-[#63d94e]" />
-              <span>Welcome back! You have an existing account.</span>
+            <div className="inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-1 px-4 py-2 sm:py-1.5 rounded-2xl sm:rounded-full bg-[#f4f4f4] dark:bg-zinc-900 border border-[#e5e5e5] dark:border-zinc-800 text-[#111111] dark:text-zinc-200 text-[12px] sm:text-[12.5px] font-medium mx-auto max-w-full shadow-2xs leading-snug">
+              <span className="inline-flex items-center gap-1.5 shrink-0">
+                <span className="size-1.5 rounded-full bg-[#63d94e]" />
+                <span>Welcome back! You have an existing account.</span>
+              </span>
               <button
                 type="button"
                 onClick={() => openAuthModal('returning_user')}
-                className="font-semibold underline hover:no-underline cursor-pointer text-[#111111] dark:text-white ml-0.5"
+                className="font-semibold underline hover:no-underline cursor-pointer text-[#111111] dark:text-white shrink-0"
               >
                 Sign in to your library →
               </button>
@@ -417,26 +419,26 @@ export default function Dashboard() {
           </form>
 
           {/* Compact Starter Quick-Pills */}
-          <div className="pt-2 flex flex-col items-center gap-2.5 max-w-[620px] mx-auto">
-            <div className="text-[11.5px] sm:text-[12px] font-medium text-[#888888] dark:text-zinc-500">
+          <div className="pt-2 flex flex-col items-center gap-3 max-w-[620px] mx-auto">
+            <div className="text-[12px] sm:text-[12.5px] font-medium text-[#777777] dark:text-zinc-400">
               Or try a starter playlist:
             </div>
 
-            <div className="flex flex-wrap items-center justify-center gap-2">
+            <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-2.5">
               {STARTER_COURSES.map((item) => (
                 <button
                   key={item.url}
                   type="button"
                   disabled={isDirectImporting}
                   onClick={() => handleQuickStart(item.url)}
-                  className="inline-flex items-center gap-1.5 h-8 px-3 rounded-full bg-[#f4f4f4] dark:bg-zinc-900 hover:bg-[#eaeaea] dark:hover:bg-zinc-800 border border-[#e5e5e5] dark:border-zinc-800 text-[11.5px] sm:text-[12px] font-medium text-[#111111] dark:text-zinc-200 transition cursor-pointer disabled:opacity-50 group shadow-2xs"
+                  className="inline-flex items-center gap-2 h-9 sm:h-9.5 px-3.5 sm:px-4 rounded-full bg-[#f4f4f4] dark:bg-zinc-900 hover:bg-[#eaeaea] dark:hover:bg-zinc-800/90 border border-[#e5e5e5] dark:border-zinc-800 text-[12px] sm:text-[13px] font-medium text-[#111111] dark:text-zinc-200 transition-all active:scale-[0.98] cursor-pointer disabled:opacity-50 group shadow-2xs"
                   title={`Import ${item.title} by ${item.channel}`}
                 >
-                  <span className="font-mono text-[9px] font-bold text-[#666666] dark:text-zinc-400 px-1 py-0.5 rounded bg-white dark:bg-zinc-800 border border-[#e5e5e5] dark:border-zinc-700/80">
+                  <span className="font-mono text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 px-1.5 py-0.5 rounded-md bg-zinc-200/70 dark:bg-zinc-800">
                     {item.tag}
                   </span>
-                  <span className="truncate max-w-[130px] sm:max-w-none">{item.title}</span>
-                  <ArrowRight className="size-3 text-[#888888] group-hover:text-[#111111] dark:group-hover:text-white group-hover:translate-x-0.5 transition" />
+                  <span className="whitespace-nowrap">{item.title}</span>
+                  <ArrowRight className="size-3 sm:size-3.5 text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white group-hover:translate-x-0.5 transition-transform" />
                 </button>
               ))}
             </div>
