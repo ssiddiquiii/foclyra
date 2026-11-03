@@ -122,7 +122,7 @@ export default function UserMenu({ onOpenAuth }) {
             onClick={async () => {
               setDropdownOpen(false);
               await signOut();
-              navigate('/studio');
+              navigate('/', { replace: true });
             }}
             className="w-full flex items-center gap-2 px-3 py-2 rounded-full text-[12px] text-[#e11d48] dark:text-rose-400 hover:bg-rose-500/10 font-medium transition cursor-pointer"
           >

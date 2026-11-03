@@ -1,9 +1,27 @@
 import { create } from 'zustand';
-import { supabase, isSupabaseConfigured } from '../services/supabaseClient';
-import { hydrateFromCloud, subscribeToProgressRealtime, migrateGuestPlaylistToAccount, flushPendingProgressSync } from '../services/cloudSyncService';
-import { db } from '../db/FoclyraDB';
-import { clearGuestImportHistory, setReturningRegisteredUser } from '../services/quotaService';
-import { identifyUser, resetUser, trackEvent } from '../services/analytics';
+import { supabase, isSupabaseConfigured } from '../services/supabaseClient.js';
+import { hydrateFromCloud, subscribeToProgressRealtime, migrateGuestPlaylistToAccount, flushPendingProgressSync } from '../services/cloudSyncService.js';
+import { db } from '../db/FoclyraDB.js';
+import { clearGuestImportHistory, setReturningRegisteredUser, getGuestImportHistory } from '../services/quotaService.js';
+import { identifyUser, resetUser, trackEvent } from '../services/analytics.js';
+import { useUIStore } from './useUIStore.js';
+
+export const AUTH_STATUS = Object.freeze({
+  INITIALIZING: 'INITIALIZING',
+  AUTHENTICATED: 'AUTHENTICATED',
+  GUEST: 'GUEST',
+  UNAUTHENTICATED: 'UNAUTHENTICATED'
+});
+
+export const ACTIVE_USER_STORAGE_KEY = 'foclyra_active_user_id';
+
+export function computeAuthStatus(user, isLoading) {
+  if (isLoading) return AUTH_STATUS.INITIALIZING;
+  if (user) return AUTH_STATUS.AUTHENTICATED;
+  const guestHistory = getGuestImportHistory();
+  if (guestHistory && guestHistory.length > 0) return AUTH_STATUS.GUEST;
+  return AUTH_STATUS.UNAUTHENTICATED;
+}
 
 let progressUnsub = null;
 
@@ -25,25 +43,48 @@ function cleanupRealtime() {
 }
 
 /**
- * Global Authentication Store with Supabase Auth & Google OAuth.
+ * Global Authentication Store with Supabase Auth, Google OAuth, and State Machine.
  */
 export const useAuth = create((set, get) => ({
   user: null,
   profile: null,
   session: null,
   isLoading: true,
+  status: AUTH_STATUS.INITIALIZING,
   isConfigured: isSupabaseConfigured(),
 
   initAuth: async () => {
     if (!isSupabaseConfigured() || !supabase) {
-      set({ isLoading: false, user: null, profile: null, session: null });
+      set({ 
+        isLoading: false, 
+        user: null, 
+        profile: null, 
+        session: null,
+        status: computeAuthStatus(null, false)
+      });
       return;
     }
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error) throw error;
+
       if (session?.user) {
-        set({ session, user: session.user });
+        // Multi-tenant check: if another user was previously cached in Dexie, wipe it before hydration
+        const activeUserId = localStorage.getItem(ACTIVE_USER_STORAGE_KEY);
+        if (activeUserId && activeUserId !== session.user.id && activeUserId !== 'guest') {
+          await db.resetDatabase().catch(() => {});
+          clearGuestImportHistory();
+          setReturningRegisteredUser(false);
+        }
+        localStorage.setItem(ACTIVE_USER_STORAGE_KEY, session.user.id);
+
+        set({ 
+          session, 
+          user: session.user, 
+          status: AUTH_STATUS.AUTHENTICATED,
+          isLoading: false 
+        });
         setReturningRegisteredUser(true);
         await get().fetchProfile(session.user.id);
         identifyUser(session.user.id, {
@@ -54,25 +95,48 @@ export const useAuth = create((set, get) => ({
         hydrateFromCloud(session.user).catch(() => {});
         setupRealtime(session.user);
       } else {
-        set({ session: null, user: null, profile: null });
+        // Expired or absent session: verify Dexie does not leak previous authenticated data
+        const activeUserId = localStorage.getItem(ACTIVE_USER_STORAGE_KEY);
+        if (activeUserId && activeUserId !== 'guest') {
+          await db.resetDatabase().catch(() => {});
+          localStorage.removeItem(ACTIVE_USER_STORAGE_KEY);
+        }
+        set({ 
+          session: null, 
+          user: null, 
+          profile: null,
+          status: computeAuthStatus(null, false),
+          isLoading: false
+        });
       }
     } catch (err) {
       console.warn('Failed to retrieve Supabase session:', err);
-    } finally {
-      set({ isLoading: false });
+      set({ 
+        session: null, 
+        user: null, 
+        profile: null, 
+        status: computeAuthStatus(null, false),
+        isLoading: false 
+      });
     }
 
     // Real-time listener for OAuth logins, token refreshes, and logouts
-    supabase.auth.onAuthStateChange(async (_event, session) => {
+    supabase.auth.onAuthStateChange(async (event, session) => {
       if (session?.user) {
-        const currentUser = get().user;
-        if (currentUser && currentUser.id !== session.user.id) {
-          // Different user signed in! Clean up previous user's local database first
+        const activeUserId = localStorage.getItem(ACTIVE_USER_STORAGE_KEY);
+        if (activeUserId && activeUserId !== session.user.id && activeUserId !== 'guest') {
           await db.resetDatabase().catch(() => {});
           clearGuestImportHistory();
-    setReturningRegisteredUser(false);
+          setReturningRegisteredUser(false);
         }
-        set({ session, user: session.user, isLoading: false });
+        localStorage.setItem(ACTIVE_USER_STORAGE_KEY, session.user.id);
+
+        set({ 
+          session, 
+          user: session.user, 
+          status: AUTH_STATUS.AUTHENTICATED,
+          isLoading: false 
+        });
         setReturningRegisteredUser(true);
         await get().fetchProfile(session.user.id);
         identifyUser(session.user.id, {
@@ -84,11 +148,19 @@ export const useAuth = create((set, get) => ({
         setupRealtime(session.user);
       } else {
         cleanupRealtime();
-        if (_event === 'SIGNED_OUT') {
+        if (event === 'SIGNED_OUT') {
+          localStorage.removeItem(ACTIVE_USER_STORAGE_KEY);
           await db.resetDatabase().catch(() => {});
           clearGuestImportHistory();
+          useUIStore.getState().resetUIState();
         }
-        set({ session: null, user: null, profile: null, isLoading: false });
+        set({ 
+          session: null, 
+          user: null, 
+          profile: null, 
+          status: computeAuthStatus(null, false),
+          isLoading: false 
+        });
       }
     });
   },
@@ -105,7 +177,6 @@ export const useAuth = create((set, get) => ({
       if (!error && data) {
         set({ profile: data });
       } else {
-        // Fallback profile if row is not populated yet
         const { user } = get();
         set({
           profile: {
@@ -167,7 +238,7 @@ export const useAuth = create((set, get) => ({
       console.warn('Sign out warning:', err);
     }
 
-    // Wipe local database completely to guarantee session isolation
+    localStorage.removeItem(ACTIVE_USER_STORAGE_KEY);
     try {
       await db.resetDatabase();
     } catch (dbErr) {
@@ -175,11 +246,18 @@ export const useAuth = create((set, get) => ({
     }
 
     clearGuestImportHistory();
+    useUIStore.getState().resetUIState();
     try {
       localStorage.removeItem('foclyra_custom_youtube_api_key');
     } catch {}
 
-    set({ user: null, profile: null, session: null });
+    set({ 
+      user: null, 
+      profile: null, 
+      session: null, 
+      status: AUTH_STATUS.UNAUTHENTICATED,
+      isLoading: false 
+    });
   },
 
   signOutAllDevices: async () => {
@@ -194,6 +272,7 @@ export const useAuth = create((set, get) => ({
       console.warn('Sign out global warning:', err);
     }
 
+    localStorage.removeItem(ACTIVE_USER_STORAGE_KEY);
     try {
       await db.resetDatabase();
     } catch (dbErr) {
@@ -201,11 +280,18 @@ export const useAuth = create((set, get) => ({
     }
 
     clearGuestImportHistory();
+    useUIStore.getState().resetUIState();
     try {
       localStorage.removeItem('foclyra_custom_youtube_api_key');
     } catch {}
 
-    set({ user: null, profile: null, session: null });
+    set({ 
+      user: null, 
+      profile: null, 
+      session: null, 
+      status: AUTH_STATUS.UNAUTHENTICATED,
+      isLoading: false 
+    });
   },
 
   deleteAccount: async () => {
@@ -216,7 +302,6 @@ export const useAuth = create((set, get) => ({
     cleanupRealtime();
     await flushPendingProgressSync().catch(() => {});
 
-    // Attempt secure RPC delete_user execution
     const { error } = await supabase.rpc('delete_user');
     if (error) {
       console.warn('RPC delete_user failed or not yet deployed, fallback to profiles purge:', error);
@@ -229,6 +314,7 @@ export const useAuth = create((set, get) => ({
       await supabase.auth.signOut({ scope: 'global' });
     } catch {}
 
+    localStorage.removeItem(ACTIVE_USER_STORAGE_KEY);
     try {
       await db.resetDatabase();
     } catch (dbErr) {
@@ -237,10 +323,17 @@ export const useAuth = create((set, get) => ({
 
     clearGuestImportHistory();
     setReturningRegisteredUser(false);
+    useUIStore.getState().resetUIState();
     try {
       localStorage.removeItem('foclyra_custom_youtube_api_key');
     } catch {}
 
-    set({ user: null, profile: null, session: null });
+    set({ 
+      user: null, 
+      profile: null, 
+      session: null, 
+      status: AUTH_STATUS.UNAUTHENTICATED,
+      isLoading: false 
+    });
   }
 }));

@@ -188,6 +188,7 @@ export default function Settings() {
   const handleSignOutAllDevices = async () => {
     try {
       await signOutAllDevices();
+      navigate('/', { replace: true });
       toast.add({
         title: 'Signed out globally',
         description: 'All active sessions on all devices have been signed out.',
@@ -218,6 +219,7 @@ export default function Settings() {
 
     try {
       await deleteAccount();
+      navigate('/', { replace: true });
       toast.update(deleteToastId, {
         title: 'Account deleted',
         description: 'Your Foclyra account and cloud data have been permanently removed.',
@@ -302,7 +304,7 @@ export default function Settings() {
             <div className="flex items-center gap-2 flex-wrap shrink-0">
               <button
                 type="button"
-                onClick={async () => { await signOut(); navigate('/studio'); }}
+                onClick={async () => { await signOut(); navigate('/', { replace: true }); }}
                 className="h-9 px-4 rounded-full border border-zinc-200/80 dark:border-zinc-800/80 bg-white/90 dark:bg-zinc-900/90 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs font-medium text-zinc-800 dark:text-zinc-200 transition flex items-center gap-1.5 cursor-pointer shadow-2xs"
                 title="Sign out from this device"
               >

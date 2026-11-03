@@ -10,7 +10,14 @@ import BetaModal from './components/BetaModal';
 import UserMenu from './components/UserMenu';
 import AuthModal from './components/AuthModal';
 import QuotaModal from './components/QuotaModal';
-import { useAuth } from './hooks/useAuth';
+import { useAuth, AUTH_STATUS } from './hooks/useAuth';
+import { 
+  FoclyraSplash, 
+  PublicOnlyRoute, 
+  ProtectedRoute, 
+  LearningRoute, 
+  StudioRoute 
+} from './components/routing/RouteGuards';
 import { useUIStore } from './hooks/useUIStore';
 import { useTheme } from './hooks/useTheme';
 import { isNavigationActive, navigationItems } from './components/shell/navigation';
@@ -42,7 +49,7 @@ function AppContent() {
     closeQuotaModal
   } = useUIStore();
   const { isDark, toggleTheme } = useTheme();
-  const { user, isLoading, initAuth } = useAuth();
+  const { user, status, isLoading, initAuth } = useAuth();
 
   useEffect(() => {
     initAuth();
@@ -138,26 +145,23 @@ function AppContent() {
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
   }, [commandPaletteOpen, openCommandPalette, closeCommandPalette, navigate]);
 
+  if (isLoading || status === AUTH_STATUS.INITIALIZING) {
+    return <FoclyraSplash />;
+  }
+
   if (isLandingPage) {
-    if (!isLoading && user) {
+    if (status === AUTH_STATUS.AUTHENTICATED) {
       return <Navigate to="/studio" replace />;
     }
     return (
       <div className="min-h-screen bg-white dark:bg-[#0a0a0c] text-[#111111] dark:text-[#f5f5f7]">
         <Suspense
-          fallback={
-            <div className="flex flex-col items-center justify-center min-h-screen space-y-4">
-              <div className="animate-spin size-7 border-2 border-[#111111] dark:border-white border-t-transparent rounded-full" />
-            </div>
-          }
+          fallback={<FoclyraSplash />}
         >
           <LandingPage />
         </Suspense>
         <AuthModal />
-
-      <QuotaModal isOpen={quotaModalOpen} onClose={closeQuotaModal} data={quotaModalData} />
-
-      <QuotaModal isOpen={quotaModalOpen} onClose={closeQuotaModal} data={quotaModalData} />
+        <QuotaModal isOpen={quotaModalOpen} onClose={closeQuotaModal} data={quotaModalData} />
         <BetaModal />
         <Toaster />
       </div>
@@ -456,21 +460,21 @@ function AppContent() {
                   <Routes location={location}>
                     <Route
                       path="/"
-                      element={!isLoading && user ? <Navigate to="/studio" replace /> : <LandingPage />}
+                      element={<PublicOnlyRoute element={<LandingPage />} />}
                     />
                     <Route
                       path="/landing"
-                      element={!isLoading && user ? <Navigate to="/studio" replace /> : <LandingPage />}
+                      element={<PublicOnlyRoute element={<LandingPage />} />}
                     />
                     <Route
                       path="/welcome"
-                      element={!isLoading && user ? <Navigate to="/studio" replace /> : <LandingPage />}
+                      element={<PublicOnlyRoute element={<LandingPage />} />}
                     />
-                    <Route path="/studio" element={<Dashboard />} />
+                    <Route path="/studio" element={<StudioRoute element={<Dashboard />} />} />
                     <Route path="/import" element={<Navigate to="/studio" replace />} />
-                    <Route path="/courses/:courseId" element={<CourseDetail />} />
-                    <Route path="/courses/:courseId/lessons/:lessonId" element={<Watch />} />
-                    <Route path="/settings" element={<Settings />} />
+                    <Route path="/courses/:courseId" element={<LearningRoute element={<CourseDetail />} />} />
+                    <Route path="/courses/:courseId/lessons/:lessonId" element={<LearningRoute element={<Watch />} />} />
+                    <Route path="/settings" element={<ProtectedRoute element={<Settings />} />} />
                     <Route path="*" element={<Navigate to="/studio" replace />} />
                   </Routes>
                 </motion.div>

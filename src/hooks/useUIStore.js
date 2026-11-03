@@ -60,5 +60,19 @@ export const useUIStore = create((set, get) => ({
   setImportError: (err) => set({ importError: err }),
   
   // Reset watch state
-  resetPlayerState: () => set({ activeLessonId: null, isPlaying: false, seekRequestTime: null, activePlayerCommands: null })
+  resetPlayerState: () => set({ activeLessonId: null, isPlaying: false, seekRequestTime: null, activePlayerCommands: null }),
+  resetUIState: () => set({
+    activeLessonId: null,
+    isPlaying: false,
+    seekRequestTime: null,
+    activePlayerCommands: null,
+    betaModalOpen: false,
+    feedbackModalOpen: false,
+    quotaModalOpen: false,
+    authModalOpen: false,
+    authModalContext: 'default',
+    commandPaletteOpen: false,
+    isImporting: false,
+    importError: null
+  })
 }));

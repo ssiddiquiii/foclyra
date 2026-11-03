@@ -79,6 +79,7 @@ export function recordGuestImport(playlistId) {
     if (!history.includes(cleanId)) {
       history.push(cleanId);
       localStorage.setItem(GUEST_IMPORTS_STORAGE_KEY, JSON.stringify(history));
+      localStorage.setItem('foclyra_active_user_id', 'guest');
     }
   } catch (err) {
     console.warn('Failed to record guest import in localStorage:', err);
@@ -105,6 +106,9 @@ export function removeGuestImport(playlistId) {
 export function clearGuestImportHistory() {
   try {
     localStorage.removeItem(GUEST_IMPORTS_STORAGE_KEY);
+    if (localStorage.getItem('foclyra_active_user_id') === 'guest') {
+      localStorage.removeItem('foclyra_active_user_id');
+    }
   } catch (err) {
     console.warn('Failed to clear guest import history from localStorage:', err);
   }
