@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import { Check, CheckCircle2, Circle, Clock, FileText, ListVideo, Search, ChevronRight } from 'lucide-react';
+import { Check, CheckCircle2, Circle, Clock, FileText, ListVideo, Search, ChevronRight, Sparkles } from 'lucide-react';
 import { NotesPanel } from './NotesPanel';
+import { AITutorPanel } from './AITutorPanel';
 
 /**
  * Playlist Syllabus List: Displays lectures in playlist order with status checkmarks and durations.
@@ -87,10 +88,25 @@ export function PlaylistSyllabusList({ courseId, lessonId, lessons, progressList
 }
 
 /**
- * Desktop Watch Workspace: Dedicated Right Sidebar displaying the Course Playlist
+ * Desktop Watch Workspace: Dedicated Right Sidebar with Lectures Playlist & AI Tutor Switcher
  */
 export function DesktopWatchWorkspace(props) {
-  const { courseId, lessonId, lessons, progressList, onNavigate, onToggleCollapse } = props;
+  const { 
+    courseId, 
+    lessonId, 
+    lessons, 
+    progressList, 
+    onNavigate, 
+    onToggleCollapse,
+    courseTitle,
+    lessonTitle,
+    description,
+    getCurrentTime,
+    onSeek
+  } = props;
+
+  const [desktopTab, setDesktopTab] = useState('lectures'); // 'lectures' | 'ai'
+
   const completedCount = (lessons || []).filter(item => 
     progressList?.some(progress => progress.id === `${courseId}_${item.id}` && progress.completed)
   ).length;
@@ -98,68 +114,113 @@ export function DesktopWatchWorkspace(props) {
 
   return (
     <aside data-testid="watch-side-workspace" className="hidden h-full w-80 xl:w-96 flex-shrink-0 flex-col overflow-hidden border-l border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-50/50 dark:bg-zinc-950/50 xl:flex">
-      {/* Sidebar Header */}
-      <div className="p-4 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-white/70 dark:bg-zinc-900/60 backdrop-blur-md space-y-2.5 flex-shrink-0">
-        <div className="flex items-center justify-between">
-          <button
-            type="button"
-            onClick={onToggleCollapse}
-            className="flex items-center gap-2 text-left group cursor-pointer hover:opacity-85 transition"
-            title="Click to collapse playlist & expand screen (Theater Mode)"
-            aria-label="Collapse course playlist"
-          >
-            <div className="w-6 h-6 rounded-lg bg-zinc-200/80 dark:bg-zinc-800 flex items-center justify-center text-zinc-900 dark:text-zinc-100 transition">
-              <ListVideo size={13} className="group-hover:scale-110 transition-transform" />
-            </div>
-            <h2 className="text-xs font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 group-hover:opacity-80 transition">
-              {lessons?.length === 1 ? 'Single Video Crash Course' : `Course Playlist (${lessons?.length || 0})`}
-            </h2>
-          </button>
+      {/* Sidebar Header with Switcher */}
+      <div className="p-3.5 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-white/70 dark:bg-zinc-900/60 backdrop-blur-md space-y-2.5 flex-shrink-0">
+        <div className="flex items-center justify-between gap-2">
+          {/* Editorial Tab Switcher */}
+          <div className="flex items-center gap-1 bg-zinc-200/60 dark:bg-zinc-800/60 p-0.5 rounded-full border border-zinc-200/80 dark:border-zinc-700/80">
+            <button
+              type="button"
+              onClick={() => setDesktopTab('lectures')}
+              className={`py-1 px-3 rounded-full text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer ${
+                desktopTab === 'lectures'
+                  ? 'bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 shadow-2xs'
+                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-100'
+              }`}
+            >
+              <ListVideo size={12} />
+              <span>Lectures ({lessons?.length || 0})</span>
+            </button>
 
-          <div className="flex items-center gap-2">
-            <span className="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 font-mono">
-              {completedCount}/{lessons?.length || 0} ({percent}%)
-            </span>
+            <button
+              type="button"
+              onClick={() => setDesktopTab('ai')}
+              className={`py-1 px-3 rounded-full text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer ${
+                desktopTab === 'ai'
+                  ? 'bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 shadow-2xs'
+                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-100'
+              }`}
+            >
+              <Sparkles size={12} className={desktopTab === 'ai' ? 'text-amber-300' : 'text-amber-500'} />
+              <span>AI Tutor</span>
+            </button>
+          </div>
+
+          <div className="flex items-center gap-1.5">
+            {desktopTab === 'lectures' && (
+              <span className="text-[10.5px] font-semibold text-zinc-500 dark:text-zinc-400 font-mono">
+                {percent}%
+              </span>
+            )}
             <button
               type="button"
               onClick={onToggleCollapse}
               className="w-7 h-7 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-800 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition flex items-center justify-center cursor-pointer"
-              title="Collapse playlist to expand screen"
-              aria-label="Collapse playlist"
+              title="Collapse sidebar to expand screen"
+              aria-label="Collapse sidebar"
             >
               <ChevronRight size={14} />
             </button>
           </div>
         </div>
 
-        {/* Visual Progress Bar */}
-        <div className="w-full h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden">
-          <div 
-            className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-300"
-            style={{ width: `${percent}%` }}
-          />
-        </div>
+        {/* Visual Progress Bar (Shown in Lectures tab) */}
+        {desktopTab === 'lectures' && (
+          <div className="w-full h-1 bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-300"
+              style={{ width: `${percent}%` }}
+            />
+          </div>
+        )}
       </div>
 
-      {/* Playlist Content */}
+      {/* Workspace Panel Content */}
       <div className="flex-1 overflow-y-auto p-3.5">
-        <PlaylistSyllabusList
-          courseId={courseId}
-          lessonId={lessonId}
-          lessons={lessons}
-          progressList={progressList}
-          onNavigate={onNavigate}
-        />
+        {desktopTab === 'lectures' ? (
+          <PlaylistSyllabusList
+            courseId={courseId}
+            lessonId={lessonId}
+            lessons={lessons}
+            progressList={progressList}
+            onNavigate={onNavigate}
+          />
+        ) : (
+          <AITutorPanel
+            courseId={courseId}
+            lessonId={lessonId}
+            courseTitle={courseTitle}
+            lessonTitle={lessonTitle}
+            description={description}
+            getCurrentTime={getCurrentTime}
+            onSeek={onSeek}
+          />
+        )}
       </div>
     </aside>
   );
 }
 
 /**
- * Mobile Watch Workspace: Clean 2-Tab Switcher (Notes vs Lectures) on Small Screens.
+ * Mobile Watch Workspace: Clean 3-Tab Switcher (Notes vs AI Tutor vs Lectures) on Small Screens.
  */
 export function MobileWatchWorkspace(props) {
-  const { activeTab, onTabChange, notesProps, lessons, courseId, lessonId, progressList, onNavigate, isDesktop } = props;
+  const { 
+    activeTab, 
+    onTabChange, 
+    notesProps, 
+    lessons, 
+    courseId, 
+    lessonId, 
+    progressList, 
+    onNavigate, 
+    isDesktop,
+    courseTitle,
+    lessonTitle,
+    description,
+    getCurrentTime,
+    onSeek
+  } = props;
 
   return (
     <section data-testid="watch-inline-workspace" className="block border-b border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-950 px-3 py-4 sm:px-6 xl:hidden">
@@ -178,6 +239,20 @@ export function MobileWatchWorkspace(props) {
           >
             <FileText size={13} />
             <span>Notes ({notesProps?.notes?.length || 0})</span>
+          </button>
+
+          <button
+            type="button"
+            aria-pressed={activeTab === 'ai'}
+            onClick={() => onTabChange('ai')}
+            className={`flex-1 h-9 rounded-full flex items-center justify-center gap-1.5 text-xs font-medium transition cursor-pointer ${
+              activeTab === 'ai'
+                ? 'bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 shadow-xs'
+                : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-900'
+            }`}
+          >
+            <Sparkles size={13} className={activeTab === 'ai' ? 'text-amber-300' : 'text-amber-500'} />
+            <span>AI Tutor</span>
           </button>
 
           {lessons && lessons.length > 1 && (
@@ -200,6 +275,19 @@ export function MobileWatchWorkspace(props) {
         {/* Mobile Tab Content */}
         <div className="p-3.5 sm:p-4">
           {!isDesktop && activeTab === 'notes' && <NotesPanel {...notesProps} />}
+          {!isDesktop && activeTab === 'ai' && (
+            <div className="h-[480px]">
+              <AITutorPanel
+                courseId={courseId}
+                lessonId={lessonId}
+                courseTitle={courseTitle}
+                lessonTitle={lessonTitle}
+                description={description}
+                getCurrentTime={getCurrentTime}
+                onSeek={onSeek}
+              />
+            </div>
+          )}
           {!isDesktop && activeTab === 'lectures' && (
             <PlaylistSyllabusList
               courseId={courseId}

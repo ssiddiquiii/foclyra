@@ -110,15 +110,19 @@ export default function Watch() {
     activeTab,
     courseId,
     lessonId,
-    lessonType: lesson.type,
-    description: lesson.description,
+    courseTitle: course?.title,
+    lessonTitle: lesson?.title,
+    lessonType: lesson?.type,
+    description: lesson?.description,
     lessons: courseLessons,
     progressList,
     onNavigate: handleNavigate,
     notesProps,
     isDesktop: isDesktopWorkspace,
     onTabChange: setActiveTab,
-    onToggleCollapse: handleTogglePlaylistCollapse
+    onToggleCollapse: handleTogglePlaylistCollapse,
+    getCurrentTime: player.getCurrentTime,
+    onSeek: player.triggerPlayerSeek
   };
 
   const main = (

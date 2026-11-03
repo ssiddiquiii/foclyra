@@ -98,7 +98,9 @@ export default async function handler(request, response) {
             content: base64Data.trim(),
             content_id: 'user-screenshot',
             contentId: 'user-screenshot',
-            content_type: contentType
+            content_type: contentType,
+            content_disposition: 'inline',
+            disposition: 'inline'
           });
         }
       }

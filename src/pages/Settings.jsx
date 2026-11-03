@@ -61,6 +61,31 @@ export default function Settings() {
   });
   const [keySaved, setKeySaved] = useState(false);
 
+  // Custom Google Gemini API Key state (for AI Lecture Tutor BYOK)
+  const [geminiKey, setGeminiKey] = useState(() => localStorage.getItem('foclyra_custom_gemini_api_key') || '');
+  const [geminiKeySaved, setGeminiKeySaved] = useState(false);
+  const [showGeminiKey, setShowGeminiKey] = useState(false);
+
+  const handleSaveGeminiKey = (e) => {
+    e.preventDefault();
+    const trimmed = geminiKey.trim();
+    if (trimmed) {
+      localStorage.setItem('foclyra_custom_gemini_api_key', trimmed);
+    } else {
+      localStorage.removeItem('foclyra_custom_gemini_api_key');
+    }
+    setGeminiKeySaved(true);
+    toast.add({
+      title: 'Gemini API Key updated',
+      description: trimmed ? 'Personal Gemini API key saved for AI Lecture Tutor.' : 'Reverted to server default Gemini key.',
+      type: 'success',
+      timeout: 4000,
+    });
+    setTimeout(() => {
+      setGeminiKeySaved(false);
+    }, 4000);
+  };
+
   const handleSaveApiKey = (e) => {
     e.preventDefault();
     const trimmed = customKey.trim();
@@ -433,6 +458,90 @@ export default function Settings() {
                   toast.add({
                     title: 'API Key reset',
                     description: 'Reverted to default built-in proxy.',
+                    type: 'info',
+                    timeout: 4000,
+                  });
+                }}
+                className="text-zinc-500 hover:text-red-500 dark:text-zinc-400 dark:hover:text-red-400 transition underline cursor-pointer"
+              >
+                Clear & Reset
+              </button>
+            )}
+          </div>
+        </form>
+      </div>
+
+      {/* 2b. AI Lecture Tutor Gemini Key (BYOK) */}
+      <div className="rounded-[28px] border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-100/70 dark:bg-zinc-900/50 p-5 sm:p-7 shadow-xs space-y-4 backdrop-blur-xs">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-amber-500/20 to-orange-500/20 border border-amber-500/30 text-amber-600 dark:text-amber-400 flex items-center justify-center flex-shrink-0">
+            <Sparkles size={17} />
+          </div>
+          <div>
+            <h2 className="text-base font-semibold text-zinc-950 dark:text-zinc-50 tracking-tight">
+              AI Lecture Tutor (Google Gemini API)
+            </h2>
+            <p className="text-zinc-500 dark:text-zinc-400 text-xs leading-relaxed mt-0.5">
+              Power real-time lecture grounding and doubt solving. Provide your free personal Gemini API key for unlimited queries, or leave empty to use server quota.
+            </p>
+          </div>
+        </div>
+
+        <form onSubmit={handleSaveGeminiKey} className="space-y-3 pt-1">
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
+                Personal Gemini Key
+              </label>
+              <a
+                href="https://aistudio.google.com/app/apikey"
+                target="_blank"
+                rel="noreferrer"
+                className="text-[11px] text-zinc-500 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-white underline inline-flex items-center gap-1 transition"
+              >
+                <span>Get free API key</span>
+                <span aria-hidden="true">↗</span>
+              </a>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <div className="relative w-full sm:flex-1 min-w-0">
+                <input
+                  type={showGeminiKey ? 'text' : 'password'}
+                  value={geminiKey}
+                  onChange={(e) => setGeminiKey(e.target.value)}
+                  placeholder="AIzaSy... (Leave empty to use shared server key)"
+                  className="w-full h-10 pl-4 pr-10 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 text-zinc-950 dark:text-zinc-50 text-xs font-mono focus:outline-none focus:ring-1 focus:ring-zinc-950 dark:focus:ring-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 transition shadow-2xs"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowGeminiKey((prev) => !prev)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition cursor-pointer p-0.5"
+                  aria-label={showGeminiKey ? 'Hide API key' : 'Show API key'}
+                  tabIndex={-1}
+                >
+                  {showGeminiKey ? <EyeOff size={14} /> : <Eye size={14} />}
+                </button>
+              </div>
+              <button
+                type="submit"
+                className="h-10 px-5 rounded-full bg-zinc-950 hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-100 text-white text-xs font-medium transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs flex-shrink-0 active:scale-[0.98]"
+              >
+                {geminiKeySaved ? <CheckCircle2 size={13} /> : null}
+                <span>{geminiKeySaved ? 'Saved!' : 'Save Key'}</span>
+              </button>
+            </div>
+          </div>
+          <div className="flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400 pt-1">
+            <span>Status: <strong className={geminiKey.trim() ? 'text-emerald-500 font-semibold' : 'text-zinc-950 dark:text-zinc-100 font-semibold'}>{geminiKey.trim() ? 'Personal Key Active' : 'Shared Server Quota'}</strong></span>
+            {geminiKey.trim() && (
+              <button
+                type="button"
+                onClick={() => {
+                  setGeminiKey('');
+                  localStorage.removeItem('foclyra_custom_gemini_api_key');
+                  toast.add({
+                    title: 'Gemini Key reset',
+                    description: 'Reverted to shared server key.',
                     type: 'info',
                     timeout: 4000,
                   });
