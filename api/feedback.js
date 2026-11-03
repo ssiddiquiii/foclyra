@@ -83,13 +83,22 @@ export default async function handler(request, response) {
     const resendApiKey = process.env.RESEND_API_KEY;
     if (resendApiKey) {
       const attachments = [];
-      if (screenshot && screenshot.startsWith('data:image/')) {
-        const base64Data = screenshot.split(',')[1];
-        if (base64Data) {
+      if (screenshot && typeof screenshot === 'string') {
+        let base64Data = screenshot;
+        let contentType = 'image/jpeg';
+        if (screenshot.includes(',')) {
+          const parts = screenshot.split(',');
+          base64Data = parts[1];
+          const mimeMatch = parts[0].match(/:(.*?);/);
+          if (mimeMatch) contentType = mimeMatch[1];
+        }
+        if (base64Data && base64Data.trim().length > 50) {
           attachments.push({
-            filename: 'feedback-screenshot.jpg',
-            content: base64Data,
-            contentId: 'user-screenshot'
+            filename: contentType.includes('png') ? 'screenshot.png' : 'screenshot.jpg',
+            content: base64Data.trim(),
+            content_id: 'user-screenshot',
+            contentId: 'user-screenshot',
+            content_type: contentType
           });
         }
       }
