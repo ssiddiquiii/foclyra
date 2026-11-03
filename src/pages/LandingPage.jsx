@@ -32,7 +32,7 @@ import { WobbleCard } from '../components/ui/wobble-card';
 function BrandTile({ children, bg = 'bg-[#111111] dark:bg-white', text = 'text-white dark:text-[#111111]', rotate = '-rotate-3', size = 'sm' }) {
   const dims =
     size === 'lg'
-      ? 'h-[0.8em] w-[0.8em] rounded-[24%] mx-[0.1em] sm:mx-[0.12em] -translate-y-[0.06em]'
+      ? 'h-[0.82em] w-[0.82em] rounded-[24%] mx-1 sm:mx-1.5 -translate-y-[0.06em]'
       : 'size-8 sm:size-9 lg:size-10 rounded-[9px] sm:rounded-[11px] lg:rounded-[12px]';
   return (
     <span
@@ -299,7 +299,7 @@ export default function LandingPage() {
               startIndex={0}
               isInView={isHeroInView}
               reduceMotion={shouldReduceMotion}
-            />{' '}
+            />
             <motion.span
               initial={shouldReduceMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: -18 }}
               animate={isHeroInView ? { opacity: 1, x: 0 } : {}}
@@ -313,7 +313,7 @@ export default function LandingPage() {
               <BrandTile bg="bg-[#FF0033]" text="text-white" rotate="-rotate-4" size="lg">
                 <Play className="size-[46%] fill-white text-white ml-[2%]" />
               </BrandTile>
-            </motion.span>{' '}
+            </motion.span>
             <GradualWord
               word="YouTube"
               startIndex={5}
@@ -334,7 +334,7 @@ export default function LandingPage() {
               isInView={isHeroInView}
               reduceMotion={shouldReduceMotion}
               gradient={false}
-            />{' '}
+            />
             <motion.span
               initial={shouldReduceMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: -18 }}
               animate={isHeroInView ? { opacity: 1, x: 0 } : {}}
@@ -348,7 +348,7 @@ export default function LandingPage() {
               <BrandTile bg="bg-[#F5C542]" text="text-[#111111]" rotate="rotate-3" size="lg">
                 <GraduationCap className="size-[54%]" strokeWidth={2.2} />
               </BrandTile>
-            </motion.span>{' '}
+            </motion.span>
             <GradualWord
               word="structured"
               startIndex={26}
