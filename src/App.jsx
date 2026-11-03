@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { Menu, Search, X, Sun, Moon, MessageSquarePlus } from 'lucide-react';
