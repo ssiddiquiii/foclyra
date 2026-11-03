@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Sparkles, 
-  Send, 
+  ArrowUp, 
   Clock, 
   Check, 
   Copy, 
@@ -10,11 +10,13 @@ import {
   RotateCcw, 
   FileText,
   AlertCircle,
-  ExternalLink
+  ExternalLink,
+  Lightbulb
 } from 'lucide-react';
 import { createNote } from '../../services/dataCommands';
 import { toast } from '../../components/ui/toast';
 import { trackEvent } from '../../services/analytics';
+import { MarkdownView } from '../../components/MarkdownView';
 
 /**
  * Format raw seconds to MM:SS or HH:MM:SS
@@ -67,10 +69,13 @@ export function AITutorPanel({
     }
   }, [messages, courseId, lessonId]);
 
-  // Auto-scroll on new message
+  // Auto-scroll to bottom smoothly on message change or loading state
   useEffect(() => {
     if (chatScrollRef.current) {
-      chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
+      chatScrollRef.current.scrollTo({
+        top: chatScrollRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
     }
   }, [messages, isLoading]);
 
@@ -188,11 +193,11 @@ export function AITutorPanel({
   const currentFormatted = formatSeconds(currentSeconds);
 
   return (
-    <div className="flex flex-col h-full bg-transparent">
-      {/* 1. Minimalist Top Status Header */}
-      <div className="flex items-center justify-between pb-2 mb-2 border-b border-zinc-200/80 dark:border-zinc-800/80 text-[11px]">
+    <div className="flex flex-col h-full bg-transparent overflow-hidden">
+      {/* 1. Sleek Top Bar with Grounding Badge & Clear */}
+      <div className="flex items-center justify-between pb-2 mb-2 border-b border-zinc-200/80 dark:border-zinc-800/80 text-[11px] shrink-0">
         <div className="flex items-center gap-1.5 font-medium text-zinc-600 dark:text-zinc-400">
-          <span className="size-1.5 rounded-full bg-emerald-500" />
+          <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
           <span>Grounded at</span>
           <span className="font-mono text-zinc-950 dark:text-zinc-50 font-semibold bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded border border-zinc-200/60 dark:border-zinc-700/60">
             {currentFormatted}
@@ -212,43 +217,43 @@ export function AITutorPanel({
         )}
       </div>
 
-      {/* 2. Pinned 2 Simple Quick Questions (Always available at the top) */}
-      <div className="grid grid-cols-2 gap-1.5 pb-2.5 mb-1">
+      {/* 2. Pinned Quick Prompt Chips (Conversational Starter Pills) */}
+      <div className="flex items-center gap-1.5 pb-2 mb-1 shrink-0 overflow-x-auto no-scrollbar">
         <button
           type="button"
           onClick={() => handleSendMessage('Explain what is being taught right now in clear, simple language with an analogy.')}
           disabled={isLoading}
-          className="py-1.5 px-2.5 rounded-xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white/70 dark:bg-zinc-900/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-[11px] font-medium text-zinc-800 dark:text-zinc-200 text-left transition flex items-center gap-1.5 cursor-pointer shadow-2xs group disabled:opacity-50"
+          className="h-7 px-3 rounded-full border border-zinc-200/80 dark:border-zinc-800/80 bg-white/80 dark:bg-zinc-900/60 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-[11px] font-medium text-zinc-700 dark:text-zinc-300 transition flex items-center gap-1.5 cursor-pointer shadow-2xs shrink-0 group disabled:opacity-50"
         >
-          <Sparkles size={11} className="text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white shrink-0 transition-colors" />
-          <span className="truncate">Explain Concept</span>
+          <Lightbulb size={11} className="text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors" />
+          <span>Explain Concept</span>
         </button>
 
         <button
           type="button"
           onClick={() => handleSendMessage('Summarize the top 3 critical takeaways and concepts from this topic so far in bullet points.')}
           disabled={isLoading}
-          className="py-1.5 px-2.5 rounded-xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white/70 dark:bg-zinc-900/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-[11px] font-medium text-zinc-800 dark:text-zinc-200 text-left transition flex items-center gap-1.5 cursor-pointer shadow-2xs group disabled:opacity-50"
+          className="h-7 px-3 rounded-full border border-zinc-200/80 dark:border-zinc-800/80 bg-white/80 dark:bg-zinc-900/60 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-[11px] font-medium text-zinc-700 dark:text-zinc-300 transition flex items-center gap-1.5 cursor-pointer shadow-2xs shrink-0 group disabled:opacity-50"
         >
-          <FileText size={11} className="text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white shrink-0 transition-colors" />
-          <span className="truncate">Key Takeaways</span>
+          <FileText size={11} className="text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors" />
+          <span>Key Takeaways</span>
         </button>
       </div>
 
-      {/* 3. Messages Scroll Area */}
-      <div ref={chatScrollRef} className="flex-1 overflow-y-auto space-y-3 pr-1 text-xs">
+      {/* 3. Real Chat Messages Stream */}
+      <div ref={chatScrollRef} className="flex-1 overflow-y-auto space-y-4 pr-1 py-2 text-xs">
         {messages.length === 0 ? (
-          <div className="py-8 px-2 text-center space-y-2.5">
-            <div className="size-8 rounded-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700/80 flex items-center justify-center mx-auto text-zinc-700 dark:text-zinc-300 shadow-2xs">
+          <div className="h-full flex flex-col items-center justify-center text-center p-4 space-y-3">
+            <div className="size-9 rounded-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700/80 flex items-center justify-center text-zinc-700 dark:text-zinc-300 shadow-2xs">
               <Sparkles size={14} />
             </div>
 
             <div className="space-y-1">
-              <h3 className="font-semibold text-zinc-900 dark:text-zinc-100 text-xs tracking-tight">
-                AI Lecture Tutor
+              <h3 className="font-semibold text-zinc-900 dark:text-zinc-100 text-xs">
+                In-Context Study Assistant
               </h3>
-              <p className="text-zinc-500 dark:text-zinc-400 text-[11px] leading-relaxed max-w-[240px] mx-auto">
-                Ask any doubt or tap the prompt buttons above. Answers are tied to this exact video second.
+              <p className="text-zinc-500 dark:text-zinc-400 text-[11px] leading-relaxed max-w-[220px]">
+                Ask any question or tap a prompt chip above. Explanations are anchored to the lecture timestamp.
               </p>
             </div>
           </div>
@@ -260,66 +265,68 @@ export function AITutorPanel({
                 key={idx}
                 className={`flex flex-col space-y-1 ${isUser ? 'items-end' : 'items-start'}`}
               >
-                <div className="flex items-center gap-1.5 text-[10px] text-zinc-400 dark:text-zinc-500 px-1 font-mono">
-                  {isUser ? (
-                    <>
-                      <span>You</span>
+                {/* Message Bubble */}
+                {isUser ? (
+                  // User Message Bubble (Real chat dark pill)
+                  <div className="flex flex-col items-end space-y-1 max-w-[85%]">
+                    <div className="bg-zinc-950 text-white dark:bg-zinc-100 dark:text-zinc-950 rounded-2xl rounded-br-xs px-3.5 py-2 text-xs font-normal shadow-xs leading-relaxed">
+                      {m.content}
+                    </div>
+                    <span className="font-mono text-[9.5px] text-zinc-400 px-1">
+                      {m.timestamp}
+                    </span>
+                  </div>
+                ) : (
+                  // AI Tutor Message (Editorial Conversational Block with Markdown)
+                  <div className="flex flex-col items-start space-y-1.5 max-w-[95%]">
+                    {/* Header line */}
+                    <div className="flex items-center gap-1.5 text-[10.5px] font-medium text-zinc-500 dark:text-zinc-400 px-1">
+                      <Sparkles size={11} className="text-zinc-900 dark:text-zinc-100" />
+                      <span className="font-semibold text-zinc-900 dark:text-zinc-100">AI Tutor</span>
                       <span>•</span>
-                      <span>{m.timestamp}</span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="font-sans font-semibold text-zinc-700 dark:text-zinc-300">Tutor</span>
                       {m.timestamp && (
                         <button
                           type="button"
                           onClick={() => onSeek && onSeek(m.rawSeconds || 0)}
-                          className="hover:underline flex items-center gap-0.5 cursor-pointer ml-1 text-zinc-500 hover:text-zinc-900 dark:hover:text-white font-mono"
-                          title="Jump to this timestamp in video"
+                          className="hover:underline flex items-center gap-0.5 cursor-pointer text-zinc-500 hover:text-zinc-900 dark:hover:text-white font-mono"
+                          title="Click to jump to this video timestamp"
                         >
                           <Clock size={9} />
                           <span>{m.timestamp}</span>
                         </button>
                       )}
-                    </>
-                  )}
-                </div>
+                    </div>
 
-                <div
-                  className={`p-3 rounded-2xl max-w-[94%] leading-relaxed ${
-                    isUser
-                      ? 'bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 rounded-tr-xs shadow-xs text-xs font-normal'
-                      : 'bg-white/90 dark:bg-zinc-900/90 border border-zinc-200/80 dark:border-zinc-800/80 text-zinc-900 dark:text-zinc-100 rounded-tl-xs shadow-2xs text-xs whitespace-pre-wrap'
-                  }`}
-                >
-                  {m.content}
-                </div>
+                    {/* Formatted Markdown Content */}
+                    <div className="bg-zinc-100/90 dark:bg-zinc-900/80 border border-zinc-200/70 dark:border-zinc-800/70 rounded-2xl rounded-tl-xs px-4 py-3 shadow-2xs w-full">
+                      <MarkdownView content={m.content} />
 
-                {/* AI Action Toolbar */}
-                {!isUser && (
-                  <div className="flex items-center gap-1 pt-0.5 px-1">
-                    <button
-                      type="button"
-                      onClick={() => handleAddToNotes(m.content, m.rawSeconds, idx)}
-                      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium border transition cursor-pointer ${
-                        addedNoteIndex === idx
-                          ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/30'
-                          : 'bg-zinc-100 dark:bg-zinc-800/70 text-zinc-600 dark:text-zinc-300 border-zinc-200/70 dark:border-zinc-700/70 hover:bg-zinc-200 dark:hover:bg-zinc-700'
-                      }`}
-                      title="Save this answer as a timestamped note"
-                    >
-                      {addedNoteIndex === idx ? <Check size={10} /> : <BookmarkPlus size={10} />}
-                      <span>{addedNoteIndex === idx ? 'Saved!' : 'Add to Notes'}</span>
-                    </button>
+                      {/* Action Toolbar */}
+                      <div className="flex items-center gap-2 mt-3 pt-2.5 border-t border-zinc-200/60 dark:border-zinc-800/60">
+                        <button
+                          type="button"
+                          onClick={() => handleAddToNotes(m.content, m.rawSeconds, idx)}
+                          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10.5px] font-medium transition cursor-pointer ${
+                            addedNoteIndex === idx
+                              ? 'bg-emerald-500 text-white shadow-2xs'
+                              : 'bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200/80 dark:border-zinc-700/80 hover:bg-zinc-50 dark:hover:bg-zinc-700 shadow-2xs'
+                          }`}
+                          title="Save this answer directly into your timestamped Notes"
+                        >
+                          {addedNoteIndex === idx ? <Check size={10} /> : <BookmarkPlus size={10} />}
+                          <span>{addedNoteIndex === idx ? 'Saved to Notes!' : '+ Add to Notes'}</span>
+                        </button>
 
-                    <button
-                      type="button"
-                      onClick={() => handleCopyText(m.content, idx)}
-                      className="p-1 rounded-full text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer"
-                      title="Copy response"
-                    >
-                      {copiedIndex === idx ? <Check size={11} className="text-emerald-500" /> : <Copy size={11} />}
-                    </button>
+                        <button
+                          type="button"
+                          onClick={() => handleCopyText(m.content, idx)}
+                          className="p-1 rounded-full text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-200/60 dark:hover:bg-zinc-800 transition cursor-pointer"
+                          title="Copy response"
+                        >
+                          {copiedIndex === idx ? <Check size={11} className="text-emerald-500" /> : <Copy size={11} />}
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
@@ -327,21 +334,23 @@ export function AITutorPanel({
           })
         )}
 
-        {/* Loading Indicator */}
+        {/* Loading / Thinking Wave */}
         {isLoading && (
           <div className="flex items-start gap-2 pt-1">
-            <div className="p-2.5 rounded-2xl rounded-tl-xs bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/60 dark:border-zinc-800/60 text-zinc-500 dark:text-zinc-400 text-xs flex items-center gap-2">
-              <div className="flex gap-1">
-                <span className="size-1 rounded-full bg-zinc-400 dark:bg-zinc-500 animate-bounce" style={{ animationDelay: '0ms' }} />
-                <span className="size-1 rounded-full bg-zinc-400 dark:bg-zinc-500 animate-bounce" style={{ animationDelay: '150ms' }} />
-                <span className="size-1 rounded-full bg-zinc-400 dark:bg-zinc-500 animate-bounce" style={{ animationDelay: '300ms' }} />
+            <div className="p-3 rounded-2xl rounded-tl-xs bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/60 dark:border-zinc-800/60 text-zinc-500 dark:text-zinc-400 text-xs flex items-center gap-2.5">
+              <div className="flex gap-1 items-center">
+                <span className="size-1.5 rounded-full bg-zinc-500 dark:bg-zinc-400 animate-bounce" style={{ animationDelay: '0ms' }} />
+                <span className="size-1.5 rounded-full bg-zinc-500 dark:bg-zinc-400 animate-bounce" style={{ animationDelay: '150ms' }} />
+                <span className="size-1.5 rounded-full bg-zinc-500 dark:bg-zinc-400 animate-bounce" style={{ animationDelay: '300ms' }} />
               </div>
-              <span className="text-[11px]">Thinking at [{currentFormatted}]...</span>
+              <span className="text-[11px] font-medium text-zinc-600 dark:text-zinc-400">
+                Tutor is thinking at [{currentFormatted}]...
+              </span>
             </div>
           </div>
         )}
 
-        {/* Clean Error Alert with Settings link if key missing */}
+        {/* Error Alert */}
         {errorMsg && (
           <div className="p-3 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 text-[11px] space-y-1.5">
             <div className="flex items-start gap-1.5 font-medium">
@@ -364,31 +373,31 @@ export function AITutorPanel({
         )}
       </div>
 
-      {/* 4. Minimalist Input Area */}
+      {/* 4. Modern Real-Time Chat Input Bar */}
       <form
         onSubmit={(e) => {
           e.preventDefault();
           handleSendMessage();
         }}
-        className="pt-2 mt-2 border-t border-zinc-200/80 dark:border-zinc-800/80"
+        className="pt-2 mt-1 border-t border-zinc-200/80 dark:border-zinc-800/80 shrink-0"
       >
-        <div className="relative flex items-center">
+        <div className="relative flex items-center h-10 rounded-full border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900 shadow-2xs focus-within:ring-1 focus-within:ring-zinc-950 dark:focus-within:ring-white transition pl-3.5 pr-1.5">
           <input
             ref={inputRef}
             type="text"
             value={inputPrompt}
             onChange={(e) => setInputPrompt(e.target.value)}
             disabled={isLoading}
-            placeholder={`Ask about lecture at ${currentFormatted}...`}
-            className="w-full h-9 pl-3.5 pr-9 rounded-full border border-zinc-200/80 dark:border-zinc-800/80 bg-white/90 dark:bg-zinc-900/90 text-zinc-950 dark:text-zinc-50 text-xs placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-950 dark:focus:ring-white shadow-2xs transition disabled:opacity-50"
+            placeholder={`Ask a question at ${currentFormatted}...`}
+            className="flex-1 bg-transparent text-xs text-zinc-950 dark:text-zinc-50 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none disabled:opacity-50"
           />
           <button
             type="submit"
             disabled={isLoading || !inputPrompt.trim()}
-            className="absolute right-1 top-1/2 -translate-y-1/2 size-7 rounded-full bg-zinc-950 hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 text-white flex items-center justify-center transition disabled:opacity-20 disabled:pointer-events-none cursor-pointer shadow-xs active:scale-95"
+            className="size-7 rounded-full bg-zinc-950 hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 text-white flex items-center justify-center transition disabled:opacity-20 disabled:pointer-events-none cursor-pointer shadow-xs active:scale-95 shrink-0"
             aria-label="Send message to AI Tutor"
           >
-            <Send size={11} />
+            <ArrowUp size={13} strokeWidth={2.5} />
           </button>
         </div>
       </form>
