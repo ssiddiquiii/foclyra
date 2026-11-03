@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import { 
   Play, 
   Pause, 
@@ -27,6 +28,8 @@ const STORAGE_KEYS = {
 
 export default function PomodoroTimer() {
   const { pauseActivePlayer } = useUIStore();
+  const location = useLocation();
+  const isWatchPage = location.pathname.includes('/lessons/');
 
   const [focusMins, setFocusMins] = useState(() => 
     parseInt(localStorage.getItem(STORAGE_KEYS.CUSTOM_FOCUS) || '25', 10)
@@ -298,7 +301,7 @@ export default function PomodoroTimer() {
       )}
 
       {/* 🎯 FLOATING POMODORO WIDGET */}
-      <aside aria-label="Pomodoro focus timer" className="fixed bottom-3 right-3 sm:right-4 z-50 will-change-transform">
+      <aside aria-label="Pomodoro focus timer" className={isWatchPage ? "fixed bottom-3 left-4 sm:left-6 z-40 will-change-transform" : "fixed bottom-3 right-3 sm:right-4 z-50 will-change-transform"}>
         {!isExpanded ? (
           /* Collapsed Pill Button — Matches Landing Page Preview Pill */
           <button

@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Sparkles, 
   Send, 
@@ -7,13 +8,9 @@ import {
   Copy, 
   BookmarkPlus, 
   RotateCcw, 
-  Bot, 
-  User, 
-  Lightbulb, 
-  Code2, 
-  HelpCircle, 
   FileText,
-  AlertCircle
+  AlertCircle,
+  ExternalLink
 } from 'lucide-react';
 import { createNote } from '../../services/dataCommands';
 import { toast } from '../../components/ui/toast';
@@ -34,29 +31,6 @@ function formatSeconds(secs) {
   return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 }
 
-const QUICK_PROMPTS = [
-  {
-    icon: Lightbulb,
-    title: 'Explain Simply',
-    prompt: 'Explain what the instructor just explained in clear, simple language with an analogy.'
-  },
-  {
-    icon: Code2,
-    title: 'Code Example',
-    prompt: 'Provide a concise, practical real-world code snippet demonstrating this lecture concept.'
-  },
-  {
-    icon: FileText,
-    title: 'Key Takeaways',
-    prompt: 'Summarize the top 3 critical takeaways from this topic in bullet points.'
-  },
-  {
-    icon: HelpCircle,
-    title: 'Quick Quiz',
-    prompt: 'Quiz me with 2 short questions to test my understanding of what was just covered.'
-  }
-];
-
 export function AITutorPanel({
   courseId,
   lessonId,
@@ -66,6 +40,7 @@ export function AITutorPanel({
   getCurrentTime,
   onSeek
 }) {
+  const navigate = useNavigate();
   const [messages, setMessages] = useState(() => {
     try {
       const saved = sessionStorage.getItem(`foclyra_ai_chat_${courseId}_${lessonId}`);
@@ -139,7 +114,13 @@ export function AITutorPanel({
         })
       });
 
-      const data = await res.json();
+      const rawText = await res.text();
+      let data = {};
+      try {
+        data = JSON.parse(rawText);
+      } catch {
+        throw new Error(rawText || `Server returned status ${res.status}`);
+      }
 
       if (!res.ok || !data.success) {
         throw new Error(data.error || 'AI Tutor was unable to generate a response.');
@@ -208,12 +189,12 @@ export function AITutorPanel({
 
   return (
     <div className="flex flex-col h-full bg-transparent">
-      {/* Top Status Bar */}
+      {/* 1. Minimalist Top Status Header */}
       <div className="flex items-center justify-between pb-2 mb-2 border-b border-zinc-200/80 dark:border-zinc-800/80 text-[11px]">
-        <div className="flex items-center gap-1.5 font-medium text-zinc-700 dark:text-zinc-300">
-          <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-          <span>Lecture Grounding:</span>
-          <span className="font-mono bg-zinc-200/80 dark:bg-zinc-800 px-1.5 py-0.5 rounded text-zinc-950 dark:text-zinc-50 font-semibold">
+        <div className="flex items-center gap-1.5 font-medium text-zinc-600 dark:text-zinc-400">
+          <span className="size-1.5 rounded-full bg-emerald-500" />
+          <span>Grounded at</span>
+          <span className="font-mono text-zinc-950 dark:text-zinc-50 font-semibold bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded border border-zinc-200/60 dark:border-zinc-700/60">
             {currentFormatted}
           </span>
         </div>
@@ -225,54 +206,50 @@ export function AITutorPanel({
             className="text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 flex items-center gap-1 text-[10.5px] transition cursor-pointer"
             title="Clear Chat History"
           >
-            <RotateCcw size={11} />
-            <span>Reset</span>
+            <RotateCcw size={10} />
+            <span>Clear</span>
           </button>
         )}
       </div>
 
-      {/* Messages Scroll Area */}
+      {/* 2. Pinned 2 Simple Quick Questions (Always available at the top) */}
+      <div className="grid grid-cols-2 gap-1.5 pb-2.5 mb-1">
+        <button
+          type="button"
+          onClick={() => handleSendMessage('Explain what is being taught right now in clear, simple language with an analogy.')}
+          disabled={isLoading}
+          className="py-1.5 px-2.5 rounded-xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white/70 dark:bg-zinc-900/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-[11px] font-medium text-zinc-800 dark:text-zinc-200 text-left transition flex items-center gap-1.5 cursor-pointer shadow-2xs group disabled:opacity-50"
+        >
+          <Sparkles size={11} className="text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white shrink-0 transition-colors" />
+          <span className="truncate">Explain Concept</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => handleSendMessage('Summarize the top 3 critical takeaways and concepts from this topic so far in bullet points.')}
+          disabled={isLoading}
+          className="py-1.5 px-2.5 rounded-xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white/70 dark:bg-zinc-900/50 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-[11px] font-medium text-zinc-800 dark:text-zinc-200 text-left transition flex items-center gap-1.5 cursor-pointer shadow-2xs group disabled:opacity-50"
+        >
+          <FileText size={11} className="text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white shrink-0 transition-colors" />
+          <span className="truncate">Key Takeaways</span>
+        </button>
+      </div>
+
+      {/* 3. Messages Scroll Area */}
       <div ref={chatScrollRef} className="flex-1 overflow-y-auto space-y-3 pr-1 text-xs">
         {messages.length === 0 ? (
-          <div className="py-6 px-2 text-center space-y-4">
-            <div className="size-10 rounded-2xl bg-gradient-to-tr from-amber-500/20 to-orange-500/20 border border-amber-500/30 flex items-center justify-center mx-auto text-amber-600 dark:text-amber-400 shadow-2xs">
-              <Sparkles size={18} />
+          <div className="py-8 px-2 text-center space-y-2.5">
+            <div className="size-8 rounded-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700/80 flex items-center justify-center mx-auto text-zinc-700 dark:text-zinc-300 shadow-2xs">
+              <Sparkles size={14} />
             </div>
 
             <div className="space-y-1">
-              <h3 className="font-semibold text-zinc-950 dark:text-white text-sm">
-                Foclyra AI Lecture Tutor
+              <h3 className="font-semibold text-zinc-900 dark:text-zinc-100 text-xs tracking-tight">
+                AI Lecture Tutor
               </h3>
-              <p className="text-zinc-500 dark:text-zinc-400 text-[11.5px] leading-relaxed max-w-[260px] mx-auto">
-                Ask doubts, generate quick code snippets, or get instant summaries grounded in this exact lecture.
+              <p className="text-zinc-500 dark:text-zinc-400 text-[11px] leading-relaxed max-w-[240px] mx-auto">
+                Ask any doubt or tap the prompt buttons above. Answers are tied to this exact video second.
               </p>
-            </div>
-
-            {/* Quick Starter Prompts */}
-            <div className="grid grid-cols-1 gap-1.5 pt-2 text-left">
-              {QUICK_PROMPTS.map((p, i) => {
-                const Icon = p.icon;
-                return (
-                  <button
-                    key={i}
-                    type="button"
-                    onClick={() => handleSendMessage(p.prompt)}
-                    className="p-2.5 rounded-xl border border-zinc-200/80 dark:border-zinc-800/80 bg-white/80 dark:bg-zinc-900/60 hover:bg-zinc-100 dark:hover:bg-zinc-800/80 transition flex items-center gap-2.5 group cursor-pointer text-left shadow-2xs"
-                  >
-                    <div className="size-6 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-600 dark:text-zinc-300 group-hover:scale-105 transition-transform shrink-0">
-                      <Icon size={12} />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <span className="font-semibold text-zinc-900 dark:text-zinc-100 block text-[11px] leading-tight">
-                        {p.title}
-                      </span>
-                      <span className="text-zinc-500 dark:text-zinc-400 text-[10px] truncate block">
-                        {p.prompt}
-                      </span>
-                    </div>
-                  </button>
-                );
-              })}
             </div>
           </div>
         ) : (
@@ -292,14 +269,13 @@ export function AITutorPanel({
                     </>
                   ) : (
                     <>
-                      <Sparkles size={10} className="text-amber-500" />
-                      <span className="font-sans font-semibold text-zinc-700 dark:text-zinc-300">AI Tutor</span>
+                      <span className="font-sans font-semibold text-zinc-700 dark:text-zinc-300">Tutor</span>
                       {m.timestamp && (
                         <button
                           type="button"
                           onClick={() => onSeek && onSeek(m.rawSeconds || 0)}
-                          className="hover:underline flex items-center gap-0.5 cursor-pointer ml-1 text-zinc-500 hover:text-zinc-900 dark:hover:text-white"
-                          title="Jump to this second in video"
+                          className="hover:underline flex items-center gap-0.5 cursor-pointer ml-1 text-zinc-500 hover:text-zinc-900 dark:hover:text-white font-mono"
+                          title="Jump to this timestamp in video"
                         >
                           <Clock size={9} />
                           <span>{m.timestamp}</span>
@@ -310,9 +286,9 @@ export function AITutorPanel({
                 </div>
 
                 <div
-                  className={`p-3 rounded-2xl max-w-[92%] leading-relaxed ${
+                  className={`p-3 rounded-2xl max-w-[94%] leading-relaxed ${
                     isUser
-                      ? 'bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 rounded-tr-xs shadow-xs font-medium text-xs'
+                      ? 'bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 rounded-tr-xs shadow-xs text-xs font-normal'
                       : 'bg-white/90 dark:bg-zinc-900/90 border border-zinc-200/80 dark:border-zinc-800/80 text-zinc-900 dark:text-zinc-100 rounded-tl-xs shadow-2xs text-xs whitespace-pre-wrap'
                   }`}
                 >
@@ -353,31 +329,42 @@ export function AITutorPanel({
 
         {/* Loading Indicator */}
         {isLoading && (
-          <div className="flex items-start gap-2 pt-2">
-            <div className="size-6 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 shrink-0">
-              <Sparkles size={12} className="animate-spin" />
-            </div>
-            <div className="p-3 rounded-2xl rounded-tl-xs bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/60 dark:border-zinc-800/60 text-zinc-500 dark:text-zinc-400 text-xs flex items-center gap-2">
+          <div className="flex items-start gap-2 pt-1">
+            <div className="p-2.5 rounded-2xl rounded-tl-xs bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/60 dark:border-zinc-800/60 text-zinc-500 dark:text-zinc-400 text-xs flex items-center gap-2">
               <div className="flex gap-1">
-                <span className="size-1.5 rounded-full bg-zinc-400 dark:bg-zinc-500 animate-bounce" style={{ animationDelay: '0ms' }} />
-                <span className="size-1.5 rounded-full bg-zinc-400 dark:bg-zinc-500 animate-bounce" style={{ animationDelay: '150ms' }} />
-                <span className="size-1.5 rounded-full bg-zinc-400 dark:bg-zinc-500 animate-bounce" style={{ animationDelay: '300ms' }} />
+                <span className="size-1 rounded-full bg-zinc-400 dark:bg-zinc-500 animate-bounce" style={{ animationDelay: '0ms' }} />
+                <span className="size-1 rounded-full bg-zinc-400 dark:bg-zinc-500 animate-bounce" style={{ animationDelay: '150ms' }} />
+                <span className="size-1 rounded-full bg-zinc-400 dark:bg-zinc-500 animate-bounce" style={{ animationDelay: '300ms' }} />
               </div>
-              <span className="text-[11px]">Analyzing lecture context...</span>
+              <span className="text-[11px]">Thinking at [{currentFormatted}]...</span>
             </div>
           </div>
         )}
 
-        {/* Error Alert */}
+        {/* Clean Error Alert with Settings link if key missing */}
         {errorMsg && (
-          <div className="p-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-[11px] flex items-start gap-2">
-            <AlertCircle size={14} className="shrink-0 mt-0.5" />
-            <span className="leading-snug">{errorMsg}</span>
+          <div className="p-3 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 text-zinc-800 dark:text-zinc-200 text-[11px] space-y-1.5">
+            <div className="flex items-start gap-1.5 font-medium">
+              <AlertCircle size={13} className="text-amber-500 shrink-0 mt-0.5" />
+              <span className="leading-snug">{errorMsg}</span>
+            </div>
+            {errorMsg.toLowerCase().includes('gemini') && (
+              <div className="pt-1">
+                <button
+                  type="button"
+                  onClick={() => navigate('/settings')}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 text-[10.5px] font-medium transition hover:opacity-90 cursor-pointer shadow-2xs"
+                >
+                  <span>Open Settings to Add Key</span>
+                  <ExternalLink size={9} />
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>
 
-      {/* Input Area */}
+      {/* 4. Minimalist Input Area */}
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -393,12 +380,12 @@ export function AITutorPanel({
             onChange={(e) => setInputPrompt(e.target.value)}
             disabled={isLoading}
             placeholder={`Ask about lecture at ${currentFormatted}...`}
-            className="w-full h-9.5 pl-3.5 pr-10 rounded-full border border-zinc-200/80 dark:border-zinc-800/80 bg-white/90 dark:bg-zinc-900/90 text-zinc-950 dark:text-zinc-50 text-xs placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-950 dark:focus:ring-white shadow-2xs transition disabled:opacity-50"
+            className="w-full h-9 pl-3.5 pr-9 rounded-full border border-zinc-200/80 dark:border-zinc-800/80 bg-white/90 dark:bg-zinc-900/90 text-zinc-950 dark:text-zinc-50 text-xs placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-950 dark:focus:ring-white shadow-2xs transition disabled:opacity-50"
           />
           <button
             type="submit"
             disabled={isLoading || !inputPrompt.trim()}
-            className="absolute right-1.5 top-1/2 -translate-y-1/2 size-7 rounded-full bg-zinc-950 hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 text-white flex items-center justify-center transition disabled:opacity-30 disabled:pointer-events-none cursor-pointer shadow-xs active:scale-95"
+            className="absolute right-1 top-1/2 -translate-y-1/2 size-7 rounded-full bg-zinc-950 hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 text-white flex items-center justify-center transition disabled:opacity-20 disabled:pointer-events-none cursor-pointer shadow-xs active:scale-95"
             aria-label="Send message to AI Tutor"
           >
             <Send size={11} />
