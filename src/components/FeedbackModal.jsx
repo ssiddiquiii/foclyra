@@ -156,16 +156,16 @@ export default function FeedbackModal({ isOpen, onClose }) {
       if (res.ok && data.success) {
         setSubmitStatus({
           type: 'success',
-          text: data.message || 'Thank you! Your feedback has been sent directly to the team.'
+          text: data.message || 'Thank you! Your feedback and diagnostics have been successfully submitted.'
         });
 
-        // Reset form and auto-close modal
+        // Reset form and auto-close modal with comfortable reading pause
         setTimeout(() => {
           setMessage('');
           handleRemoveImage();
           onClose();
           setSubmitStatus(null);
-        }, 1800);
+        }, 3200);
       } else {
         throw new Error(data.error || 'Failed to submit feedback.');
       }
@@ -403,13 +403,18 @@ export default function FeedbackModal({ isOpen, onClose }) {
           </button>
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting || submitStatus?.type === 'success'}
             className="h-9 px-5 rounded-full bg-zinc-950 hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-100 text-white text-xs font-medium transition flex items-center gap-2 cursor-pointer shadow-xs disabled:opacity-50 active:scale-[0.98]"
           >
             {isSubmitting ? (
               <>
                 <div className="w-3.5 h-3.5 border-2 border-white dark:border-zinc-950 border-t-transparent rounded-full animate-spin" />
                 <span>Sending...</span>
+              </>
+            ) : submitStatus?.type === 'success' ? (
+              <>
+                <CheckCircle2 size={13} className="text-emerald-500 dark:text-emerald-400" />
+                <span>Submitted!</span>
               </>
             ) : (
               <>

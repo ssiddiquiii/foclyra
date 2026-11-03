@@ -114,7 +114,7 @@ export default async function handler(request, response) {
         return response.status(200).json({
           success: true,
           provider: 'resend',
-          message: 'Feedback and diagnostics sent directly to Sameed.'
+          message: 'Thank you! Your feedback and diagnostics have been successfully submitted.'
         });
       }
 
