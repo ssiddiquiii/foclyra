@@ -65,18 +65,35 @@ export default function FeedbackModal({ isOpen, onClose }) {
   const processFile = (file) => {
     if (!file || !file.type.startsWith('image/')) return;
     
-    // Max 4MB size check
-    if (file.size > 4 * 1024 * 1024) {
-      setSubmitStatus({ type: 'error', text: 'Image file is too large (max 4MB).' });
+    // Max 5MB check
+    if (file.size > 5 * 1024 * 1024) {
+      setSubmitStatus({ type: 'error', text: 'Image file is too large (max 5MB).' });
       return;
     }
 
     setFileName(file.name || 'clipboard-screenshot.png');
-    setFileSize(`${(file.size / 1024).toFixed(1)} KB`);
 
     const reader = new FileReader();
     reader.onload = (e) => {
-      setScreenshot(e.target.result);
+      const img = new Image();
+      img.onload = () => {
+        const maxWidth = 1200;
+        let width = img.width;
+        let height = img.height;
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        const compressed = canvas.toDataURL('image/jpeg', 0.82);
+        setScreenshot(compressed);
+        setFileSize(`${(compressed.length * 0.75 / 1024).toFixed(1)} KB`);
+      };
+      img.src = e.target.result;
     };
     reader.readAsDataURL(file);
   };
@@ -139,19 +156,16 @@ export default function FeedbackModal({ isOpen, onClose }) {
       if (res.ok && data.success) {
         setSubmitStatus({
           type: 'success',
-          text: 'Thank you! Your feedback has been successfully submitted.',
-          mailtoUrl: data.mailtoUrl
+          text: data.message || 'Thank you! Your feedback has been sent directly to the team.'
         });
 
-        // Reset form after short delay
+        // Reset form and auto-close modal
         setTimeout(() => {
-          if (!data.mailtoUrl) {
-            setMessage('');
-            handleRemoveImage();
-            onClose();
-            setSubmitStatus(null);
-          }
-        }, 3500);
+          setMessage('');
+          handleRemoveImage();
+          onClose();
+          setSubmitStatus(null);
+        }, 1800);
       } else {
         throw new Error(data.error || 'Failed to submit feedback.');
       }
@@ -362,29 +376,18 @@ export default function FeedbackModal({ isOpen, onClose }) {
         {/* Status Message */}
         {submitStatus && (
           <div
-            className={`p-3.5 rounded-2xl text-xs flex flex-col gap-1.5 leading-relaxed ${
+            className={`p-3.5 rounded-2xl text-xs flex items-center gap-2.5 leading-relaxed ${
               submitStatus.type === 'success'
                 ? 'bg-emerald-500/10 border border-emerald-500/25 text-emerald-700 dark:text-emerald-300'
                 : 'bg-rose-500/10 border border-rose-500/25 text-rose-700 dark:text-rose-300'
             }`}
           >
-            <div className="flex items-center gap-2 font-semibold">
-              {submitStatus.type === 'success' ? <CheckCircle2 size={15} /> : <AlertCircle size={15} />}
-              <span>{submitStatus.text}</span>
-            </div>
-            {submitStatus.mailtoUrl && (
-              <div className="mt-1">
-                <a
-                  href={submitStatus.mailtoUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-1 underline font-semibold text-zinc-950 dark:text-zinc-50 hover:opacity-80"
-                >
-                  <span>Open in your email app to send</span>
-                  <ExternalLink size={11} />
-                </a>
-              </div>
+            {submitStatus.type === 'success' ? (
+              <CheckCircle2 size={16} className="shrink-0 text-emerald-600 dark:text-emerald-400" />
+            ) : (
+              <AlertCircle size={16} className="shrink-0 text-rose-600 dark:text-rose-400" />
             )}
+            <span className="font-medium">{submitStatus.text}</span>
           </div>
         )}
 

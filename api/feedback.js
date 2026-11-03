@@ -1,9 +1,7 @@
 /**
- * Foclyra Production Feedback & Bug Report Serverless Endpoint.
- * Supports:
- * - Resend API (3,000 free emails/month, base64 image attachments)
- * - Web3Forms API (Unlimited free submissions)
- * - Client mailto fallback if API keys are pending
+ * Foclyra Production Direct Feedback & Telemetry Serverless Endpoint.
+ * Transmits feedback, telemetry, and screenshots directly to the administrator inbox.
+ * Powered by Resend API (Primary) and Web3Forms (Secondary).
  */
 
 export default async function handler(request, response) {
@@ -76,13 +74,13 @@ export default async function handler(request, response) {
           </div>
 
           <div style="border-top: 1px solid #f4f4f5; padding: 16px 28px; text-align: center; font-size: 11px; color: #a1a1aa;">
-            Foclyra Telemetry & Feedback Delivery Engine • Delivered to ${recipientEmail}
+            Foclyra Direct Telemetry & Feedback Delivery Engine • Delivered to ${recipientEmail}
           </div>
         </div>
       </div>
     `;
 
-    // 1. Primary: Try Resend API (Free 3,000 emails/month)
+    // 1. Primary: Resend API Direct Delivery
     const resendApiKey = process.env.RESEND_API_KEY;
     if (resendApiKey) {
       const attachments = [];
@@ -90,7 +88,7 @@ export default async function handler(request, response) {
         const base64Data = screenshot.split(',')[1];
         if (base64Data) {
           attachments.push({
-            filename: 'screenshot.png',
+            filename: 'feedback-screenshot.jpg',
             content: base64Data
           });
         }
@@ -113,11 +111,22 @@ export default async function handler(request, response) {
       });
 
       if (resendRes.ok) {
-        return response.status(200).json({ success: true, provider: 'resend', message: 'Feedback sent successfully.' });
+        return response.status(200).json({
+          success: true,
+          provider: 'resend',
+          message: 'Feedback and diagnostics sent directly to Sameed.'
+        });
       }
+
+      // If Resend failed with an error, extract details for logging
+      const resendErr = await resendRes.json().catch(() => ({}));
+      console.error('Resend delivery error:', resendErr);
+      return response.status(resendRes.status || 500).json({
+        error: resendErr.message || 'Resend was unable to deliver the email. Please check your RESEND_API_KEY.'
+      });
     }
 
-    // 2. Alternative: Try Web3Forms (Unlimited submissions)
+    // 2. Secondary Provider: Web3Forms (if configured)
     const web3formsKey = process.env.WEB3FORMS_ACCESS_KEY;
     if (web3formsKey) {
       const w3Res = await fetch('https://api.web3forms.com/submit', {
@@ -129,28 +138,26 @@ export default async function handler(request, response) {
           email: cleanEmail,
           subject: `[Foclyra ${cleanCategory}] from ${cleanName}`,
           message: `${message}\n\n--- Telemetry ---\n${JSON.stringify(telemetry || {}, null, 2)}`,
-          from_name: 'Foclyra User'
+          from_name: 'Foclyra Feedback'
         })
       });
 
       if (w3Res.ok) {
-        return response.status(200).json({ success: true, provider: 'web3forms', message: 'Feedback sent successfully.' });
+        return response.status(200).json({
+          success: true,
+          provider: 'web3forms',
+          message: 'Feedback sent successfully.'
+        });
       }
     }
 
-    // 3. Fallback: Return successful payload with ready-to-use mailto URL so user is never blocked
-    const subject = encodeURIComponent(`[Foclyra ${cleanCategory}] from ${cleanName}`);
-    const body = encodeURIComponent(`Name: ${cleanName}\nEmail: ${cleanEmail}\n\nMessage:\n${message}\n\n--- Diagnostic Info ---\nURL: ${telemetry?.url || ''}\nBrowser: ${telemetry?.userAgent || ''}\nScreen: ${telemetry?.screenSize || ''}`);
-    const mailtoUrl = `mailto:${recipientEmail}?subject=${subject}&body=${body}`;
-
-    return response.status(200).json({
-      success: true,
-      provider: 'direct',
-      mailtoUrl,
-      message: 'Feedback received. Configure RESEND_API_KEY in Vercel to receive automatic email inbox notifications.'
+    // If no provider is configured in environment
+    return response.status(500).json({
+      error: 'Email delivery service is not configured. Please add RESEND_API_KEY in Vercel Project Settings > Environment Variables.'
     });
 
   } catch (error) {
-    return response.status(500).json({ error: `Failed to process feedback: ${error.message}` });
+    console.error('Feedback delivery exception:', error);
+    return response.status(500).json({ error: `Failed to deliver feedback: ${error.message}` });
   }
 }
