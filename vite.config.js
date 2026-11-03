@@ -60,9 +60,10 @@ function apiDevPlugin() {
             return res;
           };
 
-          // Absolute file URL import to avoid .vite-temp path resolution issues
+          // Absolute file URL import with cache buster to always run fresh handler code
           const absolutePath = path.resolve(__dirname, moduleRelative);
-          const { default: handler } = await import(pathToFileURL(absolutePath).href);
+          const cacheBuster = `?t=${Date.now()}`;
+          const { default: handler } = await import(pathToFileURL(absolutePath).href + cacheBuster);
           await handler(req, res);
         } catch (err) {
           console.error(`Local Dev API Error [${endpoint}]:`, err);

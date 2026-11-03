@@ -1,6 +1,6 @@
 /**
- * Foclyra Production AI Lecture Tutor Serverless Endpoint.
- * In-context conversational AI study assistant powered by Google Gemini 1.5 Flash.
+ * Foclyra AI Lecture Tutor Serverless Endpoint.
+ * In-context doubt solving grounded in current video timestamp using Google Gemini 2.5/3.5 Flash.
  */
 
 export default async function handler(request, response) {
@@ -18,23 +18,23 @@ export default async function handler(request, response) {
   }
 
   try {
-    const {
-      message,
-      courseTitle = 'Study Course',
-      lessonTitle = 'Lecture',
-      description = '',
+    const { 
+      message, 
+      courseTitle = 'Course Lecture', 
+      lessonTitle = 'Current Lesson', 
+      description = '', 
       currentTime = 0,
       formattedTime = '00:00',
       history = [],
-      customApiKey = ''
+      customApiKey = '' 
     } = request.body || {};
 
-    if (!message || typeof message !== 'string' || !message.trim()) {
-      return response.status(400).json({ error: 'Please provide a valid question or prompt.' });
+    if (!message || !message.trim()) {
+      return response.status(400).json({ error: 'Message cannot be empty.' });
     }
 
-    // Resolve API Key: Priority to User's custom key from Settings, then server environment variable
-    const apiKey = customApiKey?.trim() || process.env.GEMINI_API_KEY;
+    // Resolve API Key: user custom key takes priority, otherwise server environment variable
+    const apiKey = (customApiKey || process.env.GEMINI_API_KEY || '').trim();
 
     if (!apiKey) {
       return response.status(503).json({
@@ -42,30 +42,27 @@ export default async function handler(request, response) {
       });
     }
 
-    // Truncate description to prevent token bloat
-    const cleanDescription = (description || '').slice(0, 1500).trim();
+    // System prompt grounding the assistant in the lecture and exact timestamp
+    const systemPrompt = `You are Foclyra's In-Context AI Study Tutor. 
+You are assisting a student who is currently watching an educational course video inside Foclyra Study Studio.
 
-    // Construct System Instruction for Gemini 1.5 Flash
-    const systemPrompt = `You are Foclyra AI Lecture Tutor — a brilliant, encouraging, and razor-sharp personal teaching assistant.
-You are helping a student who is currently watching an educational video course inside Foclyra's distraction-free studio.
+GROUNDING CONTEXT:
+- Course Title: "${courseTitle}"
+- Lecture / Video Title: "${lessonTitle}"
+- Video Description: "${description.slice(0, 1000)}"
+- Current Video Playback Time: ${formattedTime} (approx ${Math.floor(currentTime)} seconds in).
 
-Current Lecture Context:
-- Course: "${courseTitle}"
-- Lecture: "${lessonTitle}"
-- Live Video Timestamp: ${formattedTime} (${Math.round(currentTime)} seconds into lecture)
-${cleanDescription ? `- Lecture Chapters / Outline:\n${cleanDescription}` : ''}
+CRITICAL INSTRUCTIONS:
+1. Anchor your explanations in what is being taught in this specific course and lesson.
+2. Ground your answer around the student's current timestamp [${formattedTime}].
+3. Be clear, concise, pedagogical, and encouraging.
+4. If the student asks for an explanation or takeaways, use short bullet points or crisp paragraphs.
+5. If the student asks for code, provide clean, modern, well-commented code snippets.
+6. Keep formatting clean with GitHub-flavored markdown. Avoid fluff or generic intros.`;
 
-Guidelines for your response:
-1. Be concise, punchy, and clear. Avoid greeting fluff or robotic filler (e.g. NEVER start with "Sure!", "As an AI...", or "Great question!"). Go straight into the explanation.
-2. Ground your explanation in what the instructor teaches around this specific topic and timestamp.
-3. Use clean Markdown formatting: bold key concepts, use bullet points for lists, and use triple backtick code blocks with language specifiers if discussing code.
-4. If the student asks for a code example, provide a concise, real-world, bug-free snippet.
-5. Keep explanations easy to digest so the student can grasp the concept in under 30 seconds and resume watching.`;
-
-    // Format chat conversation history into Gemini format
+    // Build Gemini contents array with history
     const contents = [];
 
-    // Add prior conversation messages
     if (Array.isArray(history) && history.length > 0) {
       for (const item of history.slice(-6)) { // keep last 6 turns for context
         if (item.content && item.role) {
@@ -83,8 +80,6 @@ Guidelines for your response:
       parts: [{ text: message.trim() }]
     });
 
-    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`;
-
     const geminiPayload = {
       systemInstruction: {
         parts: [{ text: systemPrompt }]
@@ -97,24 +92,38 @@ Guidelines for your response:
       }
     };
 
-    const apiRes = await fetch(apiUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(geminiPayload)
-    });
+    // Candidate models in priority order: gemini-2.5-flash -> gemini-3.5-flash
+    const candidateModels = ['gemini-2.5-flash', 'gemini-3.5-flash'];
+    let reply = null;
+    let lastError = null;
 
-    const data = await apiRes.json();
+    for (const model of candidateModels) {
+      try {
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
+        const apiRes = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(geminiPayload)
+        });
 
-    if (!apiRes.ok) {
-      const errMsg = data?.error?.message || 'Google Gemini API request failed.';
-      console.error('Gemini API Error:', errMsg);
-      return response.status(apiRes.status || 500).json({ error: errMsg });
+        const data = await apiRes.json();
+
+        if (apiRes.ok && data?.candidates?.[0]?.content?.parts?.[0]?.text) {
+          reply = data.candidates[0].content.parts[0].text;
+          break; // successfully generated
+        } else {
+          lastError = data?.error?.message || `Failed with model ${model}`;
+          console.warn(`Gemini model [${model}] returned error:`, lastError);
+        }
+      } catch (callErr) {
+        lastError = callErr.message;
+        console.warn(`Gemini model [${model}] network exception:`, callErr);
+      }
     }
 
-    const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-
     if (!reply) {
-      return response.status(500).json({ error: 'No response generated by AI. Please try again.' });
+      console.error('All Gemini candidate models failed:', lastError);
+      return response.status(500).json({ error: lastError || 'AI Tutor was unable to generate a response. Please try again.' });
     }
 
     return response.status(200).json({
