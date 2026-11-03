@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useInView, useReducedMotion } from 'framer-motion';
 import { 
   Play, 
   GraduationCap,
@@ -23,6 +23,7 @@ import {
 import { useTheme } from '../hooks/useTheme';
 import { useAuth } from '../hooks/useAuth';
 import { trackEvent } from '../services/analytics';
+import { WobbleCard } from '../components/ui/wobble-card';
 
 /**
  * Vidyst-style squircle app tile for intentional editorial accents.
@@ -43,10 +44,58 @@ function BrandTile({ children, bg = 'bg-[#111111] dark:bg-white', text = 'text-w
   );
 }
 
+const GRADUAL_DELAY_STEP = 0.06;
+const GRADUAL_DURATION = 0.6;
+
+/**
+ * GradualSpacing character animator for editorial hero text and inline BrandTiles.
+ */
+function GradualChar({ char, index, isInView, reduceMotion, gradient = false }) {
+  return (
+    <motion.span
+      initial={reduceMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: -18 }}
+      animate={isInView ? { opacity: 1, x: 0 } : {}}
+      transition={
+        reduceMotion
+          ? { duration: 0 }
+          : { duration: GRADUAL_DURATION, delay: index * GRADUAL_DELAY_STEP, ease: [0.2, 0.65, 0.3, 0.9] }
+      }
+      className={`inline-block ${
+        gradient
+          ? 'bg-[linear-gradient(180deg,#111_0%,#111_30%,#9e9e9e_100%)] dark:bg-[linear-gradient(180deg,#fff_0%,#fff_30%,#666_100%)] bg-clip-text text-transparent pb-[.08em]'
+          : ''
+      }`}
+    >
+      {char === ' ' ? '\u00A0' : char}
+    </motion.span>
+  );
+}
+
+function GradualWord({ word, startIndex, isInView, reduceMotion, gradient = false }) {
+  return (
+    <span className="inline-block whitespace-nowrap">
+      {word.split('').map((char, i) => (
+        <GradualChar
+          key={i}
+          char={char}
+          index={startIndex + i}
+          isInView={isInView}
+          reduceMotion={reduceMotion}
+          gradient={gradient}
+        />
+      ))}
+    </span>
+  );
+}
+
 export default function LandingPage() {
   const { isDark, toggleTheme } = useTheme();
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  const heroRef = useRef(null);
+  const isHeroInView = useInView(heroRef, { once: true });
+  const shouldReduceMotion = useReducedMotion();
 
   const [viewMode, setViewMode] = useState('foclyra'); // 'foclyra' | 'youtube'
   const [isPlaying, setIsPlaying] = useState(true);
@@ -240,24 +289,80 @@ export default function LandingPage() {
           2. Hero Section - Fully responsive down to 320px
          ========================================================================= */}
       <section id="top" className="px-3.5 sm:px-6 pt-10 sm:pt-16 md:pt-22 text-center">
-        <h1 className="mx-auto max-w-[1080px] text-[clamp(23px,6.2vw,76px)] leading-[1.08] font-semibold tracking-[-0.045em] text-[#111111] dark:text-white">
+        <h1
+          ref={heroRef}
+          className="mx-auto max-w-[1080px] text-[clamp(23px,6.2vw,76px)] leading-[1.08] font-semibold tracking-[-0.045em] text-[#111111] dark:text-white"
+        >
           <span className="block">
-            Turn{' '}
-            <BrandTile bg="bg-[#FF0033]" text="text-white" rotate="-rotate-4" size="lg">
-              <Play className="size-[46%] fill-white text-white ml-[2%]" />
-            </BrandTile>
-            YouTube playlists
+            <GradualWord
+              word="Turn"
+              startIndex={0}
+              isInView={isHeroInView}
+              reduceMotion={shouldReduceMotion}
+            />{' '}
+            <motion.span
+              initial={shouldReduceMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: -18 }}
+              animate={isHeroInView ? { opacity: 1, x: 0 } : {}}
+              transition={
+                shouldReduceMotion
+                  ? { duration: 0 }
+                  : { duration: GRADUAL_DURATION, delay: 4 * GRADUAL_DELAY_STEP, ease: [0.2, 0.65, 0.3, 0.9] }
+              }
+              className="inline-block align-middle"
+            >
+              <BrandTile bg="bg-[#FF0033]" text="text-white" rotate="-rotate-4" size="lg">
+                <Play className="size-[46%] fill-white text-white ml-[2%]" />
+              </BrandTile>
+            </motion.span>{' '}
+            <GradualWord
+              word="YouTube"
+              startIndex={5}
+              isInView={isHeroInView}
+              reduceMotion={shouldReduceMotion}
+            />{' '}
+            <GradualWord
+              word="playlists"
+              startIndex={12}
+              isInView={isHeroInView}
+              reduceMotion={shouldReduceMotion}
+            />
           </span>
           <span className="block">
-            <span className="bg-[linear-gradient(180deg,#111_0%,#111_30%,#9e9e9e_100%)] dark:bg-[linear-gradient(180deg,#fff_0%,#fff_30%,#666_100%)] bg-clip-text pb-[.08em] text-transparent">
-              into{' '}
-            </span>
-            <BrandTile bg="bg-[#F5C542]" text="text-[#111111]" rotate="rotate-3" size="lg">
-              <GraduationCap className="size-[54%]" strokeWidth={2.2} />
-            </BrandTile>
-            <span className="bg-[linear-gradient(180deg,#111_0%,#111_30%,#9e9e9e_100%)] dark:bg-[linear-gradient(180deg,#fff_0%,#fff_30%,#666_100%)] bg-clip-text pb-[.08em] text-transparent">
-              structured courses.
-            </span>
+            <GradualWord
+              word="into"
+              startIndex={21}
+              isInView={isHeroInView}
+              reduceMotion={shouldReduceMotion}
+              gradient={true}
+            />{' '}
+            <motion.span
+              initial={shouldReduceMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: -18 }}
+              animate={isHeroInView ? { opacity: 1, x: 0 } : {}}
+              transition={
+                shouldReduceMotion
+                  ? { duration: 0 }
+                  : { duration: GRADUAL_DURATION, delay: 25 * GRADUAL_DELAY_STEP, ease: [0.2, 0.65, 0.3, 0.9] }
+              }
+              className="inline-block align-middle"
+            >
+              <BrandTile bg="bg-[#F5C542]" text="text-[#111111]" rotate="rotate-3" size="lg">
+                <GraduationCap className="size-[54%]" strokeWidth={2.2} />
+              </BrandTile>
+            </motion.span>{' '}
+            <GradualWord
+              word="structured"
+              startIndex={26}
+              isInView={isHeroInView}
+              reduceMotion={shouldReduceMotion}
+              gradient={true}
+            />{' '}
+            <GradualWord
+              word="courses."
+              startIndex={36}
+              isInView={isHeroInView}
+              reduceMotion={shouldReduceMotion}
+              gradient={true}
+            />
           </span>
         </h1>
 
@@ -592,7 +697,10 @@ export default function LandingPage() {
 
           <div className="mt-7 sm:mt-11 grid grid-cols-1 gap-3.5 sm:gap-4 md:grid-cols-2 lg:grid-cols-12">
             {/* Card 1: Clean Playlist & Video Player (7 cols) */}
-            <div className="lg:col-span-7 rounded-[20px] sm:rounded-[26px] bg-[#f4f4f4] dark:bg-zinc-900/90 p-4 sm:p-6 lg:p-8 flex flex-col justify-between min-h-0 sm:min-h-[240px]">
+            <WobbleCard
+              containerClassName="lg:col-span-7 rounded-[20px] sm:rounded-[26px] bg-[#f4f4f4] dark:bg-zinc-900/90 min-h-0 sm:min-h-[240px]"
+              className="p-4 sm:p-6 lg:p-8 flex flex-col justify-between h-full"
+            >
               <div className="space-y-2 sm:space-y-2.5 max-w-lg">
                 <div className="flex items-center gap-2.5 sm:gap-3">
                   <BrandTile bg="bg-[#FF0033]" text="text-white" rotate="-rotate-3">
@@ -621,10 +729,13 @@ export default function LandingPage() {
                   <span>Auto-resumes playback</span>
                 </span>
               </div>
-            </div>
+            </WobbleCard>
 
             {/* Card 2: Timestamped Notes (5 cols) */}
-            <div className="lg:col-span-5 rounded-[20px] sm:rounded-[26px] bg-[#f4f4f4] dark:bg-zinc-900/90 p-4 sm:p-6 lg:p-8 flex flex-col justify-between min-h-0 sm:min-h-[240px]">
+            <WobbleCard
+              containerClassName="lg:col-span-5 rounded-[20px] sm:rounded-[26px] bg-[#f4f4f4] dark:bg-zinc-900/90 min-h-0 sm:min-h-[240px]"
+              className="p-4 sm:p-6 lg:p-8 flex flex-col justify-between h-full"
+            >
               <div className="space-y-2 sm:space-y-2.5">
                 <div className="flex items-center gap-2.5 sm:gap-3">
                   <BrandTile bg="bg-[#F5C542]" text="text-[#111111]" rotate="rotate-3">
@@ -656,10 +767,13 @@ export default function LandingPage() {
                   Break down complex topics into small, manageable steps.
                 </p>
               </div>
-            </div>
+            </WobbleCard>
 
             {/* Card 3: Word (.docx) Export (5 cols) */}
-            <div className="lg:col-span-5 rounded-[20px] sm:rounded-[26px] bg-[#f4f4f4] dark:bg-zinc-900/90 p-4 sm:p-6 lg:p-8 flex flex-col justify-between min-h-0 sm:min-h-[240px]">
+            <WobbleCard
+              containerClassName="lg:col-span-5 rounded-[20px] sm:rounded-[26px] bg-[#f4f4f4] dark:bg-zinc-900/90 min-h-0 sm:min-h-[240px]"
+              className="p-4 sm:p-6 lg:p-8 flex flex-col justify-between h-full"
+            >
               <div className="space-y-2 sm:space-y-2.5">
                 <div className="flex items-center gap-2.5 sm:gap-3">
                   <BrandTile bg="bg-[#2563EB]" text="text-white" rotate="-rotate-2">
@@ -685,10 +799,13 @@ export default function LandingPage() {
                 </div>
                 <Download className="size-3.5 text-[#6f6f6f] shrink-0" />
               </div>
-            </div>
+            </WobbleCard>
 
             {/* Card 4: Pomodoro, Streak & Cloud Sync (7 cols) */}
-            <div className="lg:col-span-7 rounded-[20px] sm:rounded-[26px] bg-[#f4f4f4] dark:bg-zinc-900/90 p-4 sm:p-6 lg:p-8 flex flex-col justify-between min-h-0 sm:min-h-[240px]">
+            <WobbleCard
+              containerClassName="lg:col-span-7 rounded-[20px] sm:rounded-[26px] bg-[#f4f4f4] dark:bg-zinc-900/90 min-h-0 sm:min-h-[240px]"
+              className="p-4 sm:p-6 lg:p-8 flex flex-col justify-between h-full"
+            >
               <div className="space-y-2 sm:space-y-2.5 max-w-lg">
                 <div className="flex items-center gap-2.5 sm:gap-3">
                   <BrandTile bg="bg-[#FF6B2C]" text="text-white" rotate="rotate-2">
@@ -717,7 +834,7 @@ export default function LandingPage() {
                   <span>Automatic cloud sync</span>
                 </span>
               </div>
-            </div>
+            </WobbleCard>
           </div>
         </div>
       </section>
@@ -755,9 +872,10 @@ export default function LandingPage() {
                 desc: 'Mark lectures complete as you go and download your notes as a formatted Word (.docx) document anytime.'
               }
             ].map((item) => (
-              <div
+              <WobbleCard
                 key={item.step}
-                className="rounded-[20px] sm:rounded-[26px] bg-[#f4f4f4] dark:bg-zinc-900/90 p-4 sm:p-6 md:p-5 lg:p-7 flex flex-col justify-between min-h-0 sm:min-h-[205px]"
+                containerClassName="rounded-[20px] sm:rounded-[26px] bg-[#f4f4f4] dark:bg-zinc-900/90 min-h-0 sm:min-h-[205px]"
+                className="p-4 sm:p-6 md:p-5 lg:p-7 flex flex-col justify-between h-full"
               >
                 <div className="flex items-center justify-between">
                   <span className="text-[12px] sm:text-[13px] font-mono font-medium text-[#8d8d8d]">{item.step}</span>
@@ -773,7 +891,7 @@ export default function LandingPage() {
                     {item.desc}
                   </p>
                 </div>
-              </div>
+              </WobbleCard>
             ))}
           </div>
         </div>
@@ -783,10 +901,11 @@ export default function LandingPage() {
           6. FAQ Section - Split Editorial Layout (320px Responsive)
          ========================================================================= */}
       <section id="faq" className="px-3.5 sm:px-6 pt-14 sm:pt-22 lg:pt-32">
-        <div className="mx-auto max-w-[1200px] grid grid-cols-1 lg:grid-cols-12 gap-7 sm:gap-9 lg:gap-12 items-start">
-          {/* Left Sticky Editorial Column (5 cols) */}
-          <div className="lg:col-span-5 lg:sticky lg:top-28 space-y-2.5 sm:space-y-3.5">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#f4f4f4] dark:bg-zinc-900 text-[12px] sm:text-[13px] font-medium text-[#111111] dark:text-zinc-200">
+        <div className="mx-auto max-w-[1200px] grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+          {/* Left Sticky Header (5 cols) */}
+          <div className="lg:col-span-5 space-y-3.5 sm:space-y-4">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#f4f4f4] dark:bg-zinc-900 border border-[#e5e5e5] dark:border-zinc-800 text-[11.5px] sm:text-[12px] font-medium text-[#6f6f6f] dark:text-zinc-400">
+              <span className="size-1.5 rounded-full bg-[#111111] dark:bg-white" />
               <span>FAQ</span>
             </div>
 
