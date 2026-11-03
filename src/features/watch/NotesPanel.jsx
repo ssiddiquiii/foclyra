@@ -3,6 +3,7 @@ import { Check, Clock, Pencil, Trash2, X } from 'lucide-react';
 import Dialog from '../../components/ui/Dialog';
 import { formatSeconds } from './watchConstants';
 import { usePlayerTime } from './playerTimeStore';
+import { MarkdownView } from '../../components/MarkdownView';
 
 const DEFAULT_FALLBACK_STORE = {
   subscribe: () => () => {},
@@ -131,9 +132,9 @@ export function NotesPanel({ notes = [], noteState, onSeek, timeStore }) {
                   </div>
                 </form>
               ) : (
-                <p className="min-w-0 whitespace-pre-wrap break-words text-xs leading-relaxed text-zinc-700 dark:text-zinc-300">
-                  {note.content}
-                </p>
+                <div className="min-w-0 break-words text-xs leading-relaxed text-zinc-700 dark:text-zinc-300">
+                  <MarkdownView content={note.content} />
+                </div>
               )}
             </article>
           );

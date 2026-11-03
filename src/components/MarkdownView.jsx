@@ -27,3 +27,4 @@ export function MarkdownView({ content, className = '' }) {
     />
   );
 }
+
