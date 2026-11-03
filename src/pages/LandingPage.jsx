@@ -288,12 +288,12 @@ export default function LandingPage() {
       {/* =========================================================================
           2. Hero Section - Fully responsive down to 320px
          ========================================================================= */}
-      <section id="top" className="px-3.5 sm:px-6 pt-10 sm:pt-16 md:pt-22 text-center">
+      <section id="top" className="px-3.5 sm:px-6 pt-9 sm:pt-16 md:pt-22 text-center">
         <h1
           ref={heroRef}
-          className="mx-auto max-w-[1080px] text-[clamp(32px,7.8vw,76px)] leading-[1.12] sm:leading-[1.08] font-semibold tracking-[-0.03em] sm:tracking-[-0.045em] text-[#111111] dark:text-white"
+          className="mx-auto max-w-[1080px] text-[clamp(23px,6.2vw,76px)] leading-[1.12] sm:leading-[1.08] font-semibold tracking-[-0.035em] sm:tracking-[-0.045em] text-[#111111] dark:text-white"
         >
-          <span className="block">
+          <span className="block whitespace-nowrap">
             <GradualWord
               word="Turn"
               startIndex={0}
@@ -327,7 +327,7 @@ export default function LandingPage() {
               reduceMotion={shouldReduceMotion}
             />
           </span>
-          <span className="block">
+          <span className="block whitespace-nowrap mt-0.5 sm:mt-1">
             <GradualWord
               word="into"
               startIndex={21}
@@ -366,26 +366,27 @@ export default function LandingPage() {
           </span>
         </h1>
 
-        <div className="mx-auto mt-4 sm:mt-6 max-w-[620px] text-center space-y-2 sm:space-y-2.5">
-          <p className="text-[15.5px] sm:text-[18px] md:text-[20px] font-medium tracking-[-0.015em] text-[#222222] dark:text-zinc-200 leading-[1.4]">
-            Turn any YouTube playlist into an ad-free study studio.
+        {/* Two-tier clear hierarchy without duplicating the headline */}
+        <div className="mx-auto mt-3.5 sm:mt-5 max-w-[560px] text-center space-y-1 sm:space-y-1.5 px-1">
+          <p className="text-[13.5px] sm:text-[15.5px] md:text-[17px] font-medium text-[#222222] dark:text-zinc-200 leading-snug">
+            A distraction-free study workspace for YouTube.
           </p>
-          <p className="text-[13px] sm:text-[14.5px] md:text-[15.5px] text-[#666666] dark:text-zinc-400 leading-[1.6] max-w-[540px] mx-auto">
-            Watch without recommendation rabbit holes, take live timestamped notes, and export to Word (.docx).
+          <p className="text-[12px] sm:text-[13.5px] md:text-[14.5px] text-[#6f6f6f] dark:text-zinc-400 leading-relaxed">
+            Watch without recommendations, take timestamped notes, and export to Word (.docx).
           </p>
         </div>
 
-        <div className="relative mt-6 sm:mt-8 w-full inline-flex flex-col items-center">
+        <div className="relative mt-5 sm:mt-7 w-full inline-flex flex-col items-center">
           <button
             type="button"
             onClick={() => handleLaunchApp('hero_main_pill')}
-            className="inline-flex w-auto h-11 sm:h-12 md:h-12.5 items-center justify-center gap-2 sm:gap-2.5 rounded-full bg-[#111111] dark:bg-white px-6 sm:px-7 md:px-8 text-[14px] sm:text-[15px] md:text-[15.5px] font-medium text-white dark:text-[#111111] hover:bg-[#333333] dark:hover:bg-zinc-200 transition active:scale-[.98] cursor-pointer shadow-sm whitespace-nowrap"
+            className="inline-flex w-auto h-9.5 sm:h-11 md:h-12 items-center justify-center gap-2 rounded-full bg-[#111111] dark:bg-white px-5 sm:px-6 md:px-7 text-[13px] sm:text-[14.5px] md:text-[15px] font-medium text-white dark:text-[#111111] hover:bg-[#333333] dark:hover:bg-zinc-200 transition active:scale-[.98] cursor-pointer shadow-sm whitespace-nowrap"
           >
             <span>Import a Playlist Free</span>
-            <ArrowRight className="size-4 shrink-0" />
+            <ArrowRight className="size-3.5 sm:size-4 shrink-0" />
           </button>
 
-          <p className="mt-3 sm:mt-3.5 text-[12px] sm:text-[13px] md:text-[13.5px] text-[#6f6f6f] dark:text-zinc-500 text-center max-w-[320px] sm:max-w-none leading-relaxed">
+          <p className="mt-2.5 sm:mt-3 text-[11px] sm:text-[12.5px] md:text-[13px] text-[#6f6f6f] dark:text-zinc-500 text-center max-w-[320px] sm:max-w-none leading-relaxed">
             Try 1 playlist immediately without login • Up to 5 playlists with a free account
           </p>
         </div>
