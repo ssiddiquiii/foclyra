@@ -66,6 +66,7 @@ function AppContent() {
   const location = useLocation();
   const isWatchPage = location.pathname.includes('/lessons/');
   const isLandingPage = location.pathname === '/' || location.pathname === '/landing' || location.pathname === '/welcome';
+  const isResetPasswordPage = location.pathname === '/reset-password';
   const navigate = useNavigate();
   const reduceMotion = useReducedMotion();
   const visibleNavItems = useMemo(() => getNavigationItems(user), [user]);
@@ -165,6 +166,17 @@ function AppContent() {
         <AuthModal />
         <QuotaModal isOpen={quotaModalOpen} onClose={closeQuotaModal} data={quotaModalData} />
         <BetaModal />
+        <Toaster />
+      </div>
+    );
+  }
+
+  if (isResetPasswordPage) {
+    return (
+      <div className="min-h-screen bg-white dark:bg-[#0a0a0c] text-[#111111] dark:text-[#f5f5f7]">
+        <Suspense fallback={<FoclyraSplash />}>
+          <ResetPassword />
+        </Suspense>
         <Toaster />
       </div>
     );
