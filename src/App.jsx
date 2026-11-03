@@ -30,6 +30,7 @@ const CourseDetail = lazy(() => import('./pages/CourseDetail'));
 const Watch = lazy(() => import('./pages/Watch'));
 const Settings = lazy(() => import('./pages/Settings'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword'));
+const NotFound = lazy(() => import('./pages/NotFound'));
 
 const preloadDashboard = () => import('./pages/Dashboard');
 const FOCUSABLE_SELECTOR = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -490,7 +491,7 @@ function AppContent() {
                     <Route path="/courses/:courseId/lessons/:lessonId" element={<LearningRoute element={<Watch />} />} />
                     <Route path="/settings" element={<ProtectedRoute element={<Settings />} />} />
                     <Route path="/reset-password" element={<ResetPassword />} />
-                    <Route path="*" element={<Navigate to="/studio" replace />} />
+                    <Route path="*" element={<NotFound />} />
                   </Routes>
                 </motion.div>
               </AnimatePresence>
