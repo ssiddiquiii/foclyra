@@ -10,7 +10,7 @@ import { initAnalytics } from './services/analytics';
 
 const clerkPubKey =
   import.meta.env.VITE_CLERK_PUBLISHABLE_KEY ||
-  'pk_live_Y2xlcmsuZm9jbHlyYS1zdHVkaW8udmVyY2VsLmFwcCQ';
+  'pk_test_ZGVzdGluZWQtcGFycm90LTc5Mi5jbGVyay5hY2NvdW50cy5kZXYk';
 
 // Initialize PostHog Web Analytics
 initAnalytics();
