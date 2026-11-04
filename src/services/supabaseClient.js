@@ -15,15 +15,42 @@ export const isSupabaseConfigured = () => {
   );
 };
 
+let clerkTokenGetter = null;
+
+/**
+ * Dynamically register a Clerk token getter callback.
+ * Enables Supabase RLS requests to include Clerk's signed JWT.
+ */
+export function setClerkTokenGetter(getter) {
+  clerkTokenGetter = getter;
+}
+
 /**
  * Global Supabase Client instance (or null if not configured).
+ * Injects Clerk JWT into all request headers when authenticated.
  */
 export const supabase = isSupabaseConfigured()
   ? createClient(supabaseUrl, supabaseAnonKey, {
       auth: {
-        persistSession: true,
-        autoRefreshToken: true,
-        detectSessionInUrl: true
+        persistSession: false,
+        autoRefreshToken: false,
+      },
+      global: {
+        fetch: async (url, options = {}) => {
+          let token = null;
+          if (clerkTokenGetter) {
+            try {
+              token = await clerkTokenGetter();
+            } catch (err) {
+              console.warn('Failed to get Clerk JWT for Supabase:', err);
+            }
+          }
+          const headers = new Headers(options.headers);
+          if (token) {
+            headers.set('Authorization', `Bearer ${token}`);
+          }
+          return fetch(url, { ...options, headers });
+        }
       }
     })
   : null;

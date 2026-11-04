@@ -54,6 +54,15 @@ export const useAuth = create((set, get) => ({
   isConfigured: isSupabaseConfigured(),
 
   initAuth: async () => {
+    // If Clerk is configured, ClerkSupabaseSync manages auth state reactively
+    const isClerkConfigured = Boolean(
+      (typeof import.meta !== 'undefined' && import.meta.env?.VITE_CLERK_PUBLISHABLE_KEY) ||
+      (typeof process !== 'undefined' && process.env?.VITE_CLERK_PUBLISHABLE_KEY)
+    );
+    if (isClerkConfigured) {
+      return;
+    }
+
     if (!isSupabaseConfigured() || !supabase) {
       set({ 
         isLoading: false, 
@@ -246,15 +255,22 @@ export const useAuth = create((set, get) => ({
   },
 
   signOut: async () => {
-    if (!supabase) return;
     cleanupRealtime();
     await flushPendingProgressSync().catch(() => {});
     trackEvent('user_signed_out');
     resetUser();
-    try {
-      await supabase.auth.signOut();
-    } catch (err) {
-      console.warn('Sign out warning:', err);
+    if (typeof window !== 'undefined' && window.Clerk) {
+      try {
+        await window.Clerk.signOut();
+      } catch (err) {
+        console.warn('Clerk sign out error:', err);
+      }
+    } else if (supabase) {
+      try {
+        await supabase.auth.signOut();
+      } catch (err) {
+        console.warn('Sign out warning:', err);
+      }
     }
 
     localStorage.removeItem(ACTIVE_USER_STORAGE_KEY);

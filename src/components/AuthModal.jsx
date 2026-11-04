@@ -44,7 +44,8 @@ export default function AuthModal({ isOpen: propIsOpen, onClose: propOnClose, co
     }
   }, [isOpen, context]);
 
-  if (!isOpen) return null;
+  const isClerkActive = Boolean(import.meta.env?.VITE_CLERK_PUBLISHABLE_KEY);
+  if (isClerkActive || !isOpen) return null;
 
   const handleGoogleSignIn = async () => {
     if (!isConfigured) {
