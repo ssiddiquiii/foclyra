@@ -1,16 +1,16 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  Sparkle, 
-  ArrowUp, 
+  MessageSquare, 
+  SquarePen, 
+  X, 
+  Send, 
+  Loader2, 
   Check, 
   Copy, 
   BookmarkPlus, 
-  RotateCcw, 
-  FileText,
   AlertCircle,
-  ExternalLink,
-  Lightbulb
+  ExternalLink 
 } from 'lucide-react';
 import { 
   createNote, 
@@ -48,7 +48,8 @@ export function AITutorPanel({
   lessonTitle = 'Lecture',
   description = '',
   getCurrentTime,
-  onSeek
+  onSeek,
+  onClose
 }) {
   const navigate = useNavigate();
 
@@ -112,7 +113,7 @@ export function AITutorPanel({
     return () => clearInterval(interval);
   }, []);
 
-  // 5. Smooth auto-scroll to bottom
+  // 4. Smooth auto-scroll to bottom
   useEffect(() => {
     if (chatScrollRef.current) {
       chatScrollRef.current.scrollTo({
@@ -205,7 +206,7 @@ export function AITutorPanel({
       consumeAiQuota();
       setQuotaStatus(getAiQuotaStatus());
 
-      // Ultra-smooth, non-robotic progressive stream
+      // Progressive stream
       const fullReply = data.reply || '';
       const replyMessageId = `bot_${Date.now()}`;
 
@@ -219,7 +220,7 @@ export function AITutorPanel({
 
       setMessages((prev) => [...prev, botMessagePlaceholder]);
 
-      // Stream words smoothly in natural continuous flow
+      // Stream words smoothly in continuous flow
       const words = fullReply.split(' ');
       let wordIdx = 0;
       let revealed = '';
@@ -305,96 +306,79 @@ export function AITutorPanel({
     setErrorMsg(null);
     await clearLessonChat(courseId, lessonId);
     toast.add({
-      title: 'Chat Cleared',
-      description: 'Conversation for this lecture has been reset.',
+      title: 'Chat Reset',
+      description: 'Conversation for this chapter has been cleared.',
       type: 'info',
       timeout: 2000
     });
   };
 
-  const currentSeconds = typeof getCurrentTime === 'function' ? getCurrentTime() : 0;
-  const currentFormatted = formatSeconds(currentSeconds);
-
   return (
     <div className="flex flex-col h-full bg-transparent overflow-hidden">
-      {/* 1. Sleek Top Bar with Grounding Badge, Quota Capsule & Clear */}
-      <div className="flex items-center justify-between pb-2 mb-2 border-b border-zinc-200/80 dark:border-zinc-800/80 text-[11px] shrink-0 gap-2">
-        <div className="flex items-center gap-1.5 font-medium text-zinc-600 dark:text-zinc-400 min-w-0">
-          <span className="size-1.5 rounded-full bg-emerald-500 shrink-0" />
-          <span className="truncate">Lesson Context</span>
+      {/* 1. Minimal Header: Chat icon + AI chat on left, New Chat pencil & Close on right */}
+      <div className="flex items-center justify-between pb-3 mb-1 border-b border-zinc-200/60 dark:border-zinc-800/80 shrink-0">
+        <div className="flex items-center gap-2">
+          <MessageSquare size={16} className="text-zinc-800 dark:text-zinc-200" strokeWidth={1.9} />
+          <span className="font-semibold text-sm text-zinc-900 dark:text-zinc-100 tracking-tight">AI chat</span>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
-          {/* Quota Capsule */}
-          {quotaStatus.isUnlimited ? (
-            <span 
-              className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20" 
-              title="Unlimited questions enabled via personal API key"
-            >
-              <Sparkle size={9} />
-              <span>Unlimited</span>
-            </span>
-          ) : (
-            <span
-              className="inline-flex items-center gap-1.5 text-[10px] sm:text-[10.5px] font-medium text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800/80 px-2 py-0.5 rounded-full border border-zinc-200/60 dark:border-zinc-700/60 font-mono shadow-2xs"
-              title={`Daily study quota: ${quotaStatus.remaining} of ${quotaStatus.max} doubts left. Resets in ${quotaStatus.resetCountdown}.`}
-            >
-              <span className={`size-1.5 rounded-full ${quotaStatus.remaining > 5 ? 'bg-emerald-500' : quotaStatus.remaining > 0 ? 'bg-amber-500' : 'bg-rose-500 animate-pulse'}`} />
-              <span>{quotaStatus.remaining}/30 left</span>
-            </span>
-          )}
-
-          {messages.length > 0 && (
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={handleClearHistory}
+            className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer"
+            title="New chat"
+            aria-label="New chat"
+          >
+            <SquarePen size={15} />
+          </button>
+          {onClose && (
             <button
               type="button"
-              onClick={handleClearHistory}
-              className="text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 flex items-center gap-1 text-[10.5px] transition cursor-pointer"
-              title="Clear Chapter Chat"
+              onClick={onClose}
+              className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer"
+              title="Close chat"
+              aria-label="Close chat"
             >
-              <RotateCcw size={10} />
-              <span>Clear</span>
+              <X size={15} />
             </button>
           )}
         </div>
       </div>
 
-      {/* 2. Pinned Quick Prompt Chips */}
-      <div className="flex items-center gap-1.5 pb-2 mb-1 shrink-0 overflow-x-auto no-scrollbar">
-        <button
-          type="button"
-          onClick={() => handleSendMessage('Explain what is being taught right now in clear, simple language with an analogy.')}
-          disabled={isLoading || (!quotaStatus.isUnlimited && quotaStatus.remaining === 0)}
-          className="h-7 px-3 rounded-full border border-zinc-200/80 dark:border-zinc-800/80 bg-white/80 dark:bg-zinc-900/60 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-[11px] font-medium text-zinc-700 dark:text-zinc-300 transition flex items-center gap-1.5 cursor-pointer shadow-2xs shrink-0 group disabled:opacity-50"
-        >
-          <Lightbulb size={11} className="text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors" />
-          <span>Explain Concept</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => handleSendMessage('Summarize the top 3 critical takeaways and concepts from this topic so far in bullet points.')}
-          disabled={isLoading || (!quotaStatus.isUnlimited && quotaStatus.remaining === 0)}
-          className="h-7 px-3 rounded-full border border-zinc-200/80 dark:border-zinc-800/80 bg-white/80 dark:bg-zinc-900/60 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-[11px] font-medium text-zinc-700 dark:text-zinc-300 transition flex items-center gap-1.5 cursor-pointer shadow-2xs shrink-0 group disabled:opacity-50"
-        >
-          <FileText size={11} className="text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors" />
-          <span>Key Takeaways</span>
-        </button>
-      </div>
-
-      {/* 3. Real Chat Messages Stream */}
-      <div ref={chatScrollRef} className="flex-1 overflow-y-auto space-y-4 pr-1 py-2 text-xs">
+      {/* 2. Messages Canvas */}
+      <div ref={chatScrollRef} className="flex-1 overflow-y-auto space-y-4 pr-1 py-3 text-xs sm:text-[13px]">
         {messages.length === 0 && !isInitializing ? (
           <div className="h-full flex flex-col items-center justify-center text-center p-4 space-y-3">
-            <div className="size-9 rounded-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700/80 flex items-center justify-center text-zinc-700 dark:text-zinc-300 shadow-2xs">
-              <Sparkle size={14} />
+            <div className="size-9 rounded-2xl bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200/60 dark:border-zinc-700/60 flex items-center justify-center text-zinc-700 dark:text-zinc-300 shadow-2xs">
+              <MessageSquare size={15} />
             </div>
             <div className="space-y-1">
-              <h3 className="font-semibold text-zinc-900 dark:text-zinc-100 text-xs">
-                In-Context Study Assistant
+              <h3 className="font-medium text-zinc-900 dark:text-zinc-100 text-xs sm:text-sm">
+                Ask about this chapter
               </h3>
               <p className="text-zinc-500 dark:text-zinc-400 text-[11px] leading-relaxed max-w-[220px]">
-                Ask any question or tap a prompt chip above. Explanations are saved permanently to this lecture.
+                Ask questions or clear doubts. Answers are saved locally to this lecture.
               </p>
+            </div>
+
+            <div className="flex flex-wrap gap-1.5 justify-center pt-1">
+              <button
+                type="button"
+                onClick={() => handleSendMessage('Explain what is being taught in simple terms with a clear analogy.')}
+                disabled={isLoading || (!quotaStatus.isUnlimited && quotaStatus.remaining === 0)}
+                className="px-2.5 py-1 rounded-full border border-zinc-200/80 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/70 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-[11px] text-zinc-600 dark:text-zinc-400 transition cursor-pointer shadow-2xs"
+              >
+                💡 Explain Concept
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSendMessage('Summarize the top critical takeaways from this topic.')}
+                disabled={isLoading || (!quotaStatus.isUnlimited && quotaStatus.remaining === 0)}
+                className="px-2.5 py-1 rounded-full border border-zinc-200/80 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/70 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-[11px] text-zinc-600 dark:text-zinc-400 transition cursor-pointer shadow-2xs"
+              >
+                📝 Key Takeaways
+              </button>
             </div>
           </div>
         ) : (
@@ -403,55 +387,47 @@ export function AITutorPanel({
             return (
               <div
                 key={m.id || idx}
-                className={`flex flex-col space-y-1 ${isUser ? 'items-end' : 'items-start'}`}
+                className={`flex flex-col ${isUser ? 'items-end' : 'items-start'}`}
               >
-                {/* Message Bubble - Clean without timestamp clutter */}
                 {isUser ? (
-                  <div className="flex flex-col items-end max-w-[85%]">
-                    <div className="bg-zinc-950 text-white dark:bg-zinc-100 dark:text-zinc-950 rounded-2xl rounded-br-xs px-3.5 py-2 text-xs font-normal shadow-xs leading-relaxed">
-                      {m.content}
-                    </div>
+                  /* User Bubble: Dark rounded pill, right-aligned, 0 timestamps */
+                  <div className="max-w-[85%] rounded-2xl px-4 py-2.5 text-xs sm:text-[13px] bg-zinc-800 text-zinc-100 dark:bg-zinc-800 dark:text-zinc-100 leading-relaxed shadow-2xs font-normal">
+                    {m.content}
                   </div>
                 ) : (
-                  <div className="flex flex-col items-start space-y-1.5 max-w-[95%] w-full">
-                    {/* Header line - Minimal Sparkle icon & Label */}
-                    <div className="flex items-center gap-1.5 text-[11px] font-medium text-zinc-500 dark:text-zinc-400 px-1">
-                      <Sparkle size={11} className="text-zinc-900 dark:text-zinc-100 shrink-0" />
-                      <span className="font-semibold text-zinc-900 dark:text-zinc-100">AI Tutor</span>
-                    </div>
-
-                    {/* Formatted Markdown Content */}
-                    <div className="bg-zinc-100/90 dark:bg-zinc-900/80 border border-zinc-200/70 dark:border-zinc-800/70 rounded-2xl rounded-tl-xs px-4 py-3 shadow-2xs w-full">
+                  /* AI Answer: Borderless text directly on the canvas, clean markdown */
+                  <div className="flex flex-col items-start w-full group py-0.5">
+                    <div className="w-full text-zinc-800 dark:text-zinc-200 text-xs sm:text-[13px] leading-relaxed">
                       <MarkdownView content={m.content} />
-
-                      {/* Action Toolbar (disabled while streaming) */}
-                      {!m.isStreaming && (
-                        <div className="flex items-center gap-2 mt-3 pt-2.5 border-t border-zinc-200/60 dark:border-zinc-800/60 animate-fadeIn">
-                          <button
-                            type="button"
-                            onClick={() => handleAddToNotes(m.content, m.rawSeconds, idx)}
-                            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10.5px] font-medium transition cursor-pointer ${
-                              addedNoteIndex === idx
-                                ? 'bg-emerald-500 text-white shadow-2xs'
-                                : 'bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200/80 dark:border-zinc-700/80 hover:bg-zinc-50 dark:hover:bg-zinc-700 shadow-2xs'
-                            }`}
-                            title="Save this answer directly into your timestamped Notes"
-                          >
-                            {addedNoteIndex === idx ? <Check size={10} /> : <BookmarkPlus size={10} />}
-                            <span>{addedNoteIndex === idx ? 'Saved to Notes!' : '+ Add to Notes'}</span>
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={() => handleCopyText(m.content, idx)}
-                            className="p-1 rounded-full text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-200/60 dark:hover:bg-zinc-800 transition cursor-pointer"
-                            title="Copy response"
-                          >
-                            {copiedIndex === idx ? <Check size={11} className="text-emerald-500" /> : <Copy size={11} />}
-                          </button>
-                        </div>
-                      )}
                     </div>
+
+                    {/* Subtle action buttons on hover */}
+                    {!m.isStreaming && m.content && (
+                      <div className="flex items-center gap-1.5 mt-2 opacity-40 group-hover:opacity-100 transition-opacity">
+                        <button
+                          type="button"
+                          onClick={() => handleAddToNotes(m.content, m.rawSeconds, idx)}
+                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium transition cursor-pointer ${
+                            addedNoteIndex === idx
+                              ? 'bg-emerald-500 text-white'
+                              : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800'
+                          }`}
+                          title="Save answer to notes"
+                        >
+                          {addedNoteIndex === idx ? <Check size={10} /> : <BookmarkPlus size={10} />}
+                          <span>{addedNoteIndex === idx ? 'Saved' : 'Add to notes'}</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleCopyText(m.content, idx)}
+                          className="p-1 rounded text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer"
+                          title="Copy response"
+                        >
+                          {copiedIndex === idx ? <Check size={11} className="text-emerald-500" /> : <Copy size={11} />}
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -459,28 +435,16 @@ export function AITutorPanel({
           })
         )}
 
-        {/* Loading / Minimal Organic Apple-Style Thinking State */}
+        {/* 3. Silent Spinning Loader: ONLY loader spins when waiting, zero robotic text */}
         {isLoading && (
-          <div className="flex items-start gap-2 pt-1 animate-fadeIn">
-            <div className="px-3.5 py-2.5 rounded-2xl rounded-tl-xs bg-zinc-100 dark:bg-zinc-900/90 border border-zinc-200/70 dark:border-zinc-800/70 text-zinc-500 dark:text-zinc-400 text-xs flex items-center gap-2.5 shadow-2xs">
-              <div className="flex gap-1 items-center">
-                <span className="size-1.5 rounded-full bg-zinc-500 dark:bg-zinc-400 animate-pulse" />
-                <span className="size-1.5 rounded-full bg-zinc-400 dark:bg-zinc-500 animate-pulse" style={{ animationDelay: '200ms' }} />
-                <span className="size-1.5 rounded-full bg-zinc-300 dark:bg-zinc-600 animate-pulse" style={{ animationDelay: '400ms' }} />
-              </div>
-              <span className="text-[11.5px] font-medium text-zinc-600 dark:text-zinc-300">
-                Thinking...
-              </span>
-            </div>
+          <div className="flex items-center pl-1 py-1 animate-fadeIn">
+            <Loader2 className="size-4 animate-spin text-zinc-400 dark:text-zinc-500" />
           </div>
         )}
 
         {/* Quota Exhausted Card */}
         {!quotaStatus.isUnlimited && quotaStatus.remaining === 0 && (
           <div className="p-3.5 rounded-2xl bg-zinc-100/90 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 text-center space-y-2 shadow-2xs animate-fadeIn">
-            <div className="size-7 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 mx-auto flex items-center justify-center">
-              <Sparkle size={13} />
-            </div>
             <div className="space-y-0.5">
               <h4 className="text-[11.5px] font-semibold text-zinc-900 dark:text-zinc-100">
                 Daily Study Limit Reached (30/30)
@@ -507,52 +471,63 @@ export function AITutorPanel({
               <AlertCircle size={13} className="text-amber-500 shrink-0 mt-0.5" />
               <span className="leading-snug">{errorMsg}</span>
             </div>
-            {errorMsg.toLowerCase().includes('gemini') && (
-              <div className="pt-1">
-                <button
-                  type="button"
-                  onClick={() => navigate('/settings')}
-                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 text-[10.5px] font-medium transition hover:opacity-90 cursor-pointer shadow-2xs"
-                >
-                  <span>Open Settings to Add Key</span>
-                  <ExternalLink size={9} />
-                </button>
-              </div>
-            )}
           </div>
         )}
       </div>
 
-      {/* 4. Modern Real-Time Chat Input Bar */}
+      {/* 4. Input Box & Bottom Quota Info: Exactly like reference image */}
       <form
         onSubmit={(e) => {
           e.preventDefault();
           handleSendMessage();
         }}
-        className="pt-2 mt-1 border-t border-zinc-200/80 dark:border-zinc-800/80 shrink-0"
+        className="pt-2 shrink-0 space-y-1.5"
       >
-        <div className="relative flex items-center h-10 rounded-full border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900 shadow-2xs focus-within:ring-1 focus-within:ring-zinc-950 dark:focus-within:ring-white transition pl-3.5 pr-1.5">
-          <input
-            ref={inputRef}
-            type="text"
-            value={inputPrompt}
-            onChange={(e) => setInputPrompt(e.target.value)}
-            disabled={isLoading || (!quotaStatus.isUnlimited && quotaStatus.remaining === 0)}
-            placeholder={
-              !quotaStatus.isUnlimited && quotaStatus.remaining === 0
-                ? `Daily limit reached (resets in ${quotaStatus.resetCountdown})...`
-                : `Ask a question about this lecture...`
-            }
-            className="flex-1 bg-transparent text-xs text-zinc-950 dark:text-zinc-50 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none disabled:opacity-50"
-          />
+        <div className="flex items-center gap-2">
+          <div className="flex-1 rounded-xl border border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900/90 shadow-2xs focus-within:border-zinc-400 dark:focus-within:border-zinc-700 transition px-3.5 py-2.5">
+            <input
+              ref={inputRef}
+              type="text"
+              value={inputPrompt}
+              onChange={(e) => setInputPrompt(e.target.value)}
+              disabled={isLoading || (!quotaStatus.isUnlimited && quotaStatus.remaining === 0)}
+              placeholder={
+                !quotaStatus.isUnlimited && quotaStatus.remaining === 0
+                  ? `Daily limit reached (resets at midnight)...`
+                  : `Ask about this chapter`
+              }
+              className="w-full bg-transparent text-xs sm:text-[13px] text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none disabled:opacity-50"
+            />
+          </div>
+
           <button
             type="submit"
             disabled={isLoading || !inputPrompt.trim() || (!quotaStatus.isUnlimited && quotaStatus.remaining === 0)}
-            className="size-7 rounded-full bg-zinc-950 hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 text-white flex items-center justify-center transition disabled:opacity-20 disabled:pointer-events-none cursor-pointer shadow-xs active:scale-95 shrink-0"
-            aria-label="Send message to AI Tutor"
+            className="size-11 rounded-xl bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 flex items-center justify-center transition disabled:opacity-30 disabled:pointer-events-none cursor-pointer shrink-0 shadow-2xs active:scale-95"
+            aria-label="Send message"
           >
-            <ArrowUp size={13} strokeWidth={2.5} />
+            <Send size={15} />
           </button>
+        </div>
+
+        {/* Info directly underneath input */}
+        <div className="flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400 px-0.5">
+          <span>
+            {quotaStatus.isUnlimited ? (
+              'Unlimited doubts enabled · Saved to this lecture'
+            ) : (
+              `${quotaStatus.remaining} of 30 doubts left today, resets at midnight · Saved to this lecture`
+            )}
+          </span>
+          {!quotaStatus.isUnlimited && quotaStatus.remaining <= 5 && (
+            <button
+              type="button"
+              onClick={() => navigate('/settings')}
+              className="hover:underline text-zinc-600 dark:text-zinc-300 cursor-pointer"
+            >
+              Settings
+            </button>
+          )}
         </div>
       </form>
     </div>

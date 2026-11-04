@@ -218,6 +218,7 @@ export function DesktopWatchWorkspace(props) {
                 description={description}
                 getCurrentTime={getCurrentTime}
                 onSeek={onSeek}
+                onClose={() => setDesktopTab('lectures')}
               />
             )}
           </motion.div>
@@ -332,6 +333,7 @@ export function MobileWatchWorkspace(props) {
                 description={description}
                 getCurrentTime={getCurrentTime}
                 onSeek={onSeek}
+                onClose={() => onTabChange('lectures')}
               />
             </div>
           )}
