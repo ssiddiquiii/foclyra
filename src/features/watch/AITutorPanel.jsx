@@ -142,6 +142,12 @@ export function AITutorPanel({
     const textToSend = (promptText || inputPrompt).trim();
     if (!textToSend || isLoading) return;
 
+    // Character limit check (1,500 chars max)
+    if (textToSend.length > 1500) {
+      setErrorMsg('Question exceeds maximum length of 1,500 characters. Please ask a more concise question.');
+      return;
+    }
+
     // Check Quota before dispatching
     const liveQuota = getAiQuotaStatus();
     if (!liveQuota.canAsk) {
@@ -156,8 +162,9 @@ export function AITutorPanel({
     const rawTime = typeof getCurrentTime === 'function' ? getCurrentTime() : 0;
     const formatted = formatSeconds(rawTime);
 
+    const userMessageId = `usr_${Date.now()}`;
     const userMessage = {
-      id: `usr_${Date.now()}`,
+      id: userMessageId,
       role: 'user',
       content: textToSend,
       timestamp: formatted,
@@ -172,7 +179,10 @@ export function AITutorPanel({
 
       const res = await fetch('/api/ai-tutor', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-foclyra-client': 'web-studio'
+        },
         body: JSON.stringify({
           message: textToSend,
           courseTitle,
@@ -180,7 +190,7 @@ export function AITutorPanel({
           description,
           currentTime: rawTime,
           formattedTime: formatted,
-          history: messages.slice(-8),
+          history: messages.slice(-6),
           customApiKey
         })
       });
@@ -194,7 +204,17 @@ export function AITutorPanel({
       }
 
       if (!res.ok || !data.success) {
-        throw new Error(data.error || 'AI Tutor was unable to generate a response.');
+        // Rollback un-answered user message on server security rejection or rate-limit
+        setMessages((prev) => prev.filter((m) => m.id !== userMessageId));
+
+        if (res.status === 429 && data.error?.toLowerCase().includes('daily')) {
+          setQuotaStatus((prev) => ({ ...prev, remaining: 0, canAsk: false }));
+        }
+
+        const formattedErr = data.blockedByGuardrail 
+          ? `🛡️ Guardrail Alert: ${data.error}` 
+          : (data.error || 'AI Tutor was unable to generate a response.');
+        throw new Error(formattedErr);
       }
 
       // Consume quota point successfully
