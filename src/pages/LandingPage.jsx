@@ -1081,9 +1081,25 @@ export default function LandingPage() {
           </div>
 
           {/* Bottom Copyright & Social Bar */}
-          <div className="pt-5 sm:pt-6 border-t border-[#efefef] dark:border-zinc-800/70 flex flex-col sm:flex-row items-center justify-between gap-3 text-[12px] sm:text-[13px] text-[#6f6f6f] dark:text-zinc-400 text-center sm:text-left">
-            <div>
-              © {new Date().getFullYear()} Foclyra. All rights reserved.
+          <div className="pt-5 sm:pt-6 border-t border-[#efefef] dark:border-zinc-800/70 flex flex-col sm:flex-row items-center justify-between gap-4 text-[12px] sm:text-[13px] text-[#6f6f6f] dark:text-zinc-400 text-center sm:text-left">
+            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
+              <span>© {new Date().getFullYear()} Foclyra. All rights reserved.</span>
+              <span className="hidden sm:inline text-zinc-300 dark:text-zinc-700">•</span>
+              <div className="flex items-center gap-3 font-medium">
+                <Link
+                  to="/privacy"
+                  className="hover:text-[#111111] dark:hover:text-white transition-colors underline-offset-4 hover:underline"
+                >
+                  Privacy Policy
+                </Link>
+                <span className="text-zinc-300 dark:text-zinc-700">•</span>
+                <Link
+                  to="/terms"
+                  className="hover:text-[#111111] dark:hover:text-white transition-colors underline-offset-4 hover:underline"
+                >
+                  Terms of Service
+                </Link>
+              </div>
             </div>
 
             <div ref={githubRef} className="flex items-center gap-2 shrink-0">

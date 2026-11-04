@@ -31,6 +31,8 @@ const Watch = lazy(() => import('./pages/Watch'));
 const Settings = lazy(() => import('./pages/Settings'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 const NotFound = lazy(() => import('./pages/NotFound'));
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
+const TermsOfService = lazy(() => import('./pages/TermsOfService'));
 
 const preloadDashboard = () => import('./pages/Dashboard');
 const FOCUSABLE_SELECTOR = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -68,6 +70,7 @@ function AppContent() {
   const isWatchPage = location.pathname.includes('/lessons/');
   const isLandingPage = location.pathname === '/' || location.pathname === '/landing' || location.pathname === '/welcome';
   const isResetPasswordPage = location.pathname === '/reset-password';
+  const isLegalPage = location.pathname === '/privacy' || location.pathname === '/terms';
   const navigate = useNavigate();
   const reduceMotion = useReducedMotion();
   const visibleNavItems = useMemo(() => getNavigationItems(user), [user]);
@@ -177,6 +180,20 @@ function AppContent() {
       <div className="min-h-screen bg-white dark:bg-[#0a0a0c] text-[#111111] dark:text-[#f5f5f7]">
         <Suspense fallback={<FoclyraSplash />}>
           <ResetPassword />
+        </Suspense>
+        <Toaster />
+      </div>
+    );
+  }
+
+  if (isLegalPage) {
+    return (
+      <div className="min-h-screen bg-white dark:bg-[#0a0a0c] text-[#111111] dark:text-[#f5f5f7]">
+        <Suspense fallback={<FoclyraSplash />}>
+          <Routes>
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/terms" element={<TermsOfService />} />
+          </Routes>
         </Suspense>
         <Toaster />
       </div>
@@ -491,6 +508,8 @@ function AppContent() {
                     <Route path="/courses/:courseId/lessons/:lessonId" element={<LearningRoute element={<Watch />} />} />
                     <Route path="/settings" element={<ProtectedRoute element={<Settings />} />} />
                     <Route path="/reset-password" element={<ResetPassword />} />
+                    <Route path="/privacy" element={<PrivacyPolicy />} />
+                    <Route path="/terms" element={<TermsOfService />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </motion.div>
@@ -499,9 +518,14 @@ function AppContent() {
           </ErrorBoundary>
         </div>
 
-        {/* Minimal Studio Footer — Centered Shaded Foclyra Watermark Only */}
+        {/* Minimal Studio Footer */}
         {!location.pathname.includes('/lessons/') && (
-          <footer className="mt-10 mb-6 py-4 w-full flex items-center justify-center px-3.5 select-none overflow-hidden">
+          <footer className="mt-10 mb-6 py-4 w-full flex flex-col items-center justify-center gap-2.5 px-3.5 select-none overflow-hidden text-xs text-zinc-400">
+            <div className="flex items-center gap-3">
+              <Link to="/privacy" className="hover:text-zinc-700 dark:hover:text-zinc-200 transition">Privacy Policy</Link>
+              <span>•</span>
+              <Link to="/terms" className="hover:text-zinc-700 dark:hover:text-zinc-200 transition">Terms of Service</Link>
+            </div>
             <div aria-hidden="true" className="flex items-center justify-center pointer-events-none select-none">
               <span className="block text-[clamp(36px,7vw,58px)] leading-[0.85] font-semibold tracking-[-0.055em] bg-[linear-gradient(180deg,#e4e4e9_0%,#f2f2f5_62%,rgba(255,255,255,0.05)_100%)] dark:bg-[linear-gradient(180deg,#242429_0%,#16161a_62%,rgba(10,10,12,0.05)_100%)] bg-clip-text text-transparent">
                 foclyra
