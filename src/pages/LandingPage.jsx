@@ -338,6 +338,13 @@ export default function LandingPage() {
               isInView={isHeroInView}
               reduceMotion={shouldReduceMotion}
               gradient={false}
+            />{' '}
+            <GradualWord
+              word="AI-powered"
+              startIndex={26}
+              isInView={isHeroInView}
+              reduceMotion={shouldReduceMotion}
+              gradient={false}
             />
             <motion.span
               initial={shouldReduceMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: -18 }}
@@ -345,7 +352,7 @@ export default function LandingPage() {
               transition={
                 shouldReduceMotion
                   ? { duration: 0 }
-                  : { duration: GRADUAL_DURATION, delay: 25 * GRADUAL_DELAY_STEP, ease: [0.2, 0.65, 0.3, 0.9] }
+                  : { duration: GRADUAL_DURATION, delay: 37 * GRADUAL_DELAY_STEP, ease: [0.2, 0.65, 0.3, 0.9] }
               }
               className="inline-block align-middle"
             >
@@ -354,15 +361,8 @@ export default function LandingPage() {
               </BrandTile>
             </motion.span>
             <GradualWord
-              word="structured"
-              startIndex={26}
-              isInView={isHeroInView}
-              reduceMotion={shouldReduceMotion}
-              gradient={false}
-            />{' '}
-            <GradualWord
               word="courses."
-              startIndex={36}
+              startIndex={38}
               isInView={isHeroInView}
               reduceMotion={shouldReduceMotion}
               gradient={false}
@@ -371,8 +371,8 @@ export default function LandingPage() {
         </h1>
 
         {/* Seamless Subtitle: Balanced scale, no orphan line wrap */}
-        <p className="mx-auto mt-4 sm:mt-5.5 max-w-[680px] text-[14px] sm:text-[16.5px] md:text-[18px] text-[#555555] dark:text-zinc-400 leading-[1.6] font-normal px-2">
-          Watch without recommendations, ask the in-context AI tutor, take timestamped notes, and export cleanly to Word (.docx).
+        <p className="mx-auto mt-4 sm:mt-5.5 max-w-[700px] text-[14px] sm:text-[16.5px] md:text-[18px] text-[#555555] dark:text-zinc-400 leading-[1.6] font-normal px-2">
+          Import any YouTube playlist into a distraction-free study workspace. Solve doubts at any video timestamp with an in-context AI tutor, take live notes, and export cleanly to Word (.docx).
         </p>
 
         {/* Confident Apple-Grade CTA & Trust Signal */}
@@ -657,7 +657,7 @@ export default function LandingPage() {
                       </div>
 
                       <span className="text-[10.5px] sm:text-[11px] text-[#888888] dark:text-zinc-500 font-mono whitespace-nowrap">
-                        {previewTab === 'notes' ? 'Auto-synced' : '30 doubts/day'}
+                        {previewTab === 'notes' ? 'Auto-synced' : 'In-Context AI'}
                       </span>
                     </div>
 
@@ -880,7 +880,7 @@ export default function LandingPage() {
               <div className="mt-4 sm:mt-6 flex flex-wrap items-center gap-1.5 sm:gap-2">
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-white dark:bg-zinc-800 text-[11.5px] sm:text-[12.5px] font-medium text-[#111111] dark:text-zinc-200 whitespace-nowrap">
                   <Sparkle className="size-3 sm:size-3.5 text-emerald-500 shrink-0" />
-                  <span>30 free questions / day</span>
+                  <span>Grounded in Lecture</span>
                 </span>
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-white dark:bg-zinc-800 text-[11.5px] sm:text-[12.5px] font-medium text-[#111111] dark:text-zinc-200 whitespace-nowrap">
                   <CheckCircle2 className="size-3 sm:size-3.5 text-emerald-500 shrink-0" />
