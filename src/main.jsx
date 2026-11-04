@@ -8,7 +8,9 @@ import '@fontsource-variable/geist';
 import './index.css'
 import { initAnalytics } from './services/analytics';
 
-const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY || '';
+const clerkPubKey =
+  import.meta.env.VITE_CLERK_PUBLISHABLE_KEY ||
+  'pk_live_Y2xlcmsuZm9jbHlyYS1zdHVkaW8udmVyY2VsLmFwcCQ';
 
 // Initialize PostHog Web Analytics
 initAnalytics();
