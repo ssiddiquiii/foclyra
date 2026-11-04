@@ -4,6 +4,9 @@ import { motion, AnimatePresence, useInView, useReducedMotion } from 'framer-mot
 import { 
   Play, 
   GraduationCap,
+  MessageSquare,
+  Send,
+  Sparkle,
   Pause,
   Sun, 
   Moon,
@@ -97,7 +100,8 @@ export default function LandingPage() {
   const isHeroInView = useInView(heroRef, { once: true });
   const shouldReduceMotion = useReducedMotion();
 
-  const [viewMode, setViewMode] = useState('foclyra'); // 'foclyra' | 'youtube'
+  const [viewMode, setViewMode] = useState('foclyra');
+  const [previewTab, setPreviewTab] = useState('notes'); // 'notes' | 'ai' // 'foclyra' | 'youtube'
   const [isPlaying, setIsPlaying] = useState(true);
   const [progressSec, setProgressSec] = useState(252); // 04:12
   const [selectedTimestamp, setSelectedTimestamp] = useState('04:12');
@@ -368,7 +372,7 @@ export default function LandingPage() {
 
         {/* Seamless Subtitle: Balanced scale, no orphan line wrap */}
         <p className="mx-auto mt-4 sm:mt-5.5 max-w-[680px] text-[14px] sm:text-[16.5px] md:text-[18px] text-[#555555] dark:text-zinc-400 leading-[1.6] font-normal px-2">
-          Watch without recommendations, take timestamped notes, and export cleanly to Word (.docx).
+          Watch without recommendations, ask the in-context AI tutor, take timestamped notes, and export cleanly to Word (.docx).
         </p>
 
         {/* Confident Apple-Grade CTA & Trust Signal */}
@@ -396,10 +400,17 @@ export default function LandingPage() {
       {/* =========================================================================
           3. Interactive Watch Workspace Preview - 320px to 4K Responsive
          ========================================================================= */}
-      <section id="studio" className="px-3.5 sm:px-6 pt-7 sm:pt-11">
+      <section id="studio" className="px-3.5 sm:px-6 pt-12 sm:pt-18 md:pt-24 pb-4">
         <div className="mx-auto max-w-[1140px]">
-          {/* Single Standard Mode Switcher Chip with Fluid Spring Pill */}
-          <div className="flex justify-center mb-4 sm:mb-6 w-full">
+          {/* Showcase Controller with Apple-Grade Micro-Badge */}
+          <div className="flex flex-col items-center gap-2 sm:gap-2.5 mb-5 sm:mb-7 text-center w-full">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#f4f4f4] dark:bg-zinc-800/80 border border-[#e5e5e5] dark:border-zinc-700/70 text-[10.5px] sm:text-[11px] font-semibold tracking-wider uppercase text-zinc-600 dark:text-zinc-300 shadow-2xs">
+              <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Interactive Studio Demo</span>
+              <span className="text-zinc-300 dark:text-zinc-600">•</span>
+              <span className="text-zinc-500 dark:text-zinc-400 font-normal normal-case">Tap to Compare</span>
+            </div>
+
             <div className="relative inline-flex items-center p-1 rounded-full bg-[#f2f2f2] dark:bg-zinc-900 border border-[#e5e5e5] dark:border-zinc-800 shadow-2xs">
               <button
                 type="button"
@@ -442,8 +453,13 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Unified Apple-Grade Chassis */}
-          <div className="rounded-[22px] sm:rounded-[32px] bg-white dark:bg-[#0c0d11] border border-[#e5e5e5] dark:border-zinc-800 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.08)] dark:shadow-[0_25px_70px_-15px_rgba(0,0,0,0.6)] overflow-hidden">
+          {/* Unified Apple-Grade Chassis with Ambient Pedestal Glow */}
+          <div className="relative">
+            <div
+              aria-hidden="true"
+              className="absolute -top-16 left-1/2 -translate-x-1/2 w-[92%] max-w-[880px] h-[340px] bg-gradient-to-b from-emerald-500/15 via-teal-500/8 to-transparent dark:from-emerald-400/20 dark:via-teal-400/10 dark:to-transparent blur-3xl pointer-events-none rounded-full"
+            />
+            <div className="relative rounded-[22px] sm:rounded-[32px] bg-white dark:bg-[#0c0d11] border border-[#e5e5e5] dark:border-zinc-800 shadow-[0_24px_70px_-15px_rgba(0,0,0,0.1)] dark:shadow-[0_30px_90px_-15px_rgba(0,0,0,0.7)] overflow-hidden">
             {/* Sleek Window Top Bar */}
             <div className="h-10 sm:h-12 px-3.5 sm:px-5 bg-[#fafafa] dark:bg-[#111217] border-b border-[#efefef] dark:border-zinc-800/90 flex items-center justify-between text-[11.5px] sm:text-[12.5px]">
               <div className="flex items-center gap-2 min-w-0 pr-2">
@@ -614,16 +630,39 @@ export default function LandingPage() {
                 <div className="lg:col-span-5 flex flex-col justify-between rounded-[16px] sm:rounded-[20px] bg-[#fafafa] dark:bg-[#121318] p-3.5 sm:p-5 border border-[#eaeaea] dark:border-zinc-800/80 gap-3">
                   <div className="space-y-2.5">
                     <div className="flex items-center justify-between pb-2.5 border-b border-[#e5e5e5] dark:border-zinc-800 gap-2">
-                      <span className="inline-flex items-center gap-2 text-[13px] sm:text-[14px] font-semibold tracking-[-0.01em] text-[#111111] dark:text-white whitespace-nowrap">
-                        <FileText className="size-3.5 sm:size-4 text-[#666666] dark:text-zinc-400 shrink-0" />
-                        <span>Lesson Notes ({PREVIEW_COURSE.notes.length})</span>
-                      </span>
+                      <div className="inline-flex p-0.5 rounded-full bg-[#efefef] dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800">
+                        <button
+                          type="button"
+                          onClick={() => setPreviewTab('notes')}
+                          className={`px-2.5 py-1 rounded-full text-[11px] sm:text-[11.5px] font-medium transition cursor-pointer select-none ${
+                            previewTab === 'notes'
+                              ? 'bg-white dark:bg-zinc-800 text-[#111111] dark:text-white shadow-2xs font-semibold'
+                              : 'text-[#666666] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white'
+                          }`}
+                        >
+                          Notes ({PREVIEW_COURSE.notes.length})
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setPreviewTab('ai')}
+                          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] sm:text-[11.5px] font-medium transition cursor-pointer select-none ${
+                            previewTab === 'ai'
+                              ? 'bg-white dark:bg-zinc-800 text-[#111111] dark:text-white shadow-2xs font-semibold'
+                              : 'text-[#666666] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white'
+                          }`}
+                        >
+                          <MessageSquare className="size-3" />
+                          <span>AI Chat</span>
+                        </button>
+                      </div>
+
                       <span className="text-[10.5px] sm:text-[11px] text-[#888888] dark:text-zinc-500 font-mono whitespace-nowrap">
-                        Auto-synced
+                        {previewTab === 'notes' ? 'Auto-synced' : '30 doubts/day'}
                       </span>
                     </div>
 
-                    {PREVIEW_COURSE.notes.map((note) => {
+                    {previewTab === 'notes' ? (
+                      PREVIEW_COURSE.notes.map((note) => {
                       const isSelected = selectedTimestamp === note.time;
                       return (
                         <div
@@ -655,19 +694,68 @@ export default function LandingPage() {
                           </p>
                         </div>
                       );
-                    })}
+                    })
+                  ) : (
+                    /* Interactive AI Chat Preview */
+                    <div className="space-y-3 pt-0.5 text-left">
+                      {/* User Bubble */}
+                      <div className="flex justify-end">
+                        <div className="max-w-[88%] rounded-2xl px-3.5 py-2 text-[11.5px] sm:text-[12px] bg-zinc-800 text-white font-normal shadow-2xs leading-relaxed">
+                          What makes calculate_total a pure function?
+                        </div>
+                      </div>
+
+                      {/* AI Answer: Borderless & In-Context */}
+                      <div className="flex flex-col items-start w-full text-[11.5px] sm:text-[12px] leading-relaxed text-zinc-800 dark:text-zinc-200">
+                        <p>
+                          In <strong>Lecture 04 (04:12)</strong>, <code className="font-mono text-[10.5px] px-1 py-0.5 rounded bg-zinc-200 dark:bg-zinc-800">calculate_total</code> never alters outside data and always returns the same discount computation for the given inputs.
+                        </p>
+                      </div>
+
+                      {/* Mock Input Bar */}
+                      <div className="pt-1">
+                        <div className="flex items-center gap-1.5">
+                          <div className="flex-1 rounded-xl border border-zinc-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900/90 px-3 py-2 text-[11px] sm:text-[11.5px] text-zinc-400">
+                            Ask about this chapter...
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleLaunchApp('demo_ai_send')}
+                            className="size-9 rounded-xl bg-zinc-800 text-white flex items-center justify-center shrink-0 hover:bg-zinc-700 transition cursor-pointer"
+                            title="Open Studio"
+                          >
+                            <Send size={13} />
+                          </button>
+                        </div>
+                        <div className="mt-1.5 text-[10.5px] text-zinc-500 dark:text-zinc-400 px-0.5">
+                          29 of 30 doubts left today &middot; Saved to this lecture
+                        </div>
+                      </div>
+                    </div>
+                  )}
                   </div>
 
                   <div className="pt-1.5 sm:pt-2">
-                    <button
-                      type="button"
-                      onClick={() => handleLaunchApp('demo_export')}
-                      className="w-full h-9.5 sm:h-10.5 rounded-full bg-[#111111] dark:bg-white text-white dark:text-[#111111] text-[12px] sm:text-[13px] font-medium flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition cursor-pointer shadow-xs px-4 sm:px-6 whitespace-nowrap"
-                    >
-                      <Download className="size-3.5 sm:size-4 shrink-0" />
-                      <span className="sm:hidden">Download Notes (.docx)</span>
-                      <span className="hidden sm:inline truncate">Download {PREVIEW_COURSE.docName}</span>
-                    </button>
+                    {previewTab === 'notes' ? (
+                      <button
+                        type="button"
+                        onClick={() => handleLaunchApp('demo_export')}
+                        className="w-full h-9.5 sm:h-10.5 rounded-full bg-[#111111] dark:bg-white text-white dark:text-[#111111] text-[12px] sm:text-[13px] font-medium flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition cursor-pointer shadow-xs px-4 sm:px-6 whitespace-nowrap"
+                      >
+                        <Download className="size-3.5 sm:size-4 shrink-0" />
+                        <span className="sm:hidden">Download Notes (.docx)</span>
+                        <span className="hidden sm:inline truncate">Download {PREVIEW_COURSE.docName}</span>
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => handleLaunchApp('demo_ai_cta')}
+                        className="w-full h-9.5 sm:h-10.5 rounded-full bg-[#111111] dark:bg-white text-white dark:text-[#111111] text-[12px] sm:text-[13px] font-medium flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition cursor-pointer shadow-xs px-4 sm:px-6 whitespace-nowrap"
+                      >
+                        <MessageSquare className="size-3.5 sm:size-4 shrink-0" />
+                        <span>Ask Doubts in Studio &rarr;</span>
+                      </button>
+                    )}
                   </div>
                 </div>
               </motion.div>
@@ -714,6 +802,7 @@ export default function LandingPage() {
               </motion.div>
             )}
           </AnimatePresence>
+          </div>
           </div>
         </div>
       </section>
@@ -769,7 +858,38 @@ export default function LandingPage() {
               </div>
             </WobbleCard>
 
-            {/* Card 2: Timestamped Notes (5 cols) */}
+            {/* Card 2: In-Context AI Tutor (5 cols) */}
+            <WobbleCard
+              containerClassName="lg:col-span-5 rounded-[20px] sm:rounded-[26px] bg-[#f4f4f4] dark:bg-zinc-900/90 min-h-0 sm:min-h-[240px]"
+              className="p-4 sm:p-6 lg:p-8 flex flex-col justify-between h-full"
+            >
+              <div className="space-y-2 sm:space-y-2.5">
+                <div className="flex items-center gap-2.5 sm:gap-3">
+                  <BrandTile bg="bg-[#10B981]" text="text-white" rotate="rotate-2">
+                    <MessageSquare className="size-3.5 sm:size-4" />
+                  </BrandTile>
+                  <h3 className="text-[17px] sm:text-[19px] md:text-[18.5px] lg:text-[21px] leading-[1.22] font-semibold tracking-[-0.02em] text-[#111111] dark:text-white">
+                    In-context AI tutor
+                  </h3>
+                </div>
+                <p className="text-[13.5px] sm:text-[14.5px] lg:text-[15px] leading-[1.6] text-[#666666] dark:text-zinc-400">
+                  Ask questions grounded in the current chapter and exact video timestamp. 30 daily questions with zero hallucinations.
+                </p>
+              </div>
+
+              <div className="mt-4 sm:mt-6 flex flex-wrap items-center gap-1.5 sm:gap-2">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-white dark:bg-zinc-800 text-[11.5px] sm:text-[12.5px] font-medium text-[#111111] dark:text-zinc-200 whitespace-nowrap">
+                  <Sparkle className="size-3 sm:size-3.5 text-emerald-500 shrink-0" />
+                  <span>30 free questions / day</span>
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-white dark:bg-zinc-800 text-[11.5px] sm:text-[12.5px] font-medium text-[#111111] dark:text-zinc-200 whitespace-nowrap">
+                  <CheckCircle2 className="size-3 sm:size-3.5 text-emerald-500 shrink-0" />
+                  <span>Saves directly to notes</span>
+                </span>
+              </div>
+            </WobbleCard>
+
+            {/* Card 3: Timestamped Notes (5 cols) */}
             <WobbleCard
               containerClassName="lg:col-span-5 rounded-[20px] sm:rounded-[26px] bg-[#f4f4f4] dark:bg-zinc-900/90 min-h-0 sm:min-h-[240px]"
               className="p-4 sm:p-6 lg:p-8 flex flex-col justify-between h-full"
@@ -807,9 +927,9 @@ export default function LandingPage() {
               </div>
             </WobbleCard>
 
-            {/* Card 3: Word (.docx) Export (5 cols) */}
+            {/* Card 4: Word (.docx) Export (7 cols) */}
             <WobbleCard
-              containerClassName="lg:col-span-5 rounded-[20px] sm:rounded-[26px] bg-[#f4f4f4] dark:bg-zinc-900/90 min-h-0 sm:min-h-[240px]"
+              containerClassName="lg:col-span-7 rounded-[20px] sm:rounded-[26px] bg-[#f4f4f4] dark:bg-zinc-900/90 min-h-0 sm:min-h-[240px]"
               className="p-4 sm:p-6 lg:p-8 flex flex-col justify-between h-full"
             >
               <div className="space-y-2 sm:space-y-2.5">
@@ -839,9 +959,9 @@ export default function LandingPage() {
               </div>
             </WobbleCard>
 
-            {/* Card 4: Pomodoro, Streak & Cloud Sync (7 cols) */}
+            {/* Card 5: Pomodoro, Streak & Cloud Sync (12 cols) */}
             <WobbleCard
-              containerClassName="lg:col-span-7 rounded-[20px] sm:rounded-[26px] bg-[#f4f4f4] dark:bg-zinc-900/90 min-h-0 sm:min-h-[240px]"
+              containerClassName="lg:col-span-12 rounded-[20px] sm:rounded-[26px] bg-[#f4f4f4] dark:bg-zinc-900/90 min-h-0 sm:min-h-[240px]"
               className="p-4 sm:p-6 lg:p-8 flex flex-col justify-between h-full"
             >
               <div className="space-y-2 sm:space-y-2.5 max-w-lg">
@@ -900,8 +1020,8 @@ export default function LandingPage() {
               {
                 step: '02',
                 icon: <Clock className="size-3.5 sm:size-4" />,
-                title: 'Watch & write timestamped notes',
-                desc: 'Study in Theater Mode with a built-in Pomodoro timer and save notes tied to the exact video second.'
+                title: 'Watch, ask AI & write notes',
+                desc: 'Study in Theater Mode, ask doubts to the in-context AI tutor, and save notes tied to the exact video second.'
               },
               {
                 step: '03',
