@@ -1,9 +1,8 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  Sparkles, 
+  Sparkle, 
   ArrowUp, 
-  Clock, 
   Check, 
   Copy, 
   BookmarkPlus, 
@@ -62,7 +61,6 @@ export function AITutorPanel({
 
   const [inputPrompt, setInputPrompt] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [thinkingPhase, setThinkingPhase] = useState(0);
   const [errorMsg, setErrorMsg] = useState(null);
   const [copiedIndex, setCopiedIndex] = useState(null);
   const [addedNoteIndex, setAddedNoteIndex] = useState(null);
@@ -113,20 +111,6 @@ export function AITutorPanel({
     }, 60000); // sync every minute for countdown
     return () => clearInterval(interval);
   }, []);
-
-  // 4. Dynamic thinking progression for human-grade feeling
-  useEffect(() => {
-    if (!isLoading) {
-      setThinkingPhase(0);
-      return undefined;
-    }
-    const t1 = setTimeout(() => setThinkingPhase(1), 1600);
-    const t2 = setTimeout(() => setThinkingPhase(2), 3400);
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-    };
-  }, [isLoading]);
 
   // 5. Smooth auto-scroll to bottom
   useEffect(() => {
@@ -221,7 +205,7 @@ export function AITutorPanel({
       consumeAiQuota();
       setQuotaStatus(getAiQuotaStatus());
 
-      // Organic, smooth progressive text reveal (ChatGPT-like human cadence)
+      // Ultra-smooth, non-robotic progressive stream
       const fullReply = data.reply || '';
       const replyMessageId = `bot_${Date.now()}`;
 
@@ -229,17 +213,16 @@ export function AITutorPanel({
         id: replyMessageId,
         role: 'model',
         content: '',
-        timestamp: data.timestamp || formatted,
         rawSeconds: rawTime,
         isStreaming: true
       };
 
       setMessages((prev) => [...prev, botMessagePlaceholder]);
 
-      // Stream words smoothly in natural batches
+      // Stream words smoothly in natural continuous flow
       const words = fullReply.split(' ');
-      let revealed = '';
       let wordIdx = 0;
+      let revealed = '';
 
       if (streamingTimerRef.current) {
         clearInterval(streamingTimerRef.current);
@@ -247,9 +230,9 @@ export function AITutorPanel({
 
       streamingTimerRef.current = setInterval(() => {
         if (wordIdx < words.length) {
-          const chunk = words.slice(wordIdx, wordIdx + 3).join(' ');
-          revealed = revealed ? `${revealed} ${chunk}` : chunk;
-          wordIdx += 3;
+          const nextWord = words[wordIdx];
+          revealed = revealed ? `${revealed} ${nextWord}` : nextWord;
+          wordIdx += 1;
 
           setMessages((prev) =>
             prev.map((m) =>
@@ -269,7 +252,7 @@ export function AITutorPanel({
             return finalMessages;
           });
         }
-      }, 26);
+      }, 16);
 
       trackEvent('ai_tutor_queried', { courseId, lessonId, timestamp: formatted });
 
@@ -337,11 +320,8 @@ export function AITutorPanel({
       {/* 1. Sleek Top Bar with Grounding Badge, Quota Capsule & Clear */}
       <div className="flex items-center justify-between pb-2 mb-2 border-b border-zinc-200/80 dark:border-zinc-800/80 text-[11px] shrink-0 gap-2">
         <div className="flex items-center gap-1.5 font-medium text-zinc-600 dark:text-zinc-400 min-w-0">
-          <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-          <span className="truncate">Grounded at</span>
-          <span className="font-mono text-zinc-950 dark:text-zinc-50 font-semibold bg-zinc-100 dark:bg-zinc-800 px-1.5 py-0.5 rounded border border-zinc-200/60 dark:border-zinc-700/60 shrink-0">
-            {currentFormatted}
-          </span>
+          <span className="size-1.5 rounded-full bg-emerald-500 shrink-0" />
+          <span className="truncate">Lesson Context</span>
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
@@ -351,7 +331,7 @@ export function AITutorPanel({
               className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20" 
               title="Unlimited questions enabled via personal API key"
             >
-              <Sparkles size={9} />
+              <Sparkle size={9} />
               <span>Unlimited</span>
             </span>
           ) : (
@@ -406,7 +386,7 @@ export function AITutorPanel({
         {messages.length === 0 && !isInitializing ? (
           <div className="h-full flex flex-col items-center justify-center text-center p-4 space-y-3">
             <div className="size-9 rounded-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700/80 flex items-center justify-center text-zinc-700 dark:text-zinc-300 shadow-2xs">
-              <Sparkles size={14} />
+              <Sparkle size={14} />
             </div>
             <div className="space-y-1">
               <h3 className="font-semibold text-zinc-900 dark:text-zinc-100 text-xs">
@@ -425,34 +405,19 @@ export function AITutorPanel({
                 key={m.id || idx}
                 className={`flex flex-col space-y-1 ${isUser ? 'items-end' : 'items-start'}`}
               >
-                {/* Message Bubble */}
+                {/* Message Bubble - Clean without timestamp clutter */}
                 {isUser ? (
-                  <div className="flex flex-col items-end space-y-1 max-w-[85%]">
+                  <div className="flex flex-col items-end max-w-[85%]">
                     <div className="bg-zinc-950 text-white dark:bg-zinc-100 dark:text-zinc-950 rounded-2xl rounded-br-xs px-3.5 py-2 text-xs font-normal shadow-xs leading-relaxed">
                       {m.content}
                     </div>
-                    <span className="font-mono text-[9.5px] text-zinc-400 px-1">
-                      {m.timestamp}
-                    </span>
                   </div>
                 ) : (
-                  <div className="flex flex-col items-start space-y-1.5 max-w-[95%]">
-                    {/* Header line */}
-                    <div className="flex items-center gap-1.5 text-[10.5px] font-medium text-zinc-500 dark:text-zinc-400 px-1">
-                      <Sparkles size={11} className="text-zinc-900 dark:text-zinc-100" />
+                  <div className="flex flex-col items-start space-y-1.5 max-w-[95%] w-full">
+                    {/* Header line - Minimal Sparkle icon & Label */}
+                    <div className="flex items-center gap-1.5 text-[11px] font-medium text-zinc-500 dark:text-zinc-400 px-1">
+                      <Sparkle size={11} className="text-zinc-900 dark:text-zinc-100 shrink-0" />
                       <span className="font-semibold text-zinc-900 dark:text-zinc-100">AI Tutor</span>
-                      <span>•</span>
-                      {m.timestamp && (
-                        <button
-                          type="button"
-                          onClick={() => onSeek && onSeek(m.rawSeconds || 0)}
-                          className="hover:underline flex items-center gap-0.5 cursor-pointer text-zinc-500 hover:text-zinc-900 dark:hover:text-white font-mono"
-                          title="Click to jump to this video timestamp"
-                        >
-                          <Clock size={9} />
-                          <span>{m.timestamp}</span>
-                        </button>
-                      )}
                     </div>
 
                     {/* Formatted Markdown Content */}
@@ -494,19 +459,17 @@ export function AITutorPanel({
           })
         )}
 
-        {/* Loading / Dynamic Contextual Thinking Wave */}
+        {/* Loading / Minimal Organic Apple-Style Thinking State */}
         {isLoading && (
           <div className="flex items-start gap-2 pt-1 animate-fadeIn">
-            <div className="p-3 rounded-2xl rounded-tl-xs bg-zinc-100 dark:bg-zinc-900 border border-zinc-200/60 dark:border-zinc-800/60 text-zinc-500 dark:text-zinc-400 text-xs flex items-center gap-2.5 shadow-2xs">
+            <div className="px-3.5 py-2.5 rounded-2xl rounded-tl-xs bg-zinc-100 dark:bg-zinc-900/90 border border-zinc-200/70 dark:border-zinc-800/70 text-zinc-500 dark:text-zinc-400 text-xs flex items-center gap-2.5 shadow-2xs">
               <div className="flex gap-1 items-center">
-                <span className="size-1.5 rounded-full bg-zinc-500 dark:bg-zinc-400 animate-bounce" style={{ animationDelay: '0ms' }} />
-                <span className="size-1.5 rounded-full bg-zinc-500 dark:bg-zinc-400 animate-bounce" style={{ animationDelay: '150ms' }} />
-                <span className="size-1.5 rounded-full bg-zinc-500 dark:bg-zinc-400 animate-bounce" style={{ animationDelay: '300ms' }} />
+                <span className="size-1.5 rounded-full bg-zinc-500 dark:bg-zinc-400 animate-pulse" />
+                <span className="size-1.5 rounded-full bg-zinc-400 dark:bg-zinc-500 animate-pulse" style={{ animationDelay: '200ms' }} />
+                <span className="size-1.5 rounded-full bg-zinc-300 dark:bg-zinc-600 animate-pulse" style={{ animationDelay: '400ms' }} />
               </div>
-              <span className="text-[11px] font-medium text-zinc-700 dark:text-zinc-300 transition-all duration-300">
-                {thinkingPhase === 0 && `Grounding doubt with lecture at [${currentFormatted}]...`}
-                {thinkingPhase === 1 && `Synthesizing conceptual doubt...`}
-                {thinkingPhase >= 2 && `Structuring step-by-step answer...`}
+              <span className="text-[11.5px] font-medium text-zinc-600 dark:text-zinc-300">
+                Thinking...
               </span>
             </div>
           </div>
@@ -516,7 +479,7 @@ export function AITutorPanel({
         {!quotaStatus.isUnlimited && quotaStatus.remaining === 0 && (
           <div className="p-3.5 rounded-2xl bg-zinc-100/90 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 text-center space-y-2 shadow-2xs animate-fadeIn">
             <div className="size-7 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 mx-auto flex items-center justify-center">
-              <Sparkles size={13} />
+              <Sparkle size={13} />
             </div>
             <div className="space-y-0.5">
               <h4 className="text-[11.5px] font-semibold text-zinc-900 dark:text-zinc-100">
@@ -578,7 +541,7 @@ export function AITutorPanel({
             placeholder={
               !quotaStatus.isUnlimited && quotaStatus.remaining === 0
                 ? `Daily limit reached (resets in ${quotaStatus.resetCountdown})...`
-                : `Ask a question at ${currentFormatted}...`
+                : `Ask a question about this lecture...`
             }
             className="flex-1 bg-transparent text-xs text-zinc-950 dark:text-zinc-50 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none disabled:opacity-50"
           />

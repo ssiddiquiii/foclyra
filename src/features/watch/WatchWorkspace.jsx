@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import { Check, CheckCircle2, Circle, Clock, FileText, ListVideo, Search, ChevronRight, Sparkles } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Check, CheckCircle2, Circle, Clock, FileText, ListVideo, Search, ChevronRight, Sparkle } from 'lucide-react';
 import { NotesPanel } from './NotesPanel';
 import { AITutorPanel } from './AITutorPanel';
 
@@ -117,32 +118,46 @@ export function DesktopWatchWorkspace(props) {
       {/* Sidebar Header with Switcher */}
       <div className="p-3.5 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-white/70 dark:bg-zinc-900/60 backdrop-blur-md space-y-2.5 flex-shrink-0">
         <div className="flex items-center justify-between gap-2">
-          {/* Editorial Tab Switcher */}
-          <div className="flex items-center gap-1 bg-zinc-200/60 dark:bg-zinc-800/60 p-0.5 rounded-full border border-zinc-200/80 dark:border-zinc-700/80">
+          {/* Editorial Tab Switcher with Fluid Spring Pill */}
+          <div className="relative flex items-center bg-zinc-200/70 dark:bg-zinc-800/70 p-0.5 rounded-full border border-zinc-200/80 dark:border-zinc-700/80">
             <button
               type="button"
               onClick={() => setDesktopTab('lectures')}
-              className={`py-1 px-3 rounded-full text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer ${
+              className={`relative py-1 px-3 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer select-none ${
                 desktopTab === 'lectures'
-                  ? 'bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 shadow-2xs'
+                  ? 'text-white dark:text-zinc-950'
                   : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-100'
               }`}
             >
-              <ListVideo size={12} />
-              <span>Lectures ({lessons?.length || 0})</span>
+              {desktopTab === 'lectures' && (
+                <motion.div
+                  layoutId="desktopWatchTabPill"
+                  transition={{ type: 'spring', stiffness: 500, damping: 38 }}
+                  className="absolute inset-0 bg-zinc-950 dark:bg-white rounded-full shadow-2xs"
+                />
+              )}
+              <ListVideo size={12} className="relative z-10 shrink-0" />
+              <span className="relative z-10">Lectures ({lessons?.length || 0})</span>
             </button>
 
             <button
               type="button"
               onClick={() => setDesktopTab('ai')}
-              className={`py-1 px-3 rounded-full text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer ${
+              className={`relative py-1 px-3 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer select-none ${
                 desktopTab === 'ai'
-                  ? 'bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 shadow-2xs'
+                  ? 'text-white dark:text-zinc-950'
                   : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-100'
               }`}
             >
-              <Sparkles size={12} className={desktopTab === 'ai' ? 'text-amber-300' : 'text-amber-500'} />
-              <span>AI Tutor</span>
+              {desktopTab === 'ai' && (
+                <motion.div
+                  layoutId="desktopWatchTabPill"
+                  transition={{ type: 'spring', stiffness: 500, damping: 38 }}
+                  className="absolute inset-0 bg-zinc-950 dark:bg-white rounded-full shadow-2xs"
+                />
+              )}
+              <Sparkle size={11} className="relative z-10 shrink-0 text-current" />
+              <span className="relative z-10">AI Tutor</span>
             </button>
           </div>
 
@@ -175,27 +190,38 @@ export function DesktopWatchWorkspace(props) {
         )}
       </div>
 
-      {/* Workspace Panel Content */}
+      {/* Workspace Panel Content with Smooth Crossfade */}
       <div className="flex-1 overflow-y-auto p-3.5">
-        {desktopTab === 'lectures' ? (
-          <PlaylistSyllabusList
-            courseId={courseId}
-            lessonId={lessonId}
-            lessons={lessons}
-            progressList={progressList}
-            onNavigate={onNavigate}
-          />
-        ) : (
-          <AITutorPanel
-            courseId={courseId}
-            lessonId={lessonId}
-            courseTitle={courseTitle}
-            lessonTitle={lessonTitle}
-            description={description}
-            getCurrentTime={getCurrentTime}
-            onSeek={onSeek}
-          />
-        )}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={desktopTab}
+            initial={{ opacity: 0, y: 3 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -3 }}
+            transition={{ duration: 0.15, ease: 'easeOut' }}
+            className="h-full"
+          >
+            {desktopTab === 'lectures' ? (
+              <PlaylistSyllabusList
+                courseId={courseId}
+                lessonId={lessonId}
+                lessons={lessons}
+                progressList={progressList}
+                onNavigate={onNavigate}
+              />
+            ) : (
+              <AITutorPanel
+                courseId={courseId}
+                lessonId={lessonId}
+                courseTitle={courseTitle}
+                lessonTitle={lessonTitle}
+                description={description}
+                getCurrentTime={getCurrentTime}
+                onSeek={onSeek}
+              />
+            )}
+          </motion.div>
+        </AnimatePresence>
       </div>
     </aside>
   );
@@ -225,34 +251,48 @@ export function MobileWatchWorkspace(props) {
   return (
     <section data-testid="watch-inline-workspace" className="block border-b border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-950 px-3 py-4 sm:px-6 xl:hidden">
       <div className="rounded-[24px] border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-100/70 dark:bg-zinc-900/50 overflow-hidden shadow-xs">
-        {/* Mobile Tabs: Pill capsule switcher */}
-        <div className="p-2 border-b border-zinc-200/80 dark:border-zinc-800/80 flex items-center gap-1.5 bg-white/80 dark:bg-zinc-950/80">
+        {/* Mobile Tabs: Pill capsule switcher with fluid spring pill */}
+        <div className="relative p-1.5 border-b border-zinc-200/80 dark:border-zinc-800/80 flex items-center gap-1.5 bg-white/80 dark:bg-zinc-950/80">
           <button
             type="button"
             aria-pressed={activeTab === 'notes'}
             onClick={() => onTabChange('notes')}
-            className={`flex-1 h-9 rounded-full flex items-center justify-center gap-1.5 text-xs font-medium transition cursor-pointer ${
+            className={`relative flex-1 h-9 rounded-full flex items-center justify-center gap-1.5 text-xs font-medium transition-colors cursor-pointer select-none ${
               activeTab === 'notes'
-                ? 'bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 shadow-xs'
-                : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-900'
+                ? 'text-white dark:text-zinc-950'
+                : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-100'
             }`}
           >
-            <FileText size={13} />
-            <span>Notes ({notesProps?.notes?.length || 0})</span>
+            {activeTab === 'notes' && (
+              <motion.div
+                layoutId="mobileWatchTabPill"
+                transition={{ type: 'spring', stiffness: 500, damping: 38 }}
+                className="absolute inset-0 bg-zinc-950 dark:bg-white rounded-full shadow-xs"
+              />
+            )}
+            <FileText size={13} className="relative z-10 shrink-0" />
+            <span className="relative z-10">Notes ({notesProps?.notes?.length || 0})</span>
           </button>
 
           <button
             type="button"
             aria-pressed={activeTab === 'ai'}
             onClick={() => onTabChange('ai')}
-            className={`flex-1 h-9 rounded-full flex items-center justify-center gap-1.5 text-xs font-medium transition cursor-pointer ${
+            className={`relative flex-1 h-9 rounded-full flex items-center justify-center gap-1.5 text-xs font-medium transition-colors cursor-pointer select-none ${
               activeTab === 'ai'
-                ? 'bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 shadow-xs'
-                : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-900'
+                ? 'text-white dark:text-zinc-950'
+                : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-100'
             }`}
           >
-            <Sparkles size={13} className={activeTab === 'ai' ? 'text-amber-300' : 'text-amber-500'} />
-            <span>AI Tutor</span>
+            {activeTab === 'ai' && (
+              <motion.div
+                layoutId="mobileWatchTabPill"
+                transition={{ type: 'spring', stiffness: 500, damping: 38 }}
+                className="absolute inset-0 bg-zinc-950 dark:bg-white rounded-full shadow-xs"
+              />
+            )}
+            <Sparkle size={12} className="relative z-10 shrink-0 text-current" />
+            <span className="relative z-10">AI Tutor</span>
           </button>
 
           {lessons && lessons.length > 1 && (
@@ -260,14 +300,21 @@ export function MobileWatchWorkspace(props) {
               type="button"
               aria-pressed={activeTab === 'lectures'}
               onClick={() => onTabChange('lectures')}
-              className={`flex-1 h-9 rounded-full flex items-center justify-center gap-1.5 text-xs font-medium transition cursor-pointer ${
+              className={`relative flex-1 h-9 rounded-full flex items-center justify-center gap-1.5 text-xs font-medium transition-colors cursor-pointer select-none ${
                 activeTab === 'lectures'
-                  ? 'bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 shadow-xs'
-                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-900'
+                  ? 'text-white dark:text-zinc-950'
+                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-100'
               }`}
             >
-              <ListVideo size={13} />
-              <span>Lectures ({lessons.length})</span>
+              {activeTab === 'lectures' && (
+                <motion.div
+                  layoutId="mobileWatchTabPill"
+                  transition={{ type: 'spring', stiffness: 500, damping: 38 }}
+                  className="absolute inset-0 bg-zinc-950 dark:bg-white rounded-full shadow-xs"
+                />
+              )}
+              <ListVideo size={13} className="relative z-10 shrink-0" />
+              <span className="relative z-10">Lectures ({lessons.length})</span>
             </button>
           )}
         </div>
