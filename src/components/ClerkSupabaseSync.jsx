@@ -21,10 +21,18 @@ export default function ClerkSupabaseSync() {
   useEffect(() => {
     setClerkTokenGetter(async () => {
       try {
-        return await getToken({ template: 'supabase' });
+        let token = await getToken({ template: 'supabase' });
+        if (!token) {
+          token = await getToken({ template: 'supabasefoclyra' });
+        }
+        return token;
       } catch (err) {
-        console.warn('Clerk Supabase token fetch error:', err);
-        return null;
+        try {
+          return await getToken({ template: 'supabasefoclyra' });
+        } catch {
+          console.warn('Clerk Supabase token fetch error:', err);
+          return null;
+        }
       }
     });
   }, [getToken]);
@@ -102,3 +110,4 @@ export default function ClerkSupabaseSync() {
 
   return null;
 }
+
