@@ -398,32 +398,46 @@ export default function LandingPage() {
          ========================================================================= */}
       <section id="studio" className="px-3.5 sm:px-6 pt-7 sm:pt-11">
         <div className="mx-auto max-w-[1140px]">
-          {/* Single Standard Mode Switcher Chip */}
+          {/* Single Standard Mode Switcher Chip with Fluid Spring Pill */}
           <div className="flex justify-center mb-4 sm:mb-6 w-full">
-            <div className="inline-flex items-center p-1 rounded-full bg-[#f2f2f2] dark:bg-zinc-900 border border-[#e5e5e5] dark:border-zinc-800 shadow-2xs">
+            <div className="relative inline-flex items-center p-1 rounded-full bg-[#f2f2f2] dark:bg-zinc-900 border border-[#e5e5e5] dark:border-zinc-800 shadow-2xs">
               <button
                 type="button"
                 onClick={() => setViewMode('foclyra')}
-                className={`flex h-8 sm:h-9 items-center justify-center gap-1.5 sm:gap-2 rounded-full px-3.5 sm:px-5 text-[12px] sm:text-[13px] font-medium transition-all duration-200 cursor-pointer whitespace-nowrap ${
+                className={`relative flex h-8 sm:h-9 items-center justify-center gap-1.5 sm:gap-2 rounded-full px-3.5 sm:px-5 text-[12px] sm:text-[13px] font-medium transition-colors duration-200 cursor-pointer whitespace-nowrap select-none ${
                   viewMode === 'foclyra'
-                    ? 'bg-[#111111] dark:bg-white text-white dark:text-[#111111] shadow-xs'
+                    ? 'text-white dark:text-[#111111]'
                     : 'text-[#666666] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white'
                 }`}
               >
-                <span className="size-1.5 rounded-full bg-[#63d94e] shrink-0" />
-                <span>Foclyra Workspace</span>
+                {viewMode === 'foclyra' && (
+                  <motion.div
+                    layoutId="landingViewModePill"
+                    transition={{ type: 'spring', stiffness: 500, damping: 38 }}
+                    className="absolute inset-0 bg-[#111111] dark:bg-white rounded-full shadow-xs"
+                  />
+                )}
+                <span className="relative z-10 size-1.5 rounded-full bg-[#63d94e] shrink-0" />
+                <span className="relative z-10">Foclyra Workspace</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setViewMode('youtube')}
-                className={`flex h-8 sm:h-9 items-center justify-center gap-1.5 sm:gap-2 rounded-full px-3.5 sm:px-5 text-[12px] sm:text-[13px] font-medium transition-all duration-200 cursor-pointer whitespace-nowrap ${
+                className={`relative flex h-8 sm:h-9 items-center justify-center gap-1.5 sm:gap-2 rounded-full px-3.5 sm:px-5 text-[12px] sm:text-[13px] font-medium transition-colors duration-200 cursor-pointer whitespace-nowrap select-none ${
                   viewMode === 'youtube'
-                    ? 'bg-[#111111] dark:bg-white text-white dark:text-[#111111] shadow-xs'
+                    ? 'text-white dark:text-[#111111]'
                     : 'text-[#666666] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white'
                 }`}
               >
-                <span>Standard YouTube Tab</span>
+                {viewMode === 'youtube' && (
+                  <motion.div
+                    layoutId="landingViewModePill"
+                    transition={{ type: 'spring', stiffness: 500, damping: 38 }}
+                    className="absolute inset-0 bg-[#111111] dark:bg-white rounded-full shadow-xs"
+                  />
+                )}
+                <span className="relative z-10">Standard YouTube Tab</span>
               </button>
             </div>
           </div>
@@ -456,9 +470,17 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {viewMode === 'foclyra' ? (
-              <div className="p-3 sm:p-5 lg:p-6 grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5">
-                {/* Left: Cinematic Lecture Player Stage (7 cols) */}
+            <AnimatePresence mode="wait">
+              {viewMode === 'foclyra' ? (
+                <motion.div
+                  key="foclyra"
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.18, ease: 'easeOut' }}
+                  className="p-3 sm:p-5 lg:p-6 grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5"
+                >
+                  {/* Left: Cinematic Lecture Player Stage (7 cols) */}
                 <div className="lg:col-span-7 flex flex-col gap-3">
                   <div
                     onClick={() => setIsPlaying(!isPlaying)}
@@ -648,10 +670,17 @@ export default function LandingPage() {
                     </button>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ) : (
               /* Grounded Comparison: What Standard YouTube Shows vs Foclyra */
-              <div className="p-5 sm:p-8 lg:p-10 text-center space-y-5 sm:space-y-6">
+              <motion.div
+                key="youtube"
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.18, ease: 'easeOut' }}
+                className="p-5 sm:p-8 lg:p-10 text-center space-y-5 sm:space-y-6"
+              >
                 <h3 className="text-[18px] sm:text-[22px] leading-[1.25] font-semibold tracking-[-0.02em] text-[#111111] dark:text-white">
                   What gets in your way on a standard YouTube tab
                 </h3>
@@ -682,8 +711,9 @@ export default function LandingPage() {
                 >
                   <span>Switch back to Foclyra Workspace</span>
                 </button>
-              </div>
+              </motion.div>
             )}
+          </AnimatePresence>
           </div>
         </div>
       </section>
