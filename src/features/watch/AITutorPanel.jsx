@@ -25,6 +25,7 @@ import {
 import { toast } from '../../components/ui/toast';
 import { trackEvent } from '../../services/analytics';
 import { MarkdownView } from '../../components/MarkdownView';
+import { cleanNoteText } from '../../utils/exportUtils';
 
 /**
  * Format raw seconds to MM:SS or HH:MM:SS
@@ -277,7 +278,7 @@ export function AITutorPanel({
         courseId,
         lessonId,
         timestamp: ts,
-        content: `🤖 AI Tutor:\n${content.trim()}`
+        content: `AI Tutor:\n${cleanNoteText(content)}`
       });
 
       setAddedNoteIndex(idx);

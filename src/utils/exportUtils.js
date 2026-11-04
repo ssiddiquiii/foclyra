@@ -101,6 +101,87 @@ function escapeXml(str = '') {
     .replace(/'/g, '&apos;');
 }
 
+/**
+ * Filter out markdown syntax artifacts (hashes, asterisks, divider lines, blockquotes, code backticks)
+ * and strip all emojis to produce clean, professional notes for Word documents.
+ *
+ * @param {string} text - Raw note content
+ * @returns {string} - Cleaned text
+ */
+export function cleanNoteText(text = '') {
+  if (!text || typeof text !== 'string') return '';
+
+  // 1. Remove all emojis, symbols, and pictographs
+  let cleaned = text.replace(
+    /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE00}-\u{FE0F}\u{200D}\u{20E3}\u{2388}\u{23E9}-\u{23EC}\u{23F0}\u{23F3}]|\p{Extended_Pictographic}|\p{Emoji_Presentation}/gu,
+    ''
+  );
+
+  // 2. Process line-by-line markdown
+  const rawLines = cleaned.split(/\r?\n/);
+  const processedLines = [];
+
+  for (const rawLine of rawLines) {
+    let line = rawLine.trimEnd();
+
+    // Drop horizontal divider / dotted / dashed lines (e.g. ---, ***, ___, - - -, * * *)
+    const trimmed = line.trim();
+    if (/^([-*_]\s*){3,}$/.test(trimmed)) {
+      continue;
+    }
+
+    // Strip leading heading hashes (e.g. "### Heading" -> "Heading")
+    line = line.replace(/^\s*#{1,6}\s+/, '');
+    // Strip trailing heading hashes (e.g. "### Heading ###")
+    line = line.replace(/\s+#{1,6}\s*$/, '');
+
+    // Convert bullet markers (*, -, +) into a clean bullet point (•)
+    line = line.replace(/^(\s*)[*•\-+]\s+/, '$1• ');
+
+    // Strip bold and italic markdown asterisks:
+    // e.g. ***text*** or **text** or *text* -> text
+    line = line.replace(/\*{1,3}(.*?)\*{1,3}/g, '$1');
+
+    // Strip any remaining/stray asterisks
+    line = line.replace(/\*/g, '');
+
+    // Strip markdown bold/italic underscores while preserving snake_case words
+    line = line.replace(/(^|\s)_{1,3}(.*?)_{1,3}(\s|$)/g, '$1$2$3');
+
+    // Strip inline backticks: `code` -> code
+    line = line.replace(/`([^`]+)`/g, '$1');
+
+    // Strip blockquote indicators: > quote -> quote
+    line = line.replace(/^(\s*)>\s?/, '$1');
+
+    // Normalize multiple spaces left behind by removals, preserving leading indent
+    const leadingSpaces = line.match(/^\s*/)?.[0] || '';
+    const contentPart = line.slice(leadingSpaces.length).replace(/ {2,}/g, ' ').trimEnd();
+    line = leadingSpaces + contentPart;
+
+    processedLines.push(line);
+  }
+
+  // 3. Collapse multiple consecutive empty lines to at most one empty line
+  const collapsedLines = [];
+  let prevWasEmpty = false;
+
+  for (const line of processedLines) {
+    const isEmpty = line.trim().length === 0;
+    if (isEmpty) {
+      if (!prevWasEmpty) {
+        collapsedLines.push('');
+        prevWasEmpty = true;
+      }
+    } else {
+      collapsedLines.push(line);
+      prevWasEmpty = false;
+    }
+  }
+
+  return collapsedLines.join('\n').trim();
+}
+
 function buildDocxBytes(courseSections) {
   const bodyParagraphs = [];
 
@@ -120,11 +201,13 @@ function buildDocxBytes(courseSections) {
       );
 
       lesson.notes.forEach(noteLine => {
-        const lines = String(noteLine).split(/\r?\n/);
+        const cleaned = cleanNoteText(noteLine);
+        if (!cleaned) return;
+        const lines = cleaned.split(/\r?\n/);
         const runs = lines
           .map((line, idx) => `${idx > 0 ? '<w:br/>' : ''}<w:t xml:space="preserve">${escapeXml(line)}</w:t>`)
           .join('');
-        bodyParagraphs.push(`<w:p><w:r><w:rPr><w:sz w:val="25"/><w:szCs w:val="25"/></w:rPr>${runs}</w:r></w:p>`);
+        bodyParagraphs.push(`<w:p><w:pPr><w:spacing w:after="160"/></w:pPr><w:r><w:rPr><w:sz w:val="25"/><w:szCs w:val="25"/></w:rPr>${runs}</w:r></w:p>`);
       });
     });
   });
@@ -297,9 +380,11 @@ export function exportNotesToWord(notesList = [], options = {}) {
       const noteLines = sortedNotes.map(note => {
         const seconds = typeof note.timestamp === 'number' && note.timestamp >= 0 ? note.timestamp : 0;
         const timeStr = formatTime(seconds);
-        const content = (note.text || note.content || '').trim();
-        return `${content} [${timeStr}]`;
-      });
+        const rawContent = (note.text || note.content || '').trim();
+        const cleaned = cleanNoteText(rawContent);
+        if (!cleaned) return '';
+        return `${cleaned} [${timeStr}]`;
+      }).filter(Boolean);
 
       lessonItems.push({
         videoNumber,

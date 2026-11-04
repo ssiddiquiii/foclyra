@@ -9,6 +9,7 @@ export const unitScripts = [
   'scripts/verification/phase1/verify_serverless_api_full.js',
   'scripts/verification/phase1/verify_live_smoke_test.js',
   'scripts/verification/phase1/verify_toast_notifications.js',
+  'scripts/verification/phase1/verify_clean_notes_export.js',
   'scripts/verification/phase1/verify_course_import_security.js',
 ];
 
