@@ -35,11 +35,22 @@ class FoclyraDB extends Dexie {
       practiceProgress: 'id, courseId, lessonId, completed'
     });
 
+    // Version 4: Add persistent chapter-linked AI study chats table
+    this.version(4).stores({
+      courses: 'id, title, type',
+      lessons: 'id, courseId, index, type',
+      progress: 'id, courseId, lessonId, completed, lastWatched',
+      notes: '++id, courseId, lessonId, [courseId+lessonId], timestamp',
+      practiceProgress: 'id, courseId, lessonId, completed',
+      aiChats: 'id, courseId, lessonId, [courseId+lessonId], updatedAt'
+    });
+
     this.courses = this.table('courses');
     this.lessons = this.table('lessons');
     this.progress = this.table('progress');
     this.notes = this.table('notes');
     this.practiceProgress = this.table('practiceProgress');
+    this.aiChats = this.table('aiChats');
   }
 
   /**
@@ -57,10 +68,11 @@ class FoclyraDB extends Dexie {
    * @returns {Promise<void>}
    */
   async clearProgressAndNotes() {
-    await this.transaction('rw', [this.progress, this.notes, this.practiceProgress], async () => {
+    await this.transaction('rw', [this.progress, this.notes, this.practiceProgress, this.aiChats], async () => {
       await this.progress.clear();
       await this.notes.clear();
       await this.practiceProgress.clear();
+      await this.aiChats.clear();
     });
   }
 
@@ -69,12 +81,13 @@ class FoclyraDB extends Dexie {
    * @returns {Promise<void>}
    */
   async resetDatabase() {
-    await this.transaction('rw', [this.courses, this.lessons, this.progress, this.notes, this.practiceProgress], async () => {
+    await this.transaction('rw', [this.courses, this.lessons, this.progress, this.notes, this.practiceProgress, this.aiChats], async () => {
       await this.courses.clear();
       await this.lessons.clear();
       await this.progress.clear();
       await this.notes.clear();
       await this.practiceProgress.clear();
+      await this.aiChats.clear();
     });
   }
 
@@ -112,13 +125,14 @@ class FoclyraDB extends Dexie {
     // Validate backup structure via Zod
     const validatedBackup = parseBackupForImport(rawBackup);
 
-    await this.transaction('rw', [this.courses, this.lessons, this.progress, this.notes, this.practiceProgress], async () => {
+    await this.transaction('rw', [this.courses, this.lessons, this.progress, this.notes, this.practiceProgress, this.aiChats], async () => {
       // Clear current data
       await this.courses.clear();
       await this.lessons.clear();
       await this.progress.clear();
       await this.notes.clear();
       await this.practiceProgress.clear();
+      await this.aiChats.clear();
 
       // Ingest backed-up records
       await this.courses.bulkPut(validatedBackup.courses);

@@ -1,6 +1,6 @@
 /**
  * Foclyra AI Lecture Tutor Serverless Endpoint.
- * In-context doubt solving grounded in current video timestamp using Google Gemini 2.5/3.5 Flash.
+ * In-context doubt solving grounded in current video timestamp using Google Gemini.
  */
 
 export default async function handler(request, response) {
@@ -60,25 +60,52 @@ CRITICAL INSTRUCTIONS:
 5. If the student asks for code, provide clean, modern, well-commented code snippets.
 6. Keep formatting clean with GitHub-flavored markdown. Avoid fluff or generic intros.`;
 
-    // Build Gemini contents array with history
-    const contents = [];
+    // 1. Gather all raw history turns
+    const rawTurns = [];
 
     if (Array.isArray(history) && history.length > 0) {
-      for (const item of history.slice(-6)) { // keep last 6 turns for context
+      for (const item of history.slice(-8)) { // keep recent turns
         if (item.content && item.role) {
-          contents.push({
+          rawTurns.push({
             role: item.role === 'assistant' || item.role === 'model' ? 'model' : 'user',
-            parts: [{ text: String(item.content) }]
+            parts: [{ text: String(item.content).trim() }]
           });
         }
       }
     }
 
     // Add current user prompt
-    contents.push({
+    rawTurns.push({
       role: 'user',
       parts: [{ text: message.trim() }]
     });
+
+    // 2. HIT POINT #1 FIX: Strict Role Alternation (user -> model -> user -> model)
+    // Gemini API v1beta rejects any request where consecutive turns have identical roles.
+    const contents = [];
+    for (const turn of rawTurns) {
+      if (!turn.parts[0]?.text) continue;
+      const last = contents[contents.length - 1];
+      if (last && last.role === turn.role) {
+        // Merge consecutive duplicate roles (e.g. user turn after a failed network attempt)
+        last.parts[0].text += `\n\n${turn.parts[0].text}`;
+      } else {
+        contents.push(turn);
+      }
+    }
+
+    // Ensure the conversation always begins with a 'user' turn
+    while (contents.length > 0 && contents[0].role !== 'user') {
+      contents.shift();
+    }
+
+    // Fallback if contents became empty
+    if (contents.length === 0) {
+      contents.push({
+        role: 'user',
+        parts: [{ text: message.trim() }]
+      });
+    }
 
     const geminiPayload = {
       systemInstruction: {
@@ -92,8 +119,8 @@ CRITICAL INSTRUCTIONS:
       }
     };
 
-    // Candidate models in priority order: gemini-2.5-flash -> gemini-3.5-flash
-    const candidateModels = ['gemini-2.5-flash', 'gemini-3.5-flash'];
+    // Candidate models in priority order: gemini-2.5-flash -> gemini-3.5-flash -> gemini-2.0-flash
+    const candidateModels = ['gemini-2.5-flash', 'gemini-3.5-flash', 'gemini-2.0-flash'];
     let reply = null;
     let lastError = null;
 
@@ -111,6 +138,9 @@ CRITICAL INSTRUCTIONS:
         if (apiRes.ok && data?.candidates?.[0]?.content?.parts?.[0]?.text) {
           reply = data.candidates[0].content.parts[0].text;
           break; // successfully generated
+        } else if (data?.candidates?.[0]?.finishReason === 'SAFETY') {
+          reply = "I apologize, but this explanation was blocked by safety filters. Please try rephrasing your question or focusing on specific course concepts.";
+          break;
         } else {
           lastError = data?.error?.message || `Failed with model ${model}`;
           console.warn(`Gemini model [${model}] returned error:`, lastError);

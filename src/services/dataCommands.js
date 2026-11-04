@@ -262,3 +262,45 @@ export const clearProgressAndNotes = async () => {
   }).catch(() => {});
 };
 export const resetDatabase = () => db.resetDatabase();
+
+/**
+ * AI Tutor Chapter-Linked Chat Persistence (Dexie)
+ */
+export async function getLessonChat(courseId, lessonId) {
+  if (!courseId || !lessonId) return [];
+  try {
+    const chatId = `${courseId}_${lessonId}`;
+    const record = await db.aiChats.get(chatId);
+    return Array.isArray(record?.messages) ? record.messages : [];
+  } catch (err) {
+    console.warn('Failed to load lesson AI chat from Dexie:', err);
+    return [];
+  }
+}
+
+export async function saveLessonChat(courseId, lessonId, messages) {
+  if (!courseId || !lessonId) return;
+  try {
+    const chatId = `${courseId}_${lessonId}`;
+    await db.aiChats.put({
+      id: chatId,
+      courseId,
+      lessonId,
+      messages: Array.isArray(messages) ? messages : [],
+      updatedAt: Date.now()
+    });
+  } catch (err) {
+    console.warn('Failed to save lesson AI chat to Dexie:', err);
+  }
+}
+
+export async function clearLessonChat(courseId, lessonId) {
+  if (!courseId || !lessonId) return;
+  try {
+    const chatId = `${courseId}_${lessonId}`;
+    await db.aiChats.delete(chatId);
+  } catch (err) {
+    console.warn('Failed to clear lesson AI chat from Dexie:', err);
+  }
+}
+
