@@ -91,8 +91,8 @@ export default function CommandPalette({ isOpen, onClose, returnFocusRef }) {
               className="w-full text-left px-3.5 py-2.5 rounded-2xl hover:bg-zinc-100/80 dark:hover:bg-zinc-900/80 border border-transparent hover:border-zinc-200/60 dark:hover:border-zinc-800/60 transition flex items-center justify-between cursor-pointer group"
             >
               <div className="flex items-center gap-3">
-                <Key size={15} className="text-amber-500" />
-                <span className="text-xs font-semibold text-zinc-900 dark:text-zinc-100">AI & Cloud API Keys (Vault)</span>
+                <Key size={15} className="text-zinc-500 dark:text-zinc-400" />
+                <span className="text-xs font-semibold text-zinc-900 dark:text-zinc-100">API Keys</span>
               </div>
               <span className="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/60 dark:border-zinc-700/60">Alt + K</span>
             </button>

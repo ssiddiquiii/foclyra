@@ -268,36 +268,24 @@ export default function Settings() {
         )}
       </div>
 
-      {/* 2. AI & Cloud API Keys (5-Layer Vault) Bridge Card */}
-      <div className="rounded-[28px] border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-100/70 dark:bg-zinc-900/50 p-5 sm:p-7 shadow-xs space-y-4 backdrop-blur-xs">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3.5">
-            <div className="w-10 h-10 rounded-2xl bg-amber-500/10 border border-amber-500/25 text-amber-500 dark:text-amber-400 flex items-center justify-center shrink-0">
-              <Key size={18} />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-base font-semibold text-zinc-950 dark:text-zinc-50 tracking-tight">
-                  AI & Service Keys Vault
-                </h2>
-                <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-medium">
-                  AES-256 Encrypted
-                </span>
-              </div>
-              <p className="text-zinc-500 dark:text-zinc-400 text-xs leading-relaxed mt-0.5 max-w-xl">
-                Configure Google Gemini, OpenAI, Anthropic Claude, and YouTube Data API keys with 5-Layer Hardware-Grade Encryption and live verification probes.
-              </p>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={() => navigate('/api-keys')}
-            className="h-10 px-5 rounded-full bg-zinc-950 hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-100 text-white text-xs font-medium transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs shrink-0 self-start sm:self-auto active:scale-[0.98]"
-          >
-            <span>Manage Keys</span>
-            <span aria-hidden="true">→</span>
-          </button>
+      {/* 2. API Keys Bento Card */}
+      <div className="rounded-[28px] border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-100/70 dark:bg-zinc-900/50 p-5 sm:p-7 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 backdrop-blur-xs">
+        <div>
+          <h2 className="text-base font-semibold text-zinc-950 dark:text-zinc-50 tracking-tight mb-1">
+            API Keys
+          </h2>
+          <p className="text-zinc-500 dark:text-zinc-400 text-xs leading-relaxed max-w-xl">
+            Add your own OpenAI, Google Gemini, Anthropic, or YouTube Data API keys for unlimited usage. Keys are stored encrypted in your browser.
+          </p>
         </div>
+        <button
+          type="button"
+          onClick={() => navigate('/api-keys')}
+          className="h-9 px-4 rounded-full bg-zinc-950 hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-100 text-white text-xs font-medium transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs shrink-0 self-start sm:self-auto active:scale-[0.98]"
+        >
+          <span>Manage keys</span>
+          <span aria-hidden="true">→</span>
+        </button>
       </div>
 
       {/* 4. Local Data Backups Bento Card */}

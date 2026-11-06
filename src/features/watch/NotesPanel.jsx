@@ -74,7 +74,7 @@ export function NotesPanel({ notes = [], noteState, onSeek, timeStore, courseTit
               className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-zinc-200/80 dark:border-zinc-800/80 bg-white/80 dark:bg-zinc-800/80 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-[11px] font-medium text-zinc-800 dark:text-zinc-200 transition cursor-pointer shadow-2xs active:scale-[0.98]"
               title="Share formatted study notes"
             >
-              <Share2 size={11} className="text-amber-500" />
+              <Share2 size={11} />
               <span>Share Notes</span>
             </button>
           </div>
