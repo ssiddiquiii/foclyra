@@ -377,9 +377,9 @@ export default function LandingPage() {
           </span>
         </h1>
 
-        {/* Seamless Subtitle: Relatable, clear, zero buzzwords */}
-        <p className="mx-auto mt-4 sm:mt-5.5 max-w-[660px] text-[14.5px] sm:text-[16.5px] md:text-[18px] text-[#555555] dark:text-zinc-400 leading-[1.6] font-normal px-2">
-          Paste any YouTube playlist link to block out Shorts, sidebar feeds, and comments. Track your progress, write timestamped notes, ask questions on the video, and export everything to Word.
+        {/* Seamless Subtitle: Short, punchy, catchy */}
+        <p className="mx-auto mt-4 sm:mt-5 max-w-[540px] text-[14.5px] sm:text-[16.5px] md:text-[17.5px] text-[#555555] dark:text-zinc-400 leading-[1.55] font-normal px-2">
+          No Shorts. No rabbit holes. Just your playlist, timestamped notes, and a smart tutor in one clean workspace.
         </p>
 
         {/* Confident Editorial CTA & Trust Signal */}
