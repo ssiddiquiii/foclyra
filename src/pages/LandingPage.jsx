@@ -35,7 +35,7 @@ import { WobbleCard } from '../components/ui/wobble-card';
 function BrandTile({ children, bg = 'bg-[#111111] dark:bg-white', text = 'text-white dark:text-[#111111]', rotate = '-rotate-3', size = 'sm' }) {
   const dims =
     size === 'lg'
-      ? 'h-[0.82em] w-[0.82em] rounded-[24%] mx-1 sm:mx-1.5 -translate-y-[0.06em]'
+      ? 'h-[0.82em] w-[0.82em] rounded-[24%] mx-1.5 sm:mx-2.5 -translate-y-[0.06em]'
       : 'size-8 sm:size-9 lg:size-10 rounded-[9px] sm:rounded-[11px] lg:rounded-[12px]';
   return (
     <span
@@ -43,6 +43,71 @@ function BrandTile({ children, bg = 'bg-[#111111] dark:bg-white', text = 'text-w
       aria-hidden="true"
     >
       {children}
+    </span>
+  );
+}
+
+const HERO_MORPH_ICONS = [
+  {
+    key: 'book',
+    bg: 'bg-[#111111] dark:bg-white',
+    text: 'text-white dark:text-[#111111]',
+    rotate: 'rotate-3',
+    render: () => <BookOpen className="size-[50%]" strokeWidth={2.2} />,
+  },
+  {
+    key: 'clock',
+    bg: 'bg-[#F5C542]',
+    text: 'text-[#111111]',
+    rotate: '-rotate-3',
+    render: () => <Clock className="size-[50%]" strokeWidth={2.3} />,
+  },
+  {
+    key: 'tutor',
+    bg: 'bg-[#10B981]',
+    text: 'text-white',
+    rotate: 'rotate-2',
+    render: () => <MessageSquare className="size-[48%]" strokeWidth={2.2} />,
+  },
+  {
+    key: 'docx',
+    bg: 'bg-[#2563EB]',
+    text: 'text-white',
+    rotate: '-rotate-2',
+    render: () => <FileText className="size-[48%]" strokeWidth={2.2} />,
+  },
+];
+
+function AnimatedHeroTile({ reduceMotion }) {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    if (reduceMotion) return undefined;
+    const id = setInterval(() => {
+      setIndex((prev) => (prev + 1) % HERO_MORPH_ICONS.length);
+    }, 2400);
+    return () => clearInterval(id);
+  }, [reduceMotion]);
+
+  const active = HERO_MORPH_ICONS[index];
+
+  return (
+    <span
+      className={`relative inline-flex items-center justify-center align-middle h-[0.82em] w-[0.82em] rounded-[24%] mx-1.5 sm:mx-2.5 -translate-y-[0.06em] shadow-[0_6px_16px_-4px_rgba(0,0,0,0.18)] ${active.bg} ${active.text} ${active.rotate} select-none shrink-0 overflow-hidden transition-all duration-500 ease-out`}
+      aria-hidden="true"
+    >
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.span
+          key={active.key}
+          initial={reduceMotion ? { opacity: 1 } : { y: 14, opacity: 0, scale: 0.72, filter: 'blur(3px)' }}
+          animate={{ y: 0, opacity: 1, scale: 1, filter: 'blur(0px)' }}
+          exit={reduceMotion ? { opacity: 0 } : { y: -14, opacity: 0, scale: 0.72, filter: 'blur(3px)' }}
+          transition={{ duration: 0.36, ease: [0.22, 1, 0.36, 1] }}
+          className="inset-0 flex items-center justify-center w-full h-full"
+        >
+          {active.render()}
+        </motion.span>
+      </AnimatePresence>
     </span>
   );
 }
@@ -299,7 +364,7 @@ export default function LandingPage() {
         >
           <span className="block whitespace-nowrap">
             <GradualWord
-              word="Watch"
+              word="Study"
               startIndex={0}
               isInView={isHeroInView}
               reduceMotion={shouldReduceMotion}
@@ -323,32 +388,26 @@ export default function LandingPage() {
               startIndex={6}
               isInView={isHeroInView}
               reduceMotion={shouldReduceMotion}
-            />{' '}
-            <GradualWord
-              word="lectures"
-              startIndex={13}
-              isInView={isHeroInView}
-              reduceMotion={shouldReduceMotion}
             />
           </span>
           <span className="block whitespace-nowrap mt-0.5 sm:mt-1">
             <GradualWord
               word="like"
-              startIndex={21}
+              startIndex={14}
               isInView={isHeroInView}
               reduceMotion={shouldReduceMotion}
               gradient={false}
             />{' '}
             <GradualWord
               word="a"
-              startIndex={26}
+              startIndex={19}
               isInView={isHeroInView}
               reduceMotion={shouldReduceMotion}
               gradient={false}
             />{' '}
             <GradualWord
-              word="structured"
-              startIndex={28}
+              word="real"
+              startIndex={21}
               isInView={isHeroInView}
               reduceMotion={shouldReduceMotion}
               gradient={false}
@@ -359,17 +418,15 @@ export default function LandingPage() {
               transition={
                 shouldReduceMotion
                   ? { duration: 0 }
-                  : { duration: GRADUAL_DURATION, delay: 39 * GRADUAL_DELAY_STEP, ease: [0.2, 0.65, 0.3, 0.9] }
+                  : { duration: GRADUAL_DURATION, delay: 25 * GRADUAL_DELAY_STEP, ease: [0.2, 0.65, 0.3, 0.9] }
               }
               className="inline-block align-middle"
             >
-              <BrandTile bg="bg-[#111111] dark:bg-white" text="text-white dark:text-[#111111]" rotate="rotate-3" size="lg">
-                <BookOpen className="size-[50%]" strokeWidth={2.2} />
-              </BrandTile>
+              <AnimatedHeroTile reduceMotion={shouldReduceMotion} />
             </motion.span>
             <GradualWord
               word="course."
-              startIndex={40}
+              startIndex={26}
               isInView={isHeroInView}
               reduceMotion={shouldReduceMotion}
               gradient={false}
