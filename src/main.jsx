@@ -5,7 +5,7 @@ import App from './App.jsx'
 import BootstrapGate from './components/BootstrapGate.jsx'
 import ClerkSupabaseSync from './components/ClerkSupabaseSync.jsx'
 import MaintenanceScreen from './components/MaintenanceScreen.jsx'
-import '@fontsource-variable/geist';
+import '@fontsource-variable/manrope';
 import './index.css'
 import { initAnalytics } from './services/analytics';
 

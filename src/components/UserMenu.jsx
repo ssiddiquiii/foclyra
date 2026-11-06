@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, Cloud, ChevronDown, Layers } from 'lucide-react';
+import { LogOut, Cloud, ChevronDown, Layers, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
+import { useClerk } from '@clerk/clerk-react';
 import { useUIStore } from '../hooks/useUIStore';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db/FoclyraDB';
@@ -15,6 +16,7 @@ export default function UserMenu({ onOpenAuth }) {
     else openAuthModal('default');
   };
   const { user, profile, signOut } = useAuth();
+  const clerk = useClerk();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -115,6 +117,21 @@ export default function UserMenu({ onOpenAuth }) {
               />
             </div>
           </div>
+
+                    {/* Manage Account & Active Devices */}
+          <button
+            type="button"
+            onClick={() => {
+              setDropdownOpen(false);
+              if (clerk?.openUserProfile) {
+                clerk.openUserProfile();
+              }
+            }}
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-full text-[12px] text-[#111111] dark:text-zinc-200 hover:bg-[#eaeaea] dark:hover:bg-zinc-800 font-medium transition cursor-pointer mb-1"
+          >
+            <ShieldCheck className="size-3.5 text-indigo-500 dark:text-indigo-400" />
+            <span>Account & Active Devices</span>
+          </button>
 
           {/* Sign Out Button */}
           <button
