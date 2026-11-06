@@ -73,68 +73,61 @@ export function PlayerSurface({
     );
   };
 
-  // 1. THEATER MODE (isPlaylistCollapsed = true):
-  if (isPlaylistCollapsed) {
-    return (
-      <div className="w-full bg-black relative flex items-center justify-center border-b border-zinc-800/80 flex-shrink-0 group/stage py-1 sm:py-2">
-        {/* Floating Left Prev Lecture Arrow in Cinema Margin */}
-        {prevLessonId && (
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onNavigate(prevLessonId);
-            }}
-            className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-30 p-2.5 sm:p-3 rounded-full bg-black/80 hover:bg-black text-white/80 hover:text-white border border-white/20 backdrop-blur-md opacity-0 group-hover/stage:opacity-100 transition-all cursor-pointer shadow-2xl hover:scale-110 active:scale-95"
-            title="Previous Lecture"
-            aria-label="Previous Lecture"
-          >
-            <ChevronLeft size={24} />
-          </button>
-        )}
-
-        {/* Floating Right Next Lecture Arrow in Cinema Margin */}
-        {nextLessonId && (
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              onNavigate(nextLessonId);
-            }}
-            className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-30 p-2.5 sm:p-3 rounded-full bg-black/80 hover:bg-black text-white/80 hover:text-white border border-white/20 backdrop-blur-md opacity-0 group-hover/stage:opacity-100 transition-all cursor-pointer shadow-2xl hover:scale-110 active:scale-95"
-            title="Next Lecture"
-            aria-label="Next Lecture"
-          >
-            <ChevronRight size={24} />
-          </button>
-        )}
-
-        {/* Theater Video Frame */}
-        <div 
-          data-testid="watch-player" 
-          ref={controller.playerContainerRef} 
-          onMouseMove={controller.handleMouseMove} 
-          onMouseLeave={controller.handleMouseLeave} 
-          className={`relative aspect-video w-full max-h-[calc(100vh-95px)] max-w-[calc((100vh-95px)*16/9)] 2xl:max-h-[calc(100vh-105px)] 2xl:max-w-[calc((100vh-105px)*16/9)] mx-auto overflow-hidden bg-black flex items-center justify-center shadow-2xl ${!controller.isControlsVisible && controller.isPlaying ? 'cursor-none' : ''}`}
-        >
-          {renderPlayerContent()}
-        </div>
-      </div>
-    );
-  }
-
-  // 2. DEFAULT WORKSPACE MODE (isPlaylistCollapsed = false):
+  // Unified Render: Preserves the YouTube iframe DOM node across Theater and Default modes
   return (
-    <div className="w-full px-3 sm:px-6 pt-3 sm:pt-4 flex-shrink-0">
-      <div 
-        data-testid="watch-player" 
-        ref={controller.playerContainerRef} 
-        onMouseMove={controller.handleMouseMove} 
-        onMouseLeave={controller.handleMouseLeave} 
-        className={`relative aspect-video w-full landscape:w-auto landscape:max-h-[72vh] max-w-7xl mx-auto rounded-[20px] sm:rounded-[24px] overflow-hidden bg-black flex items-center justify-center shadow-md border border-zinc-200/80 dark:border-zinc-800/80 group/player ${!controller.isControlsVisible && controller.isPlaying ? 'cursor-none' : ''}`}
+    <div
+      className={
+        isPlaylistCollapsed
+          ? "w-full bg-black relative flex items-center justify-center border-b border-zinc-800/80 flex-shrink-0 group/stage py-1 sm:py-2"
+          : "w-full px-3 sm:px-6 pt-3 sm:pt-4 flex-shrink-0"
+      }
+    >
+      {/* Floating Prev Arrow in Cinema Margin (Theater Mode) */}
+      {isPlaylistCollapsed && prevLessonId && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onNavigate(prevLessonId);
+          }}
+          className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-30 p-2.5 sm:p-3 rounded-full bg-black/80 hover:bg-black text-white/80 hover:text-white border border-white/20 backdrop-blur-md opacity-0 group-hover/stage:opacity-100 transition-all cursor-pointer shadow-2xl hover:scale-110 active:scale-95"
+          title="Previous Lecture"
+          aria-label="Previous Lecture"
+        >
+          <ChevronLeft size={24} />
+        </button>
+      )}
+
+      {/* Floating Next Arrow in Cinema Margin (Theater Mode) */}
+      {isPlaylistCollapsed && nextLessonId && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onNavigate(nextLessonId);
+          }}
+          className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-30 p-2.5 sm:p-3 rounded-full bg-black/80 hover:bg-black text-white/80 hover:text-white border border-white/20 backdrop-blur-md opacity-0 group-hover/stage:opacity-100 transition-all cursor-pointer shadow-2xl hover:scale-110 active:scale-95"
+          title="Next Lecture"
+          aria-label="Next Lecture"
+        >
+          <ChevronRight size={24} />
+        </button>
+      )}
+
+      {/* Persistent Video Frame: Stays mounted so the YouTube iframe is never torn down */}
+      <div
+        data-testid="watch-player"
+        ref={controller.playerContainerRef}
+        onMouseMove={controller.handleMouseMove}
+        onMouseLeave={controller.handleMouseLeave}
+        className={`relative aspect-video w-full overflow-hidden bg-black flex items-center justify-center ${
+          isPlaylistCollapsed
+            ? "max-h-[calc(100vh-95px)] max-w-[calc((100vh-95px)*16/9)] 2xl:max-h-[calc(100vh-105px)] 2xl:max-w-[calc((100vh-105px)*16/9)] mx-auto shadow-2xl"
+            : "landscape:w-auto landscape:max-h-[72vh] max-w-7xl mx-auto rounded-[20px] sm:rounded-[24px] shadow-md border border-zinc-200/80 dark:border-zinc-800/80 group/player"
+        } ${!controller.isControlsVisible && controller.isPlaying ? 'cursor-none' : ''}`}
       >
-        {/* Prev / Next buttons inside video on hover */}
-        {prevLessonId && (
+        {/* Prev / Next buttons inside video on hover (Default Workspace Mode) */}
+        {!isPlaylistCollapsed && prevLessonId && (
           <button
             type="button"
             onClick={(e) => {
@@ -149,7 +142,7 @@ export function PlayerSurface({
           </button>
         )}
 
-        {nextLessonId && (
+        {!isPlaylistCollapsed && nextLessonId && (
           <button
             type="button"
             onClick={(e) => {
