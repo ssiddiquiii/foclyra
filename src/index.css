@@ -358,3 +358,18 @@ code, pre, kbd, samp, .font-mono {
   border-left-color: #3f3f46;
   color: #a1a1aa;
 }
+
+/* Clerk v5 Modal Seam & Corner Gap Fixes */
+.cl-cardBox {
+  border-radius: 20px !important;
+  overflow: hidden !important;
+}
+.cl-card,
+.cl-scrollBox,
+.cl-pageScrollBox,
+.cl-navbar,
+.cl-footer {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  margin: 0 !important;
+}

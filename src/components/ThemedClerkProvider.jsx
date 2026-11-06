@@ -1,15 +1,25 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { ClerkProvider } from '@clerk/clerk-react';
 import { dark } from '@clerk/themes';
-import { useTheme } from '../hooks/useTheme';
+import { getInitialTheme } from '../hooks/useTheme';
 
 /**
  * ThemedClerkProvider wraps ClerkProvider and synchronizes Clerk's UI appearance
- * (Sign In modal, User Profile, etc.) with Foclyra's obsidian dark and editorial light studio aesthetics.
+ * with Foclyra's dark and light themes without internal corner seams or gaps.
  */
 export default function ThemedClerkProvider({ children, publishableKey }) {
-  const { theme } = useTheme();
-  const isDark = theme === 'dark';
+  const [isDark, setIsDark] = useState(() => getInitialTheme() === 'dark');
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return undefined;
+    const root = document.documentElement;
+    const syncTheme = () => setIsDark(root.classList.contains('dark'));
+    syncTheme();
+
+    const observer = new MutationObserver(syncTheme);
+    observer.observe(root, { attributes: true, attributeFilter: ['class'] });
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <ClerkProvider
@@ -24,7 +34,7 @@ export default function ThemedClerkProvider({ children, publishableKey }) {
               colorInputText: '#ffffff',
               colorText: '#f5f5f7',
               colorTextSecondary: '#a1a1aa',
-              borderRadius: '1rem',
+              borderRadius: '0.75rem',
               fontFamily: 'var(--font-sans)',
             }
           : {
@@ -34,17 +44,31 @@ export default function ThemedClerkProvider({ children, publishableKey }) {
               colorInputText: '#111111',
               colorText: '#111111',
               colorTextSecondary: '#666666',
-              borderRadius: '1rem',
+              borderRadius: '0.75rem',
               fontFamily: 'var(--font-sans)',
             },
         elements: {
-          card: isDark
-            ? 'border border-white/10 shadow-2xl bg-[#121215]'
-            : 'border border-zinc-200 shadow-xl bg-white',
-          navbar: isDark ? 'border-r border-white/10' : 'border-r border-zinc-200',
-          navbarButton: isDark ? 'text-zinc-300 hover:text-white' : 'text-zinc-700 hover:text-black',
+          cardBox: isDark
+            ? '!rounded-[20px] !overflow-hidden border border-white/10 !shadow-2xl !bg-[#121215]'
+            : '!rounded-[20px] !overflow-hidden border border-zinc-200/90 !shadow-2xl !bg-white',
+          card: '!rounded-none !shadow-none !border-0 !m-0 !bg-transparent',
+          scrollBox: isDark
+            ? '!rounded-none !shadow-none !border-0 !m-0 !bg-[#121215]'
+            : '!rounded-none !shadow-none !border-0 !m-0 !bg-white',
+          pageScrollBox: '!rounded-none !shadow-none !border-0',
+          navbar: isDark
+            ? '!rounded-none !m-0 !bg-[#16161a] border-r border-white/10'
+            : '!rounded-none !m-0 !bg-zinc-50/90 border-r border-zinc-200/80',
+          navbarButton: isDark
+            ? 'text-zinc-300 hover:text-white !rounded-lg'
+            : 'text-zinc-700 hover:text-black !rounded-lg',
+          footer: isDark
+            ? '!rounded-none !mt-0 !bg-[#16161a] border-t border-white/10'
+            : '!rounded-none !mt-0 !bg-zinc-50 border-t border-zinc-200/80',
           headerTitle: 'font-semibold tracking-tight',
-          userButtonPopoverCard: isDark ? 'bg-[#121215] border border-white/10' : 'bg-white border border-zinc-200',
+          userButtonPopoverCard: isDark
+            ? '!rounded-[16px] !overflow-hidden bg-[#121215] border border-white/10'
+            : '!rounded-[16px] !overflow-hidden bg-white border border-zinc-200',
         }
       }}
     >
@@ -52,4 +76,3 @@ export default function ThemedClerkProvider({ children, publishableKey }) {
     </ClerkProvider>
   );
 }
-

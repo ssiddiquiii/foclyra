@@ -400,59 +400,8 @@ export default function LandingPage() {
       {/* =========================================================================
           3. Interactive Watch Workspace Preview - 320px to 4K Responsive
          ========================================================================= */}
-      <section id="studio" className="px-3.5 sm:px-6 pt-12 sm:pt-18 md:pt-24 pb-4">
+      <section id="studio" className="px-3.5 sm:px-6 pt-10 sm:pt-14 md:pt-18 pb-4">
         <div className="mx-auto max-w-[1140px]">
-          {/* Showcase Controller with Apple-Grade Micro-Badge */}
-          <div className="flex flex-col items-center gap-2 sm:gap-2.5 mb-5 sm:mb-7 text-center w-full">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#f4f4f4] dark:bg-zinc-800/80 border border-[#e5e5e5] dark:border-zinc-700/70 text-[10.5px] sm:text-[11px] font-semibold tracking-wider uppercase text-zinc-600 dark:text-zinc-300 shadow-2xs">
-              <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Interactive Studio Demo</span>
-              <span className="text-zinc-300 dark:text-zinc-600">•</span>
-              <span className="text-zinc-500 dark:text-zinc-400 font-normal normal-case">Tap to Compare</span>
-            </div>
-
-            <div className="relative inline-flex items-center p-1 rounded-full bg-[#f2f2f2] dark:bg-zinc-900 border border-[#e5e5e5] dark:border-zinc-800 shadow-2xs">
-              <button
-                type="button"
-                onClick={() => setViewMode('foclyra')}
-                className={`relative flex h-8 sm:h-9 items-center justify-center gap-1.5 sm:gap-2 rounded-full px-3.5 sm:px-5 text-[12px] sm:text-[13px] font-medium transition-colors duration-200 cursor-pointer whitespace-nowrap select-none ${
-                  viewMode === 'foclyra'
-                    ? 'text-white dark:text-[#111111]'
-                    : 'text-[#666666] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white'
-                }`}
-              >
-                {viewMode === 'foclyra' && (
-                  <motion.div
-                    layoutId="landingViewModePill"
-                    transition={{ type: 'spring', stiffness: 500, damping: 38 }}
-                    className="absolute inset-0 bg-[#111111] dark:bg-white rounded-full shadow-xs"
-                  />
-                )}
-                <span className="relative z-10 size-1.5 rounded-full bg-[#63d94e] shrink-0" />
-                <span className="relative z-10">Foclyra Workspace</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setViewMode('youtube')}
-                className={`relative flex h-8 sm:h-9 items-center justify-center gap-1.5 sm:gap-2 rounded-full px-3.5 sm:px-5 text-[12px] sm:text-[13px] font-medium transition-colors duration-200 cursor-pointer whitespace-nowrap select-none ${
-                  viewMode === 'youtube'
-                    ? 'text-white dark:text-[#111111]'
-                    : 'text-[#666666] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white'
-                }`}
-              >
-                {viewMode === 'youtube' && (
-                  <motion.div
-                    layoutId="landingViewModePill"
-                    transition={{ type: 'spring', stiffness: 500, damping: 38 }}
-                    className="absolute inset-0 bg-[#111111] dark:bg-white rounded-full shadow-xs"
-                  />
-                )}
-                <span className="relative z-10">Standard YouTube Tab</span>
-              </button>
-            </div>
-          </div>
-
           {/* Unified Apple-Grade Chassis with Ambient Pedestal Glow */}
           <div className="relative">
             <div
@@ -460,29 +409,73 @@ export default function LandingPage() {
               className="absolute -top-16 left-1/2 -translate-x-1/2 w-[92%] max-w-[880px] h-[340px] bg-gradient-to-b from-emerald-500/15 via-teal-500/8 to-transparent dark:from-emerald-400/20 dark:via-teal-400/10 dark:to-transparent blur-3xl pointer-events-none rounded-full"
             />
             <div className="relative rounded-[22px] sm:rounded-[32px] bg-white dark:bg-[#0c0d11] border border-[#e5e5e5] dark:border-zinc-800 shadow-[0_24px_70px_-15px_rgba(0,0,0,0.1)] dark:shadow-[0_30px_90px_-15px_rgba(0,0,0,0.7)] overflow-hidden">
-            {/* Sleek Window Top Bar */}
-            <div className="h-10 sm:h-12 px-3.5 sm:px-5 bg-[#fafafa] dark:bg-[#111217] border-b border-[#efefef] dark:border-zinc-800/90 flex items-center justify-between text-[11.5px] sm:text-[12.5px]">
-              <div className="flex items-center gap-2 min-w-0 pr-2">
+            {/* Sleek Window Top Bar with Embedded Swap Toggle */}
+            <div className="min-h-12 sm:h-14 px-3.5 sm:px-5 py-2 sm:py-0 bg-[#fafafa] dark:bg-[#111217] border-b border-[#efefef] dark:border-zinc-800/90 flex items-center justify-between gap-2 text-[11.5px] sm:text-[12.5px]">
+              <div className="flex items-center gap-2 min-w-0">
                 <div className="flex items-center gap-1.5 shrink-0">
                   <span className="size-2.5 sm:size-3 rounded-full bg-[#ff5f57]" />
                   <span className="size-2.5 sm:size-3 rounded-full bg-[#febc2e]" />
                   <span className="size-2.5 sm:size-3 rounded-full bg-[#28c840]" />
                 </div>
-                <span className="ml-2 text-[#777777] dark:text-zinc-400 font-medium truncate hidden md:inline">
+                <span className="ml-2 text-[#777777] dark:text-zinc-400 font-medium truncate hidden xl:inline">
                   {PREVIEW_COURSE.header}
                 </span>
               </div>
 
-              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-[#f0f0f2] dark:bg-zinc-800/90 font-medium text-[#111111] dark:text-zinc-200 shrink-0 text-[11px] sm:text-[12px] shadow-2xs">
-                <span className="size-1.5 rounded-full bg-[#f4525f] animate-pulse shrink-0" />
-                <span className="font-mono font-semibold">{formatTime(pomodoroSec)}</span>
-                <span className="text-[#8d8d8d] hidden sm:inline">•</span>
-                <span className="text-[#555555] dark:text-zinc-400 hidden sm:inline">Pomodoro Focus</span>
+              {/* Swap Button Embedded Flush Inside Display Bar */}
+              <div className="relative inline-flex items-center p-0.5 rounded-full bg-[#e9e9ec] dark:bg-zinc-900 border border-[#dedee3] dark:border-zinc-800 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setViewMode('foclyra')}
+                  className={`relative flex h-6.5 sm:h-7.5 items-center justify-center gap-1.5 rounded-full px-3 sm:px-3.5 text-[11px] sm:text-[12px] font-medium transition-colors duration-200 cursor-pointer whitespace-nowrap select-none ${
+                    viewMode === 'foclyra'
+                      ? 'text-white dark:text-[#111111]'
+                      : 'text-[#666666] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white'
+                  }`}
+                >
+                  {viewMode === 'foclyra' && (
+                    <motion.div
+                      layoutId="landingViewModePill"
+                      transition={{ type: 'spring', stiffness: 500, damping: 38 }}
+                      className="absolute inset-0 bg-[#111111] dark:bg-white rounded-full shadow-2xs"
+                    />
+                  )}
+                  <span className="relative z-10 size-1.5 rounded-full bg-[#63d94e] shrink-0" />
+                  <span className="relative z-10">Foclyra Workspace</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setViewMode('youtube')}
+                  className={`relative flex h-6.5 sm:h-7.5 items-center justify-center gap-1.5 rounded-full px-3 sm:px-3.5 text-[11px] sm:text-[12px] font-medium transition-colors duration-200 cursor-pointer whitespace-nowrap select-none ${
+                    viewMode === 'youtube'
+                      ? 'text-white dark:text-[#111111]'
+                      : 'text-[#666666] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white'
+                  }`}
+                >
+                  {viewMode === 'youtube' && (
+                    <motion.div
+                      layoutId="landingViewModePill"
+                      transition={{ type: 'spring', stiffness: 500, damping: 38 }}
+                      className="absolute inset-0 bg-[#111111] dark:bg-white rounded-full shadow-2xs"
+                    />
+                  )}
+                  <span className="relative z-10">Standard YouTube Tab</span>
+                </button>
               </div>
 
-              <div className="hidden sm:flex items-center gap-1.5 text-[11.5px] md:text-[12px] text-[#666666] dark:text-zinc-400 shrink-0">
-                <span className="size-1.5 rounded-full bg-[#16a34a] dark:bg-[#63d94e]" />
-                <span className="text-[#16a34a] dark:text-[#63d94e] font-medium">Auto-saved</span>
+              <div className="hidden md:flex items-center gap-3 shrink-0">
+                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#f0f0f2] dark:bg-zinc-800/90 font-medium text-[#111111] dark:text-zinc-200 shrink-0 text-[11px] shadow-2xs">
+                  <span className="size-1.5 rounded-full bg-[#f4525f] animate-pulse shrink-0" />
+                  <span className="font-mono font-semibold">{formatTime(pomodoroSec)}</span>
+                  <span className="text-[#8d8d8d] hidden lg:inline">•</span>
+                  <span className="text-[#555555] dark:text-zinc-400 hidden lg:inline">Pomodoro</span>
+                </div>
+
+                <div className="flex items-center gap-1.5 text-[11.5px] text-[#666666] dark:text-zinc-400 shrink-0">
+                  <span className="size-1.5 rounded-full bg-[#16a34a] dark:bg-[#63d94e]" />
+                  <span className="text-[#16a34a] dark:text-[#63d94e] font-medium">Auto-saved</span>
+                </div>
               </div>
             </div>
 
@@ -825,24 +818,24 @@ export default function LandingPage() {
           <div className="mt-7 sm:mt-11 grid grid-cols-1 gap-3.5 sm:gap-4 md:grid-cols-2 lg:grid-cols-12">
             {/* Card 1: Clean Playlist & Video Player (7 cols) */}
             <WobbleCard
-              containerClassName="lg:col-span-7 rounded-[20px] sm:rounded-[26px] bg-[#f4f4f4] dark:bg-zinc-900/90 min-h-0 sm:min-h-[240px]"
-              className="p-4 sm:p-6 lg:p-8 flex flex-col justify-between h-full"
+              containerClassName="lg:col-span-7 rounded-[20px] sm:rounded-[26px] bg-[#f4f4f4] dark:bg-zinc-900/90"
+              className="p-5 sm:p-6 lg:p-7 flex flex-col justify-between gap-5 h-full"
             >
-              <div className="space-y-2 sm:space-y-2.5 max-w-lg">
+              <div className="space-y-2 max-w-xl">
                 <div className="flex items-center gap-2.5 sm:gap-3">
                   <BrandTile bg="bg-[#FF0033]" text="text-white" rotate="-rotate-3">
                     <Play className="size-3.5 sm:size-4 fill-white text-white ml-0.5" />
                   </BrandTile>
-                  <h3 className="text-[17px] sm:text-[19px] md:text-[18.5px] lg:text-[21px] leading-[1.22] font-semibold tracking-[-0.02em] text-[#111111] dark:text-white">
+                  <h3 className="text-[17px] sm:text-[19px] md:text-[18.5px] lg:text-[20px] leading-[1.22] font-semibold tracking-[-0.02em] text-[#111111] dark:text-white">
                     Distraction-free playlist player
                   </h3>
                 </div>
-                <p className="text-[13.5px] sm:text-[14.5px] lg:text-[15px] leading-[1.6] text-[#666666] dark:text-zinc-400">
+                <p className="text-[13.5px] sm:text-[14.5px] leading-[1.6] text-[#666666] dark:text-zinc-400">
                   Import any YouTube playlist (up to 200 videos) and study in Theater Mode with zero sidebar distractions, Shorts, or comments.
                 </p>
               </div>
 
-              <div className="mt-4 sm:mt-6 flex flex-wrap items-center gap-1.5 sm:gap-2">
+              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-white dark:bg-zinc-800 text-[11.5px] sm:text-[12.5px] font-medium text-[#111111] dark:text-zinc-200 whitespace-nowrap">
                   <CheckCircle2 className="size-3 sm:size-3.5 text-[#16a34a] shrink-0" />
                   <span>No sidebar recommendations</span>
@@ -860,24 +853,24 @@ export default function LandingPage() {
 
             {/* Card 2: In-Context AI Tutor (5 cols) */}
             <WobbleCard
-              containerClassName="lg:col-span-5 rounded-[20px] sm:rounded-[26px] bg-[#f4f4f4] dark:bg-zinc-900/90 min-h-0 sm:min-h-[240px]"
-              className="p-4 sm:p-6 lg:p-8 flex flex-col justify-between h-full"
+              containerClassName="lg:col-span-5 rounded-[20px] sm:rounded-[26px] bg-[#f4f4f4] dark:bg-zinc-900/90"
+              className="p-5 sm:p-6 lg:p-7 flex flex-col justify-between gap-5 h-full"
             >
-              <div className="space-y-2 sm:space-y-2.5">
+              <div className="space-y-2">
                 <div className="flex items-center gap-2.5 sm:gap-3">
                   <BrandTile bg="bg-[#10B981]" text="text-white" rotate="rotate-2">
                     <MessageSquare className="size-3.5 sm:size-4" />
                   </BrandTile>
-                  <h3 className="text-[17px] sm:text-[19px] md:text-[18.5px] lg:text-[21px] leading-[1.22] font-semibold tracking-[-0.02em] text-[#111111] dark:text-white">
+                  <h3 className="text-[17px] sm:text-[19px] md:text-[18.5px] lg:text-[20px] leading-[1.22] font-semibold tracking-[-0.02em] text-[#111111] dark:text-white">
                     In-context AI tutor
                   </h3>
                 </div>
-                <p className="text-[13.5px] sm:text-[14.5px] lg:text-[15px] leading-[1.6] text-[#666666] dark:text-zinc-400">
+                <p className="text-[13.5px] sm:text-[14.5px] leading-[1.6] text-[#666666] dark:text-zinc-400">
                   Ask questions grounded in the current chapter and exact video timestamp. 30 daily questions with zero hallucinations.
                 </p>
               </div>
 
-              <div className="mt-4 sm:mt-6 flex flex-wrap items-center gap-1.5 sm:gap-2">
+              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
                 <span className="inline-flex items-center gap-1.5 px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-white dark:bg-zinc-800 text-[11.5px] sm:text-[12.5px] font-medium text-[#111111] dark:text-zinc-200 whitespace-nowrap">
                   <Sparkle className="size-3 sm:size-3.5 text-emerald-500 shrink-0" />
                   <span>Grounded in Lecture</span>
@@ -891,24 +884,24 @@ export default function LandingPage() {
 
             {/* Card 3: Timestamped Notes (5 cols) */}
             <WobbleCard
-              containerClassName="lg:col-span-5 rounded-[20px] sm:rounded-[26px] bg-[#f4f4f4] dark:bg-zinc-900/90 min-h-0 sm:min-h-[240px]"
-              className="p-4 sm:p-6 lg:p-8 flex flex-col justify-between h-full"
+              containerClassName="lg:col-span-5 rounded-[20px] sm:rounded-[26px] bg-[#f4f4f4] dark:bg-zinc-900/90"
+              className="p-5 sm:p-6 lg:p-7 flex flex-col justify-between gap-4 h-full"
             >
-              <div className="space-y-2 sm:space-y-2.5">
+              <div className="space-y-2">
                 <div className="flex items-center gap-2.5 sm:gap-3">
                   <BrandTile bg="bg-[#F5C542]" text="text-[#111111]" rotate="rotate-3">
                     <Clock className="size-3.5 sm:size-4" strokeWidth={2.3} />
                   </BrandTile>
-                  <h3 className="text-[17px] sm:text-[19px] md:text-[18.5px] lg:text-[21px] leading-[1.22] font-semibold tracking-[-0.02em] text-[#111111] dark:text-white">
+                  <h3 className="text-[17px] sm:text-[19px] md:text-[18.5px] lg:text-[20px] leading-[1.22] font-semibold tracking-[-0.02em] text-[#111111] dark:text-white">
                     Timestamped lecture notes
                   </h3>
                 </div>
-                <p className="text-[13.5px] sm:text-[14.5px] lg:text-[15px] leading-[1.6] text-[#666666] dark:text-zinc-400">
+                <p className="text-[13.5px] sm:text-[14.5px] leading-[1.6] text-[#666666] dark:text-zinc-400">
                   Every note links to the exact video second. Click any timestamp to jump right back to that concept or formula.
                 </p>
               </div>
 
-              <div className="mt-4 sm:mt-6 rounded-[14px] sm:rounded-[18px] bg-white dark:bg-zinc-800/90 border border-zinc-200/70 dark:border-zinc-700/60 p-3.5 sm:p-4 shadow-2xs">
+              <div className="rounded-[14px] sm:rounded-[18px] bg-white dark:bg-zinc-800/90 border border-zinc-200/70 dark:border-zinc-700/60 p-3.5 sm:p-4 shadow-2xs">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="inline-flex items-center gap-2">
                     <span className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-mono font-medium bg-[#16a34a]/10 text-[#15803d] dark:text-[#4ade80] border border-[#16a34a]/20">
@@ -921,7 +914,7 @@ export default function LandingPage() {
                   </div>
                   <span className="text-[11px] font-mono text-[#16a34a] dark:text-[#4ade80] font-medium">Jump to 04:12</span>
                 </div>
-                <p className="mt-2 text-[12px] sm:text-[13px] leading-relaxed text-[#555555] dark:text-zinc-400">
+                <p className="mt-1.5 text-[12px] sm:text-[13px] leading-relaxed text-[#555555] dark:text-zinc-400">
                   Break down complex topics into small, manageable steps.
                 </p>
               </div>
@@ -929,65 +922,70 @@ export default function LandingPage() {
 
             {/* Card 4: Word (.docx) Export (7 cols) */}
             <WobbleCard
-              containerClassName="lg:col-span-7 rounded-[20px] sm:rounded-[26px] bg-[#f4f4f4] dark:bg-zinc-900/90 min-h-0 sm:min-h-[240px]"
-              className="p-4 sm:p-6 lg:p-8 flex flex-col justify-between h-full"
+              containerClassName="lg:col-span-7 rounded-[20px] sm:rounded-[26px] bg-[#f4f4f4] dark:bg-zinc-900/90"
+              className="p-5 sm:p-6 lg:p-7 flex flex-col justify-between gap-4 h-full"
             >
-              <div className="space-y-2 sm:space-y-2.5">
+              <div className="space-y-2">
                 <div className="flex items-center gap-2.5 sm:gap-3">
                   <BrandTile bg="bg-[#2563EB]" text="text-white" rotate="-rotate-2">
                     <FileText className="size-3.5 sm:size-4" />
                   </BrandTile>
-                  <h3 className="text-[17px] sm:text-[19px] md:text-[18.5px] lg:text-[21px] leading-[1.22] font-semibold tracking-[-0.02em] text-[#111111] dark:text-white">
+                  <h3 className="text-[17px] sm:text-[19px] md:text-[18.5px] lg:text-[20px] leading-[1.22] font-semibold tracking-[-0.02em] text-[#111111] dark:text-white">
                     Course-wise Word (.docx) export
                   </h3>
                 </div>
-                <p className="text-[13.5px] sm:text-[14.5px] lg:text-[15px] leading-[1.6] text-[#666666] dark:text-zinc-400">
+                <p className="text-[13.5px] sm:text-[14.5px] leading-[1.6] text-[#666666] dark:text-zinc-400">
                   Export notes from a single course or your entire library as a formatted Microsoft Word (.docx) study guide.
                 </p>
               </div>
 
-              <div className="mt-4 sm:mt-6 flex items-center justify-between rounded-[14px] sm:rounded-[18px] bg-white dark:bg-zinc-800 px-3.5 py-2.5 sm:px-4 sm:py-3.5">
-                <div className="flex items-center gap-2.5 min-w-0 pr-2">
-                  <span className="size-7 sm:size-8 rounded-lg bg-[#2563EB]/10 text-[#2563EB] flex items-center justify-center shrink-0">
-                    <FileText className="size-3.5" />
-                  </span>
-                  <span className="text-[12px] sm:text-[13px] font-medium text-[#111111] dark:text-white truncate">
-                    Valuation_Notes.docx
-                  </span>
+              <div className="rounded-[14px] sm:rounded-[18px] bg-white dark:bg-zinc-800/90 border border-zinc-200/70 dark:border-zinc-700/60 p-3.5 sm:p-4 shadow-2xs">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2.5 min-w-0 pr-2">
+                    <span className="size-6 rounded-md bg-[#2563EB]/10 text-[#2563EB] flex items-center justify-center shrink-0">
+                      <FileText className="size-3.5" />
+                    </span>
+                    <span className="text-[12px] sm:text-[13px] font-semibold text-[#111111] dark:text-white truncate">
+                      Valuation_Notes.docx
+                    </span>
+                  </div>
+                  <Download className="size-3.5 text-[#6f6f6f] shrink-0" />
                 </div>
-                <Download className="size-3.5 text-[#6f6f6f] shrink-0" />
+                <p className="mt-1.5 text-[12px] sm:text-[13px] leading-relaxed text-[#555555] dark:text-zinc-400">
+                  Organized by lecture title with clickable timestamps and clean headings.
+                </p>
               </div>
             </WobbleCard>
 
             {/* Card 5: Pomodoro, Streak & Cloud Sync (12 cols) */}
             <WobbleCard
-              containerClassName="lg:col-span-12 rounded-[20px] sm:rounded-[26px] bg-[#f4f4f4] dark:bg-zinc-900/90 min-h-0 sm:min-h-[240px]"
-              className="p-4 sm:p-6 lg:p-8 flex flex-col justify-between h-full"
+              containerClassName="md:col-span-2 lg:col-span-12 rounded-[20px] sm:rounded-[26px] bg-[#f4f4f4] dark:bg-zinc-900/90"
+              className="p-5 sm:p-6 lg:p-7 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 sm:gap-6 h-full"
             >
-              <div className="space-y-2 sm:space-y-2.5 max-w-lg">
+              <div className="space-y-2 max-w-2xl">
                 <div className="flex items-center gap-2.5 sm:gap-3">
                   <BrandTile bg="bg-[#FF6B2C]" text="text-white" rotate="rotate-2">
                     <Flame className="size-3.5 sm:size-4 fill-white text-white" />
                   </BrandTile>
-                  <h3 className="text-[17px] sm:text-[19px] md:text-[18.5px] lg:text-[21px] leading-[1.22] font-semibold tracking-[-0.02em] text-[#111111] dark:text-white">
+                  <h3 className="text-[17px] sm:text-[19px] md:text-[18.5px] lg:text-[20px] leading-[1.22] font-semibold tracking-[-0.02em] text-[#111111] dark:text-white">
                     Pomodoro timer, streaks &amp; cloud sync
                   </h3>
                 </div>
-                <p className="text-[13.5px] sm:text-[14.5px] lg:text-[15px] leading-[1.6] text-[#666666] dark:text-zinc-400">
+                <p className="text-[13.5px] sm:text-[14.5px] leading-[1.6] text-[#666666] dark:text-zinc-400">
                   Stay consistent with a built-in focus timer, daily study streaks, and automatic cloud sync across devices.
                 </p>
               </div>
 
-              <div className="mt-4 sm:mt-6 flex flex-wrap items-center gap-1.5 sm:gap-2">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-white dark:bg-zinc-800 text-[11.5px] sm:text-[12.5px] font-medium text-[#111111] dark:text-zinc-200 whitespace-nowrap">
+              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 shrink-0">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-full bg-white dark:bg-zinc-800 text-[11.5px] sm:text-[12.5px] font-medium text-[#111111] dark:text-zinc-200 whitespace-nowrap">
                   <Clock className="size-3 sm:size-3.5 text-[#f4525f] shrink-0" />
                   <span>Built-in Pomodoro timer</span>
                 </span>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-white dark:bg-zinc-800 text-[11.5px] sm:text-[12.5px] font-medium text-[#111111] dark:text-zinc-200 whitespace-nowrap">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-full bg-white dark:bg-zinc-800 text-[11.5px] sm:text-[12.5px] font-medium text-[#111111] dark:text-zinc-200 whitespace-nowrap">
                   <Flame className="size-3 sm:size-3.5 text-[#FF6B2C] shrink-0" />
                   <span>Daily study streak</span>
                 </span>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-white dark:bg-zinc-800 text-[11.5px] sm:text-[12.5px] font-medium text-[#111111] dark:text-zinc-200 whitespace-nowrap">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-full bg-white dark:bg-zinc-800 text-[11.5px] sm:text-[12.5px] font-medium text-[#111111] dark:text-zinc-200 whitespace-nowrap">
                   <Cloud className="size-3 sm:size-3.5 text-[#2563EB] shrink-0" />
                   <span>Automatic cloud sync</span>
                 </span>
