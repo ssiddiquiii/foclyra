@@ -7,7 +7,7 @@
 
 @theme inline {
   --font-sans: 'Manrope Variable', 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-heading: 'Manrope Variable', 'Manrope', sans-serif;
+  --font-heading: 'Geist Variable', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
   --font-handwriting: 'Caveat', cursive;
   
@@ -209,6 +209,9 @@ code, pre, kbd, samp, .font-mono {
   html {
     @apply font-sans scroll-smooth;
     scroll-padding-top: 5rem;
+  }
+  h1, h2, h3, h4, h5, h6, .font-heading {
+    font-family: var(--font-heading);
   }
 }
 

@@ -12,7 +12,9 @@ import {
   Globe, 
   Trash2, 
   Sparkles,
-  ExternalLink
+  ExternalLink,
+  Play,
+  Check
 } from 'lucide-react';
 import { 
   PROVIDERS, 
@@ -25,61 +27,86 @@ import {
 } from '../services/secureKeyVault';
 import { toast } from '../components/ui/toast';
 
+// AI Providers list matching reference UI order
+const AI_PROVIDERS = [PROVIDERS.OPENAI, PROVIDERS.GEMINI, PROVIDERS.CLAUDE];
+
 export default function ApiKeys() {
-  const [activeTab, setActiveTab] = useState(PROVIDERS.GEMINI);
-  const [keyInput, setKeyInput] = useState('');
-  const [showKey, setShowKey] = useState(false);
-  const [isVerifying, setIsVerifying] = useState(false);
-  const [verifyStatus, setVerifyStatus] = useState(null); // { valid: boolean, message: string }
-  const [isSaved, setIsSaved] = useState(false);
-  const [keyExistsInVault, setKeyExistsInVault] = useState(false);
+  // 1. AI Key State (OpenAI, Google Gemini, Anthropic Claude)
+  const [activeAiTab, setActiveAiTab] = useState(PROVIDERS.OPENAI);
+  const [aiKeyInput, setAiKeyInput] = useState('');
+  const [showAiKey, setShowAiKey] = useState(false);
+  const [isAiVerifying, setIsAiVerifying] = useState(false);
+  const [aiVerifyStatus, setAiVerifyStatus] = useState(null);
+  const [isAiSaved, setIsAiSaved] = useState(false);
+  const [aiKeyExists, setAiKeyExists] = useState(false);
 
-  const currentConfig = PROVIDER_CONFIGS[activeTab];
+  // 2. Separate YouTube API Key State
+  const [ytKeyInput, setYtKeyInput] = useState('');
+  const [showYtKey, setShowYtKey] = useState(false);
+  const [isYtVerifying, setIsYtVerifying] = useState(false);
+  const [ytVerifyStatus, setYtVerifyStatus] = useState(null);
+  const [isYtSaved, setIsYtSaved] = useState(false);
+  const [ytKeyExists, setYtKeyExists] = useState(false);
 
-  // Load existing key when tab changes
+  const currentAiConfig = PROVIDER_CONFIGS[activeAiTab];
+  const ytConfig = PROVIDER_CONFIGS[PROVIDERS.YOUTUBE];
+
+  // Load AI key whenever activeAiTab changes
   useEffect(() => {
     let isMounted = true;
-    setVerifyStatus(null);
-    setIsSaved(false);
-    setShowKey(false);
+    setAiVerifyStatus(null);
+    setIsAiSaved(false);
+    setShowAiKey(false);
 
-    async function loadKey() {
-      const exists = hasStoredKey(activeTab);
-      setKeyExistsInVault(exists);
+    async function loadAiKey() {
+      const exists = hasStoredKey(activeAiTab);
+      setAiKeyExists(exists);
       if (exists) {
-        const dec = await getDecryptedKey(activeTab);
-        if (isMounted) {
-          setKeyInput(dec || '');
-        }
+        const dec = await getDecryptedKey(activeAiTab);
+        if (isMounted) setAiKeyInput(dec || '');
       } else {
-        if (isMounted) {
-          setKeyInput('');
-        }
+        if (isMounted) setAiKeyInput('');
       }
     }
 
-    loadKey();
+    loadAiKey();
     return () => { isMounted = false; };
-  }, [activeTab]);
+  }, [activeAiTab]);
 
-  const handleCheckKey = async () => {
-    const trimmed = keyInput.trim();
+  // Load YouTube key on mount
+  useEffect(() => {
+    let isMounted = true;
+    async function loadYtKey() {
+      const exists = hasStoredKey(PROVIDERS.YOUTUBE);
+      setYtKeyExists(exists);
+      if (exists) {
+        const dec = await getDecryptedKey(PROVIDERS.YOUTUBE);
+        if (isMounted) setYtKeyInput(dec || '');
+      }
+    }
+    loadYtKey();
+    return () => { isMounted = false; };
+  }, []);
+
+  // --- Handlers for AI Key ---
+  const handleCheckAiKey = async () => {
+    const trimmed = aiKeyInput.trim();
     if (!trimmed) {
-      setVerifyStatus({ valid: false, message: 'Please enter a key before checking.' });
+      setAiVerifyStatus({ valid: false, message: 'Please enter a key before checking.' });
       return;
     }
 
-    setIsVerifying(true);
-    setVerifyStatus(null);
+    setIsAiVerifying(true);
+    setAiVerifyStatus(null);
 
-    const result = await verifyProviderKey(activeTab, trimmed);
-    setIsVerifying(false);
-    setVerifyStatus(result);
+    const result = await verifyProviderKey(activeAiTab, trimmed);
+    setIsAiVerifying(false);
+    setAiVerifyStatus(result);
 
     if (result.valid) {
       toast.add({
         title: 'Key Verified',
-        description: `${currentConfig.name} key connection is live and verified.`,
+        description: `${currentAiConfig.name} key connection is live and active.`,
         type: 'success',
         timeout: 4000
       });
@@ -93,36 +120,99 @@ export default function ApiKeys() {
     }
   };
 
-  const handleSave = async (e) => {
+  const handleSaveAiKey = async (e) => {
     e?.preventDefault();
-    const trimmed = keyInput.trim();
+    const trimmed = aiKeyInput.trim();
 
-    await saveSecureKey(activeTab, trimmed);
-    setIsSaved(true);
-    setKeyExistsInVault(Boolean(trimmed));
+    await saveSecureKey(activeAiTab, trimmed);
+    setIsAiSaved(true);
+    setAiKeyExists(Boolean(trimmed));
 
     toast.add({
       title: 'Vault Updated',
       description: trimmed 
-        ? `${currentConfig.name} key encrypted and saved to your device vault.` 
-        : `${currentConfig.name} key cleared. Reverted to server defaults.`,
+        ? `${currentAiConfig.name} key encrypted and saved to device vault.` 
+        : `${currentAiConfig.name} key cleared. Reverted to server defaults.`,
       type: 'success',
       timeout: 4000
     });
 
-    setTimeout(() => {
-      setIsSaved(false);
-    }, 4000);
+    setTimeout(() => setIsAiSaved(false), 4000);
   };
 
-  const handleClear = () => {
-    removeStoredKey(activeTab);
-    setKeyInput('');
-    setKeyExistsInVault(false);
-    setVerifyStatus(null);
+  const handleClearAiKey = () => {
+    removeStoredKey(activeAiTab);
+    setAiKeyInput('');
+    setAiKeyExists(false);
+    setAiVerifyStatus(null);
     toast.add({
       title: 'Key Purged',
-      description: `${currentConfig.name} key wiped from memory and local vault.`,
+      description: `${currentAiConfig.name} key wiped from memory and local vault.`,
+      type: 'info',
+      timeout: 4000
+    });
+  };
+
+  // --- Handlers for YouTube Key ---
+  const handleCheckYtKey = async () => {
+    const trimmed = ytKeyInput.trim();
+    if (!trimmed) {
+      setYtVerifyStatus({ valid: false, message: 'Please enter a YouTube API key before checking.' });
+      return;
+    }
+
+    setIsYtVerifying(true);
+    setYtVerifyStatus(null);
+
+    const result = await verifyProviderKey(PROVIDERS.YOUTUBE, trimmed);
+    setIsYtVerifying(false);
+    setYtVerifyStatus(result);
+
+    if (result.valid) {
+      toast.add({
+        title: 'YouTube Key Verified',
+        description: 'Google Cloud YouTube Data API connection is active with full quota.',
+        type: 'success',
+        timeout: 4000
+      });
+    } else {
+      toast.add({
+        title: 'Verification Failed',
+        description: result.message,
+        type: 'error',
+        timeout: 5000
+      });
+    }
+  };
+
+  const handleSaveYtKey = async (e) => {
+    e?.preventDefault();
+    const trimmed = ytKeyInput.trim();
+
+    await saveSecureKey(PROVIDERS.YOUTUBE, trimmed);
+    setIsYtSaved(true);
+    setYtKeyExists(Boolean(trimmed));
+
+    toast.add({
+      title: 'YouTube Key Saved',
+      description: trimmed 
+        ? 'Custom YouTube API key encrypted and saved to your device vault.' 
+        : 'Reverted to built-in automatic serverless proxy.',
+      type: 'success',
+      timeout: 4000
+    });
+
+    setTimeout(() => setIsYtSaved(false), 4000);
+  };
+
+  const handleClearYtKey = () => {
+    removeStoredKey(PROVIDERS.YOUTUBE);
+    setYtKeyInput('');
+    setYtKeyExists(false);
+    setYtVerifyStatus(null);
+    toast.add({
+      title: 'YouTube Key Purged',
+      description: 'Reverted to default serverless proxy.',
       type: 'info',
       timeout: 4000
     });
@@ -131,34 +221,46 @@ export default function ApiKeys() {
   return (
     <div className="p-3.5 sm:p-8 max-w-4xl mx-auto space-y-6 sm:space-y-8 animate-page-entry min-w-0 w-full font-sans">
       
-      {/* 1. Header matching Reference Screen */}
+      {/* Page Header */}
       <div>
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-500 dark:text-amber-400 text-xs font-medium mb-3">
           <Sparkles className="size-3.5" />
-          <span>High-Performance AI & Cloud BYOK</span>
+          <span>High-Performance BYOK Console</span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-semibold text-[#111111] dark:text-white tracking-[-0.03em]">
-          Your AI & Service Keys
+          API & Service Keys
         </h1>
         <p className="text-zinc-600 dark:text-zinc-400 text-xs sm:text-sm mt-1.5 leading-relaxed max-w-2xl">
-          Foclyra comes with built-in models for suggestions and tutor chat. To use cutting-edge, high-end models (Gemini 2.5 Flash, GPT-4o, Claude 3.5 Sonnet) or bypass YouTube limits, add your key: Foclyra uses it directly, with no daily chat limits.
+          Bring your own keys to unlock frontier AI reasoning models with unlimited queries, or provide your Google Cloud quota for fast playlist indexing.
         </p>
       </div>
 
-      {/* 2. Main Key Injection Bento Card */}
-      <div className="rounded-[28px] border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-100/70 dark:bg-zinc-900/50 p-5 sm:p-8 shadow-xs space-y-6 backdrop-blur-xs min-w-0">
-        
-        {/* Segmented Provider Tabs (Matching Reference Design) */}
+      {/* =========================================================================
+          SECTION 1: YOUR AI KEY (OpenAI, Google Gemini, Anthropic Claude)
+          Exact match to Reference Screenshot layout
+          ========================================================================= */}
+      <div className="rounded-[28px] border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-100/70 dark:bg-zinc-900/50 p-5 sm:p-8 shadow-xs space-y-5 backdrop-blur-xs min-w-0">
+        <div>
+          <h2 className="text-xl sm:text-2xl font-semibold text-[#111111] dark:text-white tracking-[-0.025em]">
+            Your AI key
+          </h2>
+          <p className="text-zinc-600 dark:text-zinc-400 text-xs sm:text-sm mt-1 leading-relaxed">
+            Labs come with a few AI models for suggestions and the chat. To use cutting-edge, high-end models, add your key: your labs use it instead, with no daily chat limit.
+          </p>
+        </div>
+
+        {/* AI Segmented Tabs: OpenAI, Google Gemini, Anthropic (Claude) */}
         <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-zinc-200/70 dark:bg-zinc-950/80 border border-zinc-300/60 dark:border-zinc-800/80 overflow-x-auto scrollbar-none">
-          {Object.entries(PROVIDER_CONFIGS).map(([key, config]) => {
-            const isActive = activeTab === key;
+          {AI_PROVIDERS.map((key) => {
+            const config = PROVIDER_CONFIGS[key];
+            const isActive = activeAiTab === key;
             const hasKey = hasStoredKey(key);
 
             return (
               <button
                 key={key}
                 type="button"
-                onClick={() => setActiveTab(key)}
+                onClick={() => setActiveAiTab(key)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition cursor-pointer whitespace-nowrap ${
                   isActive
                     ? 'bg-white dark:bg-[#1f1f23] text-zinc-950 dark:text-white shadow-sm border border-black/5 dark:border-white/10'
@@ -176,15 +278,15 @@ export default function ApiKeys() {
           })}
         </div>
 
-        {/* Key Form Field */}
-        <form onSubmit={handleSave} className="space-y-4 pt-1">
+        {/* AI Key Form */}
+        <form onSubmit={handleSaveAiKey} className="space-y-4 pt-1">
           <div>
             <div className="flex items-center justify-between mb-2">
               <label className="block text-xs font-semibold text-zinc-900 dark:text-zinc-100">
                 API key
               </label>
               <a
-                href={currentConfig.link}
+                href={currentAiConfig.link}
                 target="_blank"
                 rel="noreferrer"
                 className="text-[11px] text-zinc-500 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-white inline-flex items-center gap-1 transition"
@@ -194,41 +296,40 @@ export default function ApiKeys() {
               </a>
             </div>
 
-            {/* Input with Check Key Button on the right */}
+            {/* Input with Check Key Button */}
             <div className="flex flex-col sm:flex-row gap-2.5">
               <div className="relative flex-1 min-w-0">
                 <input
-                  type={showKey ? 'text' : 'password'}
-                  value={keyInput}
+                  type={showAiKey ? 'text' : 'password'}
+                  value={aiKeyInput}
                   onChange={(e) => {
-                    setKeyInput(e.target.value);
-                    setVerifyStatus(null);
+                    setAiKeyInput(e.target.value);
+                    setAiVerifyStatus(null);
                   }}
-                  placeholder={currentConfig.placeholder}
+                  placeholder={currentAiConfig.placeholder}
                   className="w-full h-11 pl-4 pr-11 rounded-2xl bg-white dark:bg-zinc-950/80 border border-zinc-200/80 dark:border-zinc-800/80 text-zinc-950 dark:text-zinc-50 text-xs sm:text-sm font-mono focus:outline-none focus:ring-1 focus:ring-zinc-950 dark:focus:ring-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 transition shadow-2xs"
                 />
                 <button
                   type="button"
-                  onClick={() => setShowKey((prev) => !prev)}
+                  onClick={() => setShowAiKey((prev) => !prev)}
                   className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition cursor-pointer p-0.5"
-                  aria-label={showKey ? 'Hide key' : 'Show key'}
+                  aria-label={showAiKey ? 'Hide key' : 'Show key'}
                   tabIndex={-1}
                 >
-                  {showKey ? <EyeOff size={16} /> : <Eye size={16} />}
+                  {showAiKey ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
 
-              {/* Check Key Button */}
               <button
                 type="button"
-                onClick={handleCheckKey}
-                disabled={isVerifying || !keyInput.trim()}
+                onClick={handleCheckAiKey}
+                disabled={isAiVerifying || !aiKeyInput.trim()}
                 className="h-11 px-5 rounded-2xl border border-zinc-300 dark:border-zinc-700/80 bg-white/90 dark:bg-zinc-800/80 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-xs sm:text-sm font-medium text-zinc-900 dark:text-zinc-100 transition flex items-center justify-center gap-2 cursor-pointer shadow-2xs disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
               >
-                {isVerifying ? (
+                {isAiVerifying ? (
                   <>
                     <Loader2 size={14} className="animate-spin text-amber-500" />
-                    <span>Verifying...</span>
+                    <span>Checking...</span>
                   </>
                 ) : (
                   <span>Check key</span>
@@ -236,50 +337,50 @@ export default function ApiKeys() {
               </button>
             </div>
 
-            {/* Helper Text */}
+            {/* Provider helper string */}
             <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-2">
-              {currentConfig.helperText}
+              {currentAiConfig.helperText}
             </p>
           </div>
 
-          {/* Verification Status Banner */}
-          {verifyStatus && (
+          {/* AI Verification Status Banner */}
+          {aiVerifyStatus && (
             <div className={`p-3.5 rounded-2xl border flex items-start gap-2.5 text-xs animate-in fade-in duration-200 ${
-              verifyStatus.valid 
+              aiVerifyStatus.valid 
                 ? 'bg-emerald-500/10 border-emerald-500/25 text-emerald-600 dark:text-emerald-400' 
                 : 'bg-rose-500/10 border-rose-500/25 text-rose-600 dark:text-rose-400'
             }`}>
-              {verifyStatus.valid ? (
+              {aiVerifyStatus.valid ? (
                 <CheckCircle2 size={16} className="shrink-0 mt-0.5 text-emerald-500" />
               ) : (
                 <AlertCircle size={16} className="shrink-0 mt-0.5 text-rose-500" />
               )}
               <div className="leading-relaxed">
-                <strong className="block font-semibold">{verifyStatus.valid ? 'Active Connection Verified' : 'Verification Issue'}</strong>
-                <span>{verifyStatus.message}</span>
+                <strong className="block font-semibold">{aiVerifyStatus.valid ? 'Active Connection Verified' : 'Verification Issue'}</strong>
+                <span>{aiVerifyStatus.message}</span>
               </div>
             </div>
           )}
 
-          {/* Trust Disclaimer matching screenshot */}
-          <p className="text-xs text-zinc-500 dark:text-zinc-400 pt-1">
+          {/* Trust Disclaimer */}
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 pt-0.5">
             Your key is stored encrypted. You pay your provider for what you use.
           </p>
 
-          {/* Actions: Save & Clear */}
-          <div className="flex items-center gap-3 pt-2">
+          {/* Actions */}
+          <div className="flex items-center gap-3 pt-1">
             <button
               type="submit"
               className="h-10 px-6 rounded-xl bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-200 text-xs sm:text-sm font-medium transition flex items-center justify-center gap-2 cursor-pointer shadow-xs active:scale-[0.98]"
             >
-              {isSaved ? <CheckCircle2 size={14} className="text-emerald-400 dark:text-emerald-600" /> : null}
-              <span>{isSaved ? 'Saved to Vault!' : 'Save Key'}</span>
+              {isAiSaved ? <CheckCircle2 size={14} className="text-emerald-400 dark:text-emerald-600" /> : null}
+              <span>{isAiSaved ? 'Saved!' : 'Save'}</span>
             </button>
 
-            {keyExistsInVault && (
+            {aiKeyExists && (
               <button
                 type="button"
-                onClick={handleClear}
+                onClick={handleClearAiKey}
                 className="h-10 px-4 rounded-xl border border-zinc-200/80 dark:border-zinc-800/80 hover:bg-rose-500/10 hover:border-rose-500/30 text-zinc-600 dark:text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400 text-xs sm:text-sm font-medium transition cursor-pointer flex items-center gap-1.5"
               >
                 <Trash2 size={14} />
@@ -290,7 +391,148 @@ export default function ApiKeys() {
         </form>
       </div>
 
-      {/* 3. 🛡️ 5-Layer Security Architecture Card */}
+      {/* =========================================================================
+          SECTION 2: YOUTUBE DATA API (Separate Dedicated Section)
+          Maintains consistent design sense and verification flow
+          ========================================================================= */}
+      <div className="rounded-[28px] border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-100/70 dark:bg-zinc-900/50 p-5 sm:p-8 shadow-xs space-y-5 backdrop-blur-xs min-w-0">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-[11px] font-semibold mb-2">
+              <Play className="size-3 fill-current" />
+              <span>Google Cloud YouTube Service</span>
+            </div>
+            <h2 className="text-xl sm:text-2xl font-semibold text-[#111111] dark:text-white tracking-[-0.025em]">
+              YouTube Data API key
+            </h2>
+            <p className="text-zinc-600 dark:text-zinc-400 text-xs sm:text-sm mt-1 leading-relaxed">
+              Foclyra automatically operates a serverless proxy with zero setup. To bypass shared quota limits during heavy studying, add your personal Google Cloud API key.
+            </p>
+          </div>
+
+          {ytKeyExists && (
+            <span className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-600 dark:text-emerald-400 text-xs font-semibold">
+              <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Personal Key Active</span>
+            </span>
+          )}
+        </div>
+
+        {/* YouTube Key Form */}
+        <form onSubmit={handleSaveYtKey} className="space-y-4 pt-1">
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-xs font-semibold text-zinc-900 dark:text-zinc-100">
+                YouTube Data API key
+              </label>
+              <a
+                href={ytConfig.link}
+                target="_blank"
+                rel="noreferrer"
+                className="text-[11px] text-zinc-500 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-white inline-flex items-center gap-1 transition"
+              >
+                <span>Get Google Cloud Key</span>
+                <ExternalLink size={11} />
+              </a>
+            </div>
+
+            {/* Input with Check Key Button */}
+            <div className="flex flex-col sm:flex-row gap-2.5">
+              <div className="relative flex-1 min-w-0">
+                <input
+                  type={showYtKey ? 'text' : 'password'}
+                  value={ytKeyInput}
+                  onChange={(e) => {
+                    setYtKeyInput(e.target.value);
+                    setYtVerifyStatus(null);
+                  }}
+                  placeholder={ytConfig.placeholder}
+                  className="w-full h-11 pl-4 pr-11 rounded-2xl bg-white dark:bg-zinc-950/80 border border-zinc-200/80 dark:border-zinc-800/80 text-zinc-950 dark:text-zinc-50 text-xs sm:text-sm font-mono focus:outline-none focus:ring-1 focus:ring-zinc-950 dark:focus:ring-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 transition shadow-2xs"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowYtKey((prev) => !prev)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition cursor-pointer p-0.5"
+                  aria-label={showYtKey ? 'Hide key' : 'Show key'}
+                  tabIndex={-1}
+                >
+                  {showYtKey ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleCheckYtKey}
+                disabled={isYtVerifying || !ytKeyInput.trim()}
+                className="h-11 px-5 rounded-2xl border border-zinc-300 dark:border-zinc-700/80 bg-white/90 dark:bg-zinc-800/80 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-xs sm:text-sm font-medium text-zinc-900 dark:text-zinc-100 transition flex items-center justify-center gap-2 cursor-pointer shadow-2xs disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+              >
+                {isYtVerifying ? (
+                  <>
+                    <Loader2 size={14} className="animate-spin text-rose-500" />
+                    <span>Checking...</span>
+                  </>
+                ) : (
+                  <span>Check key</span>
+                )}
+              </button>
+            </div>
+
+            <p className="text-[11px] text-zinc-500 dark:text-zinc-400 mt-2">
+              {ytConfig.helperText}
+            </p>
+          </div>
+
+          {/* YouTube Verification Status Banner */}
+          {ytVerifyStatus && (
+            <div className={`p-3.5 rounded-2xl border flex items-start gap-2.5 text-xs animate-in fade-in duration-200 ${
+              ytVerifyStatus.valid 
+                ? 'bg-emerald-500/10 border-emerald-500/25 text-emerald-600 dark:text-emerald-400' 
+                : 'bg-rose-500/10 border-rose-500/25 text-rose-600 dark:text-rose-400'
+            }`}>
+              {ytVerifyStatus.valid ? (
+                <CheckCircle2 size={16} className="shrink-0 mt-0.5 text-emerald-500" />
+              ) : (
+                <AlertCircle size={16} className="shrink-0 mt-0.5 text-rose-500" />
+              )}
+              <div className="leading-relaxed">
+                <strong className="block font-semibold">{ytVerifyStatus.valid ? 'Active Connection Verified' : 'Verification Issue'}</strong>
+                <span>{ytVerifyStatus.message}</span>
+              </div>
+            </div>
+          )}
+
+          {/* Trust Disclaimer */}
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 pt-0.5">
+            Your key is stored encrypted on this device. Google Cloud provides 10,000 free quota units daily.
+          </p>
+
+          {/* Actions */}
+          <div className="flex items-center gap-3 pt-1">
+            <button
+              type="submit"
+              className="h-10 px-6 rounded-xl bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-200 text-xs sm:text-sm font-medium transition flex items-center justify-center gap-2 cursor-pointer shadow-xs active:scale-[0.98]"
+            >
+              {isYtSaved ? <CheckCircle2 size={14} className="text-emerald-400 dark:text-emerald-600" /> : null}
+              <span>{isYtSaved ? 'Saved to Vault!' : 'Save Key'}</span>
+            </button>
+
+            {ytKeyExists && (
+              <button
+                type="button"
+                onClick={handleClearYtKey}
+                className="h-10 px-4 rounded-xl border border-zinc-200/80 dark:border-zinc-800/80 hover:bg-rose-500/10 hover:border-rose-500/30 text-zinc-600 dark:text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400 text-xs sm:text-sm font-medium transition cursor-pointer flex items-center gap-1.5"
+              >
+                <Trash2 size={14} />
+                <span>Remove Key (Use Default Proxy)</span>
+              </button>
+            )}
+          </div>
+        </form>
+      </div>
+
+      {/* =========================================================================
+          SECTION 3: 5-LAYER HARDWARE SECURITY VAULT
+          ========================================================================= */}
       <div className="rounded-[28px] border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-100/70 dark:bg-zinc-900/50 p-6 sm:p-8 shadow-xs space-y-6 backdrop-blur-xs min-w-0">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
