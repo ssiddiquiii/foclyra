@@ -9,12 +9,12 @@ import '@fontsource-variable/geist';
 import './index.css'
 import { initAnalytics } from './services/analytics';
 
-// Set to true to temporarily take down site with a professional "Changes in Progress" screen
-const IS_MAINTENANCE_MODE = true;
+// Maintenance mode toggle (set to true if platform upgrades require pausing traffic)
+const IS_MAINTENANCE_MODE = false;
 
 const clerkPubKey =
   import.meta.env.VITE_CLERK_PUBLISHABLE_KEY ||
-  'pk_test_ZGVzdGluZWQtcGFycm90LTc5Mi5jbGVyay5hY2NvdW50cy5kZXYk';
+  'pk_test_Zmx1ZW50LXBpcmFuaGEtNDE4NC5jbGVyay5hY2NvdW50cy5kZXYk';
 
 // Initialize PostHog Web Analytics
 initAnalytics();
