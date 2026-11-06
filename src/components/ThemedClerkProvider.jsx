@@ -52,3 +52,4 @@ export default function ThemedClerkProvider({ children, publishableKey }) {
     </ClerkProvider>
   );
 }
+

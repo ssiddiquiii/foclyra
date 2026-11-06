@@ -1,17 +1,19 @@
-import React from 'react';
-import { Check, Clock, Pencil, Trash2, X } from 'lucide-react';
+import React, { useState } from 'react';
+import { Check, Clock, Pencil, Trash2, X, Share2 } from 'lucide-react';
 import Dialog from '../../components/ui/Dialog';
 import { formatSeconds } from './watchConstants';
 import { usePlayerTime } from './playerTimeStore';
 import { MarkdownView } from '../../components/MarkdownView';
+import ShareNotesModal from '../../components/ShareNotesModal';
 
 const DEFAULT_FALLBACK_STORE = {
   subscribe: () => () => {},
   getSnapshot: () => ({ currentTime: 0, duration: 0 })
 };
 
-export function NotesPanel({ notes = [], noteState, onSeek, timeStore }) {
+export function NotesPanel({ notes = [], noteState, onSeek, timeStore, courseTitle = 'Course', lessonTitle = '' }) {
   globalThis.__foclyraRenderProbe?.('NotesPanel');
+  const [isShareOpen, setIsShareOpen] = useState(false);
   const isSaving = noteState.status === 'saving';
 
   // Live dynamic timestamp subscription from player
@@ -61,6 +63,23 @@ export function NotesPanel({ notes = [], noteState, onSeek, timeStore }) {
 
       {/* Saved Notes Feed */}
       <div className="space-y-2 pt-0.5" aria-busy={isSaving}>
+        {notes.length > 0 && (
+          <div className="flex items-center justify-between px-1 pb-1">
+            <span className="text-[11px] font-medium text-zinc-500 dark:text-zinc-400">
+              {notes.length} saved note{notes.length === 1 ? '' : 's'}
+            </span>
+            <button
+              type="button"
+              onClick={() => setIsShareOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-zinc-200/80 dark:border-zinc-800/80 bg-white/80 dark:bg-zinc-800/80 hover:bg-zinc-100 dark:hover:bg-zinc-700 text-[11px] font-medium text-zinc-800 dark:text-zinc-200 transition cursor-pointer shadow-2xs active:scale-[0.98]"
+              title="Share formatted study notes"
+            >
+              <Share2 size={11} className="text-amber-500" />
+              <span>Share Notes</span>
+            </button>
+          </div>
+        )}
+
         {notes.length === 0 ? (
           <p className="py-3 text-xs text-zinc-500 dark:text-zinc-400">No notes written for this video yet.</p>
         ) : notes.map(note => {
@@ -171,6 +190,14 @@ export function NotesPanel({ notes = [], noteState, onSeek, timeStore }) {
           </button>
         </div>
       </Dialog>
+      {/* Share Notes Dialog with viral Foclyra CTA */}
+      <ShareNotesModal
+        isOpen={isShareOpen}
+        onClose={() => setIsShareOpen(false)}
+        courseTitle={courseTitle}
+        lessonTitle={lessonTitle}
+        notes={notes}
+      />
     </div>
   );
 }

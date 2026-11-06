@@ -189,6 +189,8 @@ export default function Watch() {
             noteState={noteState}
             onSeek={player.triggerPlayerSeek}
             timeStore={player.timeStore}
+            courseTitle={course?.title}
+            lessonTitle={lesson?.title}
           />
         </div>
       </div>

@@ -39,67 +39,10 @@ export default function Settings() {
   
   const [showConfirmReset, setShowConfirmReset] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
-  const [showApiKey, setShowApiKey] = useState(false);
 
   // Active courses live query
   const courses = useLiveQuery(() => db.courses.toArray()) || [];
   const activeCount = courses.length;
-
-  // Custom YouTube API Key state
-  const [customKey, setCustomKey] = useState(() => {
-    const stored = localStorage.getItem('foclyra_custom_youtube_api_key') || '';
-    if (stored.trim() === ['AIza', 'SyAExIAyfPvaaNixl5cz7HZJfNwQdniXP_o'].join('')) {
-      localStorage.removeItem('foclyra_custom_youtube_api_key');
-      return '';
-    }
-    return stored;
-  });
-  const [keySaved, setKeySaved] = useState(false);
-
-  // Custom Google Gemini API Key state (for AI Lecture Tutor BYOK)
-  const [geminiKey, setGeminiKey] = useState(() => localStorage.getItem('foclyra_custom_gemini_api_key') || '');
-  const [geminiKeySaved, setGeminiKeySaved] = useState(false);
-  const [showGeminiKey, setShowGeminiKey] = useState(false);
-
-  const handleSaveGeminiKey = (e) => {
-    e.preventDefault();
-    const trimmed = geminiKey.trim();
-    if (trimmed) {
-      localStorage.setItem('foclyra_custom_gemini_api_key', trimmed);
-    } else {
-      localStorage.removeItem('foclyra_custom_gemini_api_key');
-    }
-    setGeminiKeySaved(true);
-    toast.add({
-      title: 'Gemini API Key updated',
-      description: trimmed ? 'Personal Gemini API key saved for AI Lecture Tutor.' : 'Reverted to server default Gemini key.',
-      type: 'success',
-      timeout: 4000,
-    });
-    setTimeout(() => {
-      setGeminiKeySaved(false);
-    }, 4000);
-  };
-
-  const handleSaveApiKey = (e) => {
-    e.preventDefault();
-    const trimmed = customKey.trim();
-    if (trimmed) {
-      localStorage.setItem('foclyra_custom_youtube_api_key', trimmed);
-    } else {
-      localStorage.removeItem('foclyra_custom_youtube_api_key');
-    }
-    setKeySaved(true);
-    toast.add({
-      title: 'API Key updated',
-      description: trimmed ? 'Custom YouTube API key saved successfully.' : 'Reverted to default built-in YouTube API key.',
-      type: 'success',
-      timeout: 4000,
-    });
-    setTimeout(() => {
-      setKeySaved(false);
-    }, 4000);
-  };
 
   const handleExport = async () => {
     const exportToastId = toast.add({
@@ -325,161 +268,36 @@ export default function Settings() {
         )}
       </div>
 
-      {/* 2. YouTube API Configuration Bento Card */}
+      {/* 2. AI & Cloud API Keys (5-Layer Vault) Bridge Card */}
       <div className="rounded-[28px] border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-100/70 dark:bg-zinc-900/50 p-5 sm:p-7 shadow-xs space-y-4 backdrop-blur-xs">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-zinc-200 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 flex items-center justify-center border border-zinc-300/60 dark:border-zinc-700/60 flex-shrink-0">
-            <Key size={17} />
-          </div>
-          <div>
-            <h2 className="text-base font-semibold text-zinc-950 dark:text-zinc-50 tracking-tight">
-              YouTube API Configuration (Optional)
-            </h2>
-            <p className="text-zinc-500 dark:text-zinc-400 text-xs leading-relaxed mt-0.5">
-              Foclyra includes an automatic serverless proxy with zero-key fallback. You can also provide a personal Google Cloud YouTube Data API v3 key.
-            </p>
-          </div>
-        </div>
-
-        <form onSubmit={handleSaveApiKey} className="space-y-3 pt-1">
-          <div>
-            <label className="block text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-1.5">
-              Personal API Key
-            </label>
-            <div className="flex flex-col sm:flex-row gap-2">
-              <div className="relative w-full sm:flex-1 min-w-0">
-                <input
-                  type={showApiKey ? 'text' : 'password'}
-                  value={customKey}
-                  onChange={(e) => setCustomKey(e.target.value)}
-                  placeholder="AIzaSy... (Leave empty to use built-in proxy)"
-                  className="w-full h-10 pl-4 pr-10 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 text-zinc-950 dark:text-zinc-50 text-xs font-mono focus:outline-none focus:ring-1 focus:ring-zinc-950 dark:focus:ring-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 transition shadow-2xs"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowApiKey((prev) => !prev)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition cursor-pointer p-0.5"
-                  aria-label={showApiKey ? 'Hide API key' : 'Show API key'}
-                  tabIndex={-1}
-                >
-                  {showApiKey ? <EyeOff size={14} /> : <Eye size={14} />}
-                </button>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div className="w-10 h-10 rounded-2xl bg-amber-500/10 border border-amber-500/25 text-amber-500 dark:text-amber-400 flex items-center justify-center shrink-0">
+              <Key size={18} />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className="text-base font-semibold text-zinc-950 dark:text-zinc-50 tracking-tight">
+                  AI & Service Keys Vault
+                </h2>
+                <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-medium">
+                  AES-256 Encrypted
+                </span>
               </div>
-              <button
-                type="submit"
-                className="h-10 px-5 rounded-full bg-zinc-950 hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-100 text-white text-xs font-medium transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs flex-shrink-0 active:scale-[0.98]"
-              >
-                {keySaved ? <CheckCircle2 size={13} /> : null}
-                <span>{keySaved ? 'Saved!' : 'Save Key'}</span>
-              </button>
+              <p className="text-zinc-500 dark:text-zinc-400 text-xs leading-relaxed mt-0.5 max-w-xl">
+                Configure Google Gemini, OpenAI, Anthropic Claude, and YouTube Data API keys with 5-Layer Hardware-Grade Encryption and live verification probes.
+              </p>
             </div>
           </div>
-          <div className="flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400 pt-1">
-            <span>Status: <strong className={customKey.trim() ? 'text-emerald-500 font-semibold' : 'text-zinc-950 dark:text-zinc-100 font-semibold'}>{customKey.trim() ? 'Personal Key Active' : 'Automatic Proxy Active'}</strong></span>
-            {customKey.trim() && (
-              <button
-                type="button"
-                onClick={() => {
-                  setCustomKey('');
-                  localStorage.removeItem('foclyra_custom_youtube_api_key');
-                  toast.add({
-                    title: 'API Key reset',
-                    description: 'Reverted to default built-in proxy.',
-                    type: 'info',
-                    timeout: 4000,
-                  });
-                }}
-                className="text-zinc-500 hover:text-red-500 dark:text-zinc-400 dark:hover:text-red-400 transition underline cursor-pointer"
-              >
-                Clear & Reset
-              </button>
-            )}
-          </div>
-        </form>
-      </div>
-
-      {/* 3. AI Lecture Tutor Gemini Key (BYOK) */}
-      <div className="rounded-[28px] border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-100/70 dark:bg-zinc-900/50 p-5 sm:p-7 shadow-xs space-y-4 backdrop-blur-xs">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-amber-500/20 to-orange-500/20 border border-amber-500/30 text-amber-600 dark:text-amber-400 flex items-center justify-center flex-shrink-0">
-            <Sparkles size={17} />
-          </div>
-          <div>
-            <h2 className="text-base font-semibold text-zinc-950 dark:text-zinc-50 tracking-tight">
-              AI Lecture Tutor (Google Gemini API)
-            </h2>
-            <p className="text-zinc-500 dark:text-zinc-400 text-xs leading-relaxed mt-0.5">
-              Power real-time lecture grounding and doubt solving. Provide your free personal Gemini API key for unlimited queries, or leave empty to use server quota.
-            </p>
-          </div>
+          <button
+            type="button"
+            onClick={() => navigate('/api-keys')}
+            className="h-10 px-5 rounded-full bg-zinc-950 hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-100 text-white text-xs font-medium transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs shrink-0 self-start sm:self-auto active:scale-[0.98]"
+          >
+            <span>Manage Keys</span>
+            <span aria-hidden="true">→</span>
+          </button>
         </div>
-
-        <form onSubmit={handleSaveGeminiKey} className="space-y-3 pt-1">
-          <div>
-            <div className="flex items-center justify-between mb-1.5">
-              <label className="block text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">
-                Personal Gemini Key
-              </label>
-              <a
-                href="https://aistudio.google.com/app/apikey"
-                target="_blank"
-                rel="noreferrer"
-                className="text-[11px] text-zinc-500 hover:text-zinc-950 dark:text-zinc-400 dark:hover:text-white underline inline-flex items-center gap-1 transition"
-              >
-                <span>Get free API key</span>
-                <span aria-hidden="true">↗</span>
-              </a>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-2">
-              <div className="relative w-full sm:flex-1 min-w-0">
-                <input
-                  type={showGeminiKey ? 'text' : 'password'}
-                  value={geminiKey}
-                  onChange={(e) => setGeminiKey(e.target.value)}
-                  placeholder="AIzaSy... (Leave empty to use shared server key)"
-                  className="w-full h-10 pl-4 pr-10 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 text-zinc-950 dark:text-zinc-50 text-xs font-mono focus:outline-none focus:ring-1 focus:ring-zinc-950 dark:focus:ring-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 transition shadow-2xs"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowGeminiKey((prev) => !prev)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 transition cursor-pointer p-0.5"
-                  aria-label={showGeminiKey ? 'Hide API key' : 'Show API key'}
-                  tabIndex={-1}
-                >
-                  {showGeminiKey ? <EyeOff size={14} /> : <Eye size={14} />}
-                </button>
-              </div>
-              <button
-                type="submit"
-                className="h-10 px-5 rounded-full bg-zinc-950 hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-100 text-white text-xs font-medium transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs flex-shrink-0 active:scale-[0.98]"
-              >
-                {geminiKeySaved ? <CheckCircle2 size={13} /> : null}
-                <span>{geminiKeySaved ? 'Saved!' : 'Save Key'}</span>
-              </button>
-            </div>
-          </div>
-          <div className="flex items-center justify-between text-[11px] text-zinc-500 dark:text-zinc-400 pt-1">
-            <span>Status: <strong className={geminiKey.trim() ? 'text-emerald-500 font-semibold' : 'text-zinc-950 dark:text-zinc-100 font-semibold'}>{geminiKey.trim() ? 'Personal Key Active' : 'Shared Server Quota'}</strong></span>
-            {geminiKey.trim() && (
-              <button
-                type="button"
-                onClick={() => {
-                  setGeminiKey('');
-                  localStorage.removeItem('foclyra_custom_gemini_api_key');
-                  toast.add({
-                    title: 'Gemini Key reset',
-                    description: 'Reverted to shared server key.',
-                    type: 'info',
-                    timeout: 4000,
-                  });
-                }}
-                className="text-zinc-500 hover:text-red-500 dark:text-zinc-400 dark:hover:text-red-400 transition underline cursor-pointer"
-              >
-                Clear & Reset
-              </button>
-            )}
-          </div>
-        </form>
       </div>
 
       {/* 4. Local Data Backups Bento Card */}

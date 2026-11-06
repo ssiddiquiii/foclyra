@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, Cloud, ChevronDown, Layers, ShieldCheck } from 'lucide-react';
+import { LogOut, Cloud, ChevronDown, Layers, ShieldCheck, Key } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useClerk } from '@clerk/clerk-react';
 import { useUIStore } from '../hooks/useUIStore';
@@ -131,6 +131,19 @@ export default function UserMenu({ onOpenAuth }) {
           >
             <ShieldCheck className="size-3.5 text-indigo-500 dark:text-indigo-400" />
             <span>Account & Active Devices</span>
+          </button>
+
+          {/* AI & Service Keys Vault */}
+          <button
+            type="button"
+            onClick={() => {
+              setDropdownOpen(false);
+              navigate('/api-keys');
+            }}
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-full text-[12px] text-[#111111] dark:text-zinc-200 hover:bg-[#eaeaea] dark:hover:bg-zinc-800 font-medium transition cursor-pointer mb-1"
+          >
+            <Key className="size-3.5 text-amber-500" />
+            <span>AI & Service Keys Vault</span>
           </button>
 
           {/* Sign Out Button */}

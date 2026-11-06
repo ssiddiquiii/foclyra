@@ -9,11 +9,13 @@ import {
   RefreshCw,
   Search,
   BookOpen,
-  Check
+  Check,
+  Share2
 } from 'lucide-react';
 import { fetchYouTubePlaylistData } from '../services/youtubeApi';
-import { importCourse } from '../services/dataCommands';
+import { importCourse, getNotesExportBundle } from '../services/dataCommands';
 import ExportNotesButton from '../components/ExportNotesButton';
+import ShareNotesModal from '../components/ShareNotesModal';
 import { toast } from '../components/ui/toast';
 import { trackEvent } from '../services/analytics';
 
@@ -40,6 +42,27 @@ export default function CourseDetail() {
   const [isSyncing, setIsSyncing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [thumbError, setThumbError] = useState(false);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+  const [courseNotesToShare, setCourseNotesToShare] = useState([]);
+
+  const handleOpenShareNotes = async () => {
+    try {
+      const { notes } = await getNotesExportBundle(course.id);
+      if (!notes || notes.length === 0) {
+        toast.add({
+          title: 'No notes yet',
+          description: "You haven't recorded any notes in this course yet.",
+          type: 'info',
+          timeout: 3000
+        });
+        return;
+      }
+      setCourseNotesToShare(notes);
+      setShareModalOpen(true);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   // Compute optimized thumbnail: Prefer 16:9 maxresdefault for crisp YouTube banners
   const optimizedThumb = useMemo(() => {
@@ -252,6 +275,15 @@ export default function CourseDetail() {
                 title={`Download ${course.title} Notes (.docx)`}
                 className="w-full sm:w-auto"
               />
+              <button
+                type="button"
+                onClick={handleOpenShareNotes}
+                className="w-full sm:w-auto h-8 sm:h-9 md:h-10 px-3.5 sm:px-4 md:px-5 rounded-full border border-zinc-200/80 dark:border-zinc-800/80 bg-white/90 dark:bg-zinc-900/90 text-zinc-900 dark:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-[12px] sm:text-[13px] font-medium transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs active:scale-[0.98]"
+                title="Share study notes with friends"
+              >
+                <Share2 className="size-3.5 shrink-0 text-amber-500" />
+                <span>Share Notes</span>
+              </button>
             </div>
           </div>
         </div>
@@ -429,6 +461,13 @@ export default function CourseDetail() {
           })}
         </div>
       </div>
+      {/* Share Notes Modal */}
+      <ShareNotesModal
+        isOpen={shareModalOpen}
+        onClose={() => setShareModalOpen(false)}
+        courseTitle={course?.title}
+        notes={courseNotesToShare}
+      />
     </div>
   );
 }

@@ -61,6 +61,12 @@ const STARTER_COURSES = [
     title: 'Python Crash Course',
     channel: 'freeCodeCamp',
     url: 'https://www.youtube.com/watch?v=rfscVS0vtbw'
+  },
+  {
+    tag: 'CS50',
+    title: 'CS50 Computer Science',
+    channel: 'Harvard University',
+    url: 'https://www.youtube.com/playlist?list=PLhQjrBD2T382_R13ChS_IUEBCU444Jn4O'
   }
 ];
 

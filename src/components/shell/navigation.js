@@ -1,7 +1,8 @@
-import { BookOpen, Settings, Sparkles } from 'lucide-react';
+import { BookOpen, Settings, Sparkles, Key } from 'lucide-react';
 
 export const navigationItems = [
   { name: 'Dashboard', path: '/studio', icon: BookOpen },
+  { name: 'API Keys', path: '/api-keys', icon: Key },
   { name: 'Settings', path: '/settings', icon: Settings },
   { name: 'Showcase', path: '/', icon: Sparkles }
 ];

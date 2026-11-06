@@ -29,6 +29,7 @@ const Dashboard = lazy(() => import('./pages/Dashboard'));
 const CourseDetail = lazy(() => import('./pages/CourseDetail'));
 const Watch = lazy(() => import('./pages/Watch'));
 const Settings = lazy(() => import('./pages/Settings'));
+const ApiKeys = lazy(() => import('./pages/ApiKeys'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
@@ -506,6 +507,7 @@ function AppContent() {
                     <Route path="/import" element={<Navigate to="/studio" replace />} />
                     <Route path="/courses/:courseId" element={<LearningRoute element={<CourseDetail />} />} />
                     <Route path="/courses/:courseId/lessons/:lessonId" element={<LearningRoute element={<Watch />} />} />
+                    <Route path="/api-keys" element={<ProtectedRoute element={<ApiKeys />} />} />
                     <Route path="/settings" element={<ProtectedRoute element={<Settings />} />} />
                     <Route path="/reset-password" element={<ResetPassword />} />
                     <Route path="/privacy" element={<PrivacyPolicy />} />

@@ -322,7 +322,13 @@ export function MobileWatchWorkspace(props) {
 
         {/* Mobile Tab Content */}
         <div className="p-3.5 sm:p-4">
-          {!isDesktop && activeTab === 'notes' && <NotesPanel {...notesProps} />}
+          {!isDesktop && activeTab === 'notes' && (
+            <NotesPanel
+              {...notesProps}
+              courseTitle={courseTitle}
+              lessonTitle={lessonTitle}
+            />
+          )}
           {!isDesktop && activeTab === 'ai' && (
             <div className="h-[480px]">
               <AITutorPanel
