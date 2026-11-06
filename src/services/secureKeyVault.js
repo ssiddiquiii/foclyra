@@ -23,35 +23,31 @@ export const PROVIDERS = Object.freeze({
 });
 
 export const PROVIDER_CONFIGS = {
-  [PROVIDERS.GEMINI]: {
-    name: 'Google Gemini',
-    badge: 'Default AI',
-    placeholder: 'AIzaSy... (From Google AI Studio)',
-    helperText: 'From aistudio.google.com/app/apikey. Starts with AIzaSy. (Free tier available).',
-    link: 'https://aistudio.google.com/app/apikey',
-    legacyKey: 'foclyra_custom_gemini_api_key'
-  },
   [PROVIDERS.OPENAI]: {
     name: 'OpenAI',
-    badge: 'GPT-4o',
-    placeholder: 'sk-proj-... or sk-...',
-    helperText: 'From platform.openai.com/api-keys. Starts with sk-.',
+    placeholder: 'Paste your key',
+    helperText: 'From platform.openai.com, API keys. Starts with sk-.',
     link: 'https://platform.openai.com/api-keys',
     legacyKey: 'foclyra_custom_openai_api_key'
   },
+  [PROVIDERS.GEMINI]: {
+    name: 'Google Gemini',
+    placeholder: 'Paste your key',
+    helperText: 'From aistudio.google.com/app/apikey. Starts with AIzaSy.',
+    link: 'https://aistudio.google.com/app/apikey',
+    legacyKey: 'foclyra_custom_gemini_api_key'
+  },
   [PROVIDERS.CLAUDE]: {
     name: 'Anthropic (Claude)',
-    badge: 'Claude 3.5 Sonnet',
-    placeholder: 'sk-ant-...',
+    placeholder: 'Paste your key',
     helperText: 'From console.anthropic.com/settings/keys. Starts with sk-ant-.',
     link: 'https://console.anthropic.com/settings/keys',
     legacyKey: 'foclyra_custom_claude_api_key'
   },
   [PROVIDERS.YOUTUBE]: {
     name: 'YouTube Data API',
-    badge: 'Google Cloud',
-    placeholder: 'AIzaSy... (From Google Cloud Console)',
-    helperText: 'From console.cloud.google.com/apis/credentials. Starts with AIzaSy. (10,000 free daily units).',
+    placeholder: 'Paste your key',
+    helperText: 'From console.cloud.google.com/apis/credentials. Starts with AIzaSy.',
     link: 'https://console.cloud.google.com/apis/credentials',
     legacyKey: 'foclyra_custom_youtube_api_key'
   }

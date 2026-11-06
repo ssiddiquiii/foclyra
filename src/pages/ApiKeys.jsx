@@ -261,17 +261,15 @@ export default function ApiKeys() {
                 key={key}
                 type="button"
                 onClick={() => setActiveAiTab(key)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition cursor-pointer whitespace-nowrap ${
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition cursor-pointer whitespace-nowrap ${
                   isActive
-                    ? 'bg-white dark:bg-[#1f1f23] text-zinc-950 dark:text-white shadow-sm border border-black/5 dark:border-white/10'
+                    ? 'bg-white dark:bg-[#201815] text-zinc-950 dark:text-[#f8d79a] shadow-sm border border-black/5 dark:border-amber-700/30'
                     : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
                 }`}
               >
                 <span>{config.name}</span>
-                {hasKey ? (
-                  <span className="size-2 rounded-full bg-emerald-500 animate-pulse" title="Custom key active" />
-                ) : (
-                  <span className="text-[10px] opacity-60 font-mono hidden sm:inline">({config.badge})</span>
+                {hasKey && (
+                  <span className="size-1.5 rounded-full bg-emerald-500" title="Key configured" />
                 )}
               </button>
             );
