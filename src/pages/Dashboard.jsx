@@ -424,29 +424,31 @@ export default function Dashboard() {
             </div>
           </form>
 
-          {/* Compact Starter Quick-Pills */}
-          <div className="pt-2 flex flex-col items-center gap-3 max-w-[620px] mx-auto">
+          {/* Slow Continuous Starter Playlist Slider */}
+          <div className="pt-2 flex flex-col items-center gap-3 w-full max-w-[620px] mx-auto">
             <div className="text-[12px] sm:text-[12.5px] font-medium text-[#777777] dark:text-zinc-400">
               Or try a starter playlist:
             </div>
 
-            <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-2.5">
-              {STARTER_COURSES.map((item) => (
-                <button
-                  key={item.url}
-                  type="button"
-                  disabled={isDirectImporting}
-                  onClick={() => handleQuickStart(item.url)}
-                  className="inline-flex items-center gap-2 h-9 sm:h-9.5 px-3.5 sm:px-4 rounded-full bg-[#f4f4f4] dark:bg-zinc-900 hover:bg-[#eaeaea] dark:hover:bg-zinc-800/90 border border-[#e5e5e5] dark:border-zinc-800 text-[12px] sm:text-[13px] font-medium text-[#111111] dark:text-zinc-200 transition-all active:scale-[0.98] cursor-pointer disabled:opacity-50 group shadow-2xs"
-                  title={`Import ${item.title} by ${item.channel}`}
-                >
-                  <span className="font-mono text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 px-1.5 py-0.5 rounded-md bg-zinc-200/70 dark:bg-zinc-800">
-                    {item.tag}
-                  </span>
-                  <span className="whitespace-nowrap">{item.title}</span>
-                  <ArrowRight className="size-3 sm:size-3.5 text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white group-hover:translate-x-0.5 transition-transform" />
-                </button>
-              ))}
+            <div className="relative w-full overflow-hidden py-1 [mask-image:linear-gradient(to_right,transparent,black_12%,black_88%,transparent)]">
+              <div className="animate-starter-marquee gap-2.5 sm:gap-3 pr-2.5 sm:pr-3">
+                {[...STARTER_COURSES, ...STARTER_COURSES].map((item, idx) => (
+                  <button
+                    key={`${item.url}-${idx}`}
+                    type="button"
+                    disabled={isDirectImporting}
+                    onClick={() => handleQuickStart(item.url)}
+                    className="inline-flex items-center gap-2 h-9 sm:h-9.5 px-3.5 sm:px-4 rounded-full bg-[#f4f4f4] dark:bg-zinc-900 hover:bg-[#eaeaea] dark:hover:bg-zinc-800/90 border border-[#e5e5e5] dark:border-zinc-800 text-[12px] sm:text-[13px] font-medium text-[#111111] dark:text-zinc-200 transition-all active:scale-[0.98] cursor-pointer disabled:opacity-50 group shadow-2xs shrink-0"
+                    title={`Import ${item.title} by ${item.channel}`}
+                  >
+                    <span className="font-mono text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 px-1.5 py-0.5 rounded-md bg-zinc-200/70 dark:bg-zinc-800">
+                      {item.tag}
+                    </span>
+                    <span className="whitespace-nowrap">{item.title}</span>
+                    <ArrowRight className="size-3 sm:size-3.5 text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-white group-hover:translate-x-0.5 transition-transform" />
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </div>

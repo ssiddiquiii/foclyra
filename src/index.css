@@ -373,3 +373,29 @@ code, pre, kbd, samp, .font-mono {
   box-shadow: none !important;
   margin: 0 !important;
 }
+
+/* Slow Continuous Starter Playlist Marquee Slider */
+@keyframes starter-marquee {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.animate-starter-marquee {
+  display: flex;
+  width: max-content;
+  animation: starter-marquee 42s linear infinite;
+}
+
+.animate-starter-marquee:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-starter-marquee {
+    animation: none;
+  }
+}
