@@ -187,7 +187,7 @@ export default function ApiKeys() {
           ========================================================================= */}
       <section className="space-y-6">
         <div className="space-y-2">
-          <h1 className="text-2xl sm:text-[28px] font-semibold text-[#111111] dark:text-white tracking-[-0.03em]">
+          <h1 className="text-2xl sm:text-[28px] font-bold text-[#111111] dark:text-white tracking-[-0.03em]">
             Your AI key
           </h1>
           <p className="text-zinc-600 dark:text-zinc-400 text-[13.5px] sm:text-[14.5px] leading-relaxed max-w-2xl">
@@ -317,7 +317,7 @@ export default function ApiKeys() {
           ========================================================================= */}
       <section className="space-y-5">
         <div className="space-y-2">
-          <h2 className="text-xl sm:text-2xl font-semibold text-[#111111] dark:text-white tracking-[-0.03em]">
+          <h2 className="text-xl sm:text-2xl font-bold text-[#111111] dark:text-white tracking-[-0.03em]">
             YouTube Data API
           </h2>
           <p className="text-zinc-600 dark:text-zinc-400 text-[13.5px] sm:text-[14.5px] leading-relaxed max-w-2xl">

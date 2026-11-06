@@ -295,7 +295,7 @@ export default function LandingPage() {
       <section id="top" className="px-3.5 sm:px-6 pt-10 sm:pt-16 md:pt-22 text-center">
         <h1
           ref={heroRef}
-          className="mx-auto max-w-[1080px] text-[clamp(24px,6vw,72px)] leading-[1.12] sm:leading-[1.08] font-semibold tracking-[-0.035em] sm:tracking-[-0.045em] text-[#111111] dark:text-white"
+          className="mx-auto max-w-[1080px] text-[clamp(24px,6vw,72px)] leading-[1.12] sm:leading-[1.08] font-bold tracking-[-0.035em] sm:tracking-[-0.045em] text-[#111111] dark:text-white"
         >
           <span className="block whitespace-nowrap">
             <GradualWord
@@ -818,7 +818,7 @@ export default function LandingPage() {
         <div className="mx-auto max-w-[1200px]">
           <div className="text-center max-w-[900px] mx-auto">
             <div className="text-[12.5px] sm:text-[14px] font-medium text-[#6f6f6f] dark:text-zinc-400">Features</div>
-            <h2 className="mt-1.5 sm:mt-2 text-[clamp(24px,5vw,44px)] leading-[1.12] font-semibold tracking-[-0.035em] text-[#111111] dark:text-white">
+            <h2 className="mt-1.5 sm:mt-2 text-[clamp(24px,5vw,44px)] leading-[1.12] font-bold tracking-[-0.035em] text-[#111111] dark:text-white">
               Everything you need to finish a playlist.
             </h2>
             <p className="mt-2.5 sm:mt-4 text-[14px] sm:text-[16.5px] leading-[1.6] text-[#666666] dark:text-zinc-400">
@@ -837,7 +837,7 @@ export default function LandingPage() {
                   <BrandTile bg="bg-[#FF0033]" text="text-white" rotate="-rotate-3">
                     <Play className="size-3.5 sm:size-4 fill-white text-white ml-0.5" />
                   </BrandTile>
-                  <h3 className="text-[17px] sm:text-[19px] md:text-[18.5px] lg:text-[20px] leading-[1.22] font-semibold tracking-[-0.02em] text-[#111111] dark:text-white">
+                  <h3 className="text-[17px] sm:text-[19px] md:text-[18.5px] lg:text-[20px] leading-[1.22] font-bold tracking-[-0.02em] text-[#111111] dark:text-white">
                     Distraction-free playlist player
                   </h3>
                 </div>
@@ -872,7 +872,7 @@ export default function LandingPage() {
                   <BrandTile bg="bg-[#10B981]" text="text-white" rotate="rotate-2">
                     <MessageSquare className="size-3.5 sm:size-4" />
                   </BrandTile>
-                  <h3 className="text-[17px] sm:text-[19px] md:text-[18.5px] lg:text-[20px] leading-[1.22] font-semibold tracking-[-0.02em] text-[#111111] dark:text-white">
+                  <h3 className="text-[17px] sm:text-[19px] md:text-[18.5px] lg:text-[20px] leading-[1.22] font-bold tracking-[-0.02em] text-[#111111] dark:text-white">
                     In-context AI tutor
                   </h3>
                 </div>
@@ -903,7 +903,7 @@ export default function LandingPage() {
                   <BrandTile bg="bg-[#F5C542]" text="text-[#111111]" rotate="rotate-3">
                     <Clock className="size-3.5 sm:size-4" strokeWidth={2.3} />
                   </BrandTile>
-                  <h3 className="text-[17px] sm:text-[19px] md:text-[18.5px] lg:text-[20px] leading-[1.22] font-semibold tracking-[-0.02em] text-[#111111] dark:text-white">
+                  <h3 className="text-[17px] sm:text-[19px] md:text-[18.5px] lg:text-[20px] leading-[1.22] font-bold tracking-[-0.02em] text-[#111111] dark:text-white">
                     Timestamped lecture notes
                   </h3>
                 </div>
@@ -941,7 +941,7 @@ export default function LandingPage() {
                   <BrandTile bg="bg-[#2563EB]" text="text-white" rotate="-rotate-2">
                     <FileText className="size-3.5 sm:size-4" />
                   </BrandTile>
-                  <h3 className="text-[17px] sm:text-[19px] md:text-[18.5px] lg:text-[20px] leading-[1.22] font-semibold tracking-[-0.02em] text-[#111111] dark:text-white">
+                  <h3 className="text-[17px] sm:text-[19px] md:text-[18.5px] lg:text-[20px] leading-[1.22] font-bold tracking-[-0.02em] text-[#111111] dark:text-white">
                     Course-wise Word (.docx) export
                   </h3>
                 </div>
@@ -978,7 +978,7 @@ export default function LandingPage() {
                   <BrandTile bg="bg-[#FF6B2C]" text="text-white" rotate="rotate-2">
                     <Flame className="size-3.5 sm:size-4 fill-white text-white" />
                   </BrandTile>
-                  <h3 className="text-[17px] sm:text-[19px] md:text-[18.5px] lg:text-[20px] leading-[1.22] font-semibold tracking-[-0.02em] text-[#111111] dark:text-white">
+                  <h3 className="text-[17px] sm:text-[19px] md:text-[18.5px] lg:text-[20px] leading-[1.22] font-bold tracking-[-0.02em] text-[#111111] dark:text-white">
                     Pomodoro timer, streaks &amp; cloud sync
                   </h3>
                 </div>
@@ -1013,7 +1013,7 @@ export default function LandingPage() {
         <div className="mx-auto max-w-[1200px]">
           <div className="text-center max-w-[900px] mx-auto">
             <div className="text-[12.5px] sm:text-[14px] font-medium text-[#6f6f6f] dark:text-zinc-400">How It Works</div>
-            <h2 className="mt-1.5 sm:mt-2 text-[clamp(24px,5vw,44px)] leading-[1.12] font-semibold tracking-[-0.035em] text-[#111111] dark:text-white">
+            <h2 className="mt-1.5 sm:mt-2 text-[clamp(24px,5vw,44px)] leading-[1.12] font-bold tracking-[-0.035em] text-[#111111] dark:text-white">
               Start studying in three steps.
             </h2>
           </div>
@@ -1051,7 +1051,7 @@ export default function LandingPage() {
                   </span>
                 </div>
                 <div className="space-y-1.5 sm:space-y-2 mt-4 sm:mt-6">
-                  <h3 className="text-[16.5px] sm:text-[18px] md:text-[16.5px] lg:text-[19.5px] leading-[1.25] font-semibold tracking-[-0.02em] text-[#111111] dark:text-white">
+                  <h3 className="text-[16.5px] sm:text-[18px] md:text-[16.5px] lg:text-[19.5px] leading-[1.25] font-bold tracking-[-0.02em] text-[#111111] dark:text-white">
                     {item.title}
                   </h3>
                   <p className="text-[13.5px] sm:text-[14.5px] md:text-[13.5px] lg:text-[14.5px] leading-[1.6] text-[#666666] dark:text-zinc-400">
@@ -1076,7 +1076,7 @@ export default function LandingPage() {
               <span>FAQ</span>
             </div>
 
-            <h2 className="text-[clamp(24px,4vw,38px)] leading-[1.12] font-semibold tracking-[-0.035em] text-[#111111] dark:text-white">
+            <h2 className="text-[clamp(24px,4vw,38px)] leading-[1.12] font-bold tracking-[-0.035em] text-[#111111] dark:text-white">
               Common questions, straight answers.
             </h2>
 
@@ -1163,7 +1163,7 @@ export default function LandingPage() {
 
           <h2
             id="cta-h"
-            className="mx-auto max-w-[900px] text-[clamp(23px,5vw,44px)] leading-[1.12] font-semibold tracking-[-0.035em] text-[#111111] dark:text-white"
+            className="mx-auto max-w-[900px] text-[clamp(23px,5vw,44px)] leading-[1.12] font-bold tracking-[-0.035em] text-[#111111] dark:text-white"
           >
             Ready to study your next playlist?
           </h2>
@@ -1207,7 +1207,7 @@ export default function LandingPage() {
             <div className="w-full md:max-w-[340px] lg:max-w-[400px] space-y-3.5 sm:space-y-4 shrink-0 z-10">
               <Link to="/" className="inline-flex items-center gap-2 group">
                 <img src="/logo.svg" alt="Foclyra" className="size-6 sm:size-7 transition-transform group-hover:scale-105 shrink-0" />
-                <span className="font-semibold text-[16.5px] sm:text-[18px] tracking-[-0.02em] text-[#111111] dark:text-white">
+                <span className="font-bold text-[16.5px] sm:text-[18px] tracking-[-0.02em] text-[#111111] dark:text-white">
                   foclyra
                 </span>
               </Link>
@@ -1233,7 +1233,7 @@ export default function LandingPage() {
               aria-hidden="true"
               className="flex-1 flex justify-center md:justify-end items-end select-none pointer-events-none overflow-hidden pt-2 md:pt-0"
             >
-              <span className="block text-[clamp(62px,23vw,120px)] md:text-[clamp(88px,13.5vw,145px)] lg:text-[clamp(135px,15.5vw,210px)] leading-[0.82] font-bold tracking-[-0.065em] bg-[linear-gradient(180deg,#e4e4e9_0%,#f2f2f5_62%,rgba(255,255,255,0.05)_100%)] dark:bg-[linear-gradient(180deg,#242429_0%,#16161a_62%,rgba(10,10,12,0.05)_100%)] bg-clip-text text-transparent pb-[0.06em]">
+              <span className="block font-heading text-[clamp(62px,23vw,120px)] md:text-[clamp(88px,13.5vw,145px)] lg:text-[clamp(135px,15.5vw,210px)] leading-[0.82] font-extrabold tracking-[-0.065em] bg-[linear-gradient(180deg,#d8d8df_0%,#ececf1_62%,rgba(255,255,255,0.05)_100%)] dark:bg-[linear-gradient(180deg,#2c2c33_0%,#18181d_62%,rgba(10,10,12,0.05)_100%)] bg-clip-text text-transparent pb-[0.06em]">
                 foclyra
               </span>
             </div>

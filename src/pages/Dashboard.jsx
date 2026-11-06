@@ -383,7 +383,7 @@ export default function Dashboard() {
         <div className="my-auto py-8 sm:py-16 max-w-[680px] w-full mx-auto space-y-6 sm:space-y-7 text-center">
           {/* Punchy Editorial Heading & Subtitle */}
           <div className="space-y-2.5">
-            <h1 className="text-[clamp(28px,5vw,48px)] leading-[1.1] font-semibold tracking-[-0.035em] text-[#111111] dark:text-white">
+            <h1 className="text-[clamp(28px,5vw,48px)] leading-[1.1] font-bold tracking-[-0.035em] text-[#111111] dark:text-white">
               Study any{' '}
               <BrandTile bg="bg-[#FF0033]" text="text-white" rotate="-rotate-4" size="lg">
                 <Play className="size-[46%] fill-white text-white ml-[2%]" />
@@ -478,7 +478,7 @@ export default function Dashboard() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 pb-5 border-b border-[#efefef] dark:border-zinc-800/70">
             <div className="space-y-1">
               <div className="flex flex-wrap items-center gap-2.5">
-                <h1 className="text-[clamp(22px,4vw,30px)] font-semibold tracking-[-0.03em] text-[#111111] dark:text-white leading-tight">
+                <h1 className="text-[clamp(22px,4vw,30px)] font-bold tracking-[-0.03em] text-[#111111] dark:text-white leading-tight">
                   Learning Studio
                 </h1>
 

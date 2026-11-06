@@ -158,7 +158,7 @@ export default function Settings() {
   return (
     <div className="p-3.5 sm:p-8 max-w-4xl mx-auto space-y-6 sm:space-y-8 animate-page-entry min-w-0 w-full font-sans">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-semibold text-[#111111] dark:text-white tracking-[-0.03em]">
+        <h1 className="text-2xl sm:text-3xl font-bold text-[#111111] dark:text-white tracking-[-0.03em]">
           Settings & Preferences
         </h1>
         <p className="text-zinc-600 dark:text-zinc-400 text-xs sm:text-sm mt-1 leading-relaxed">

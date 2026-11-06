@@ -6,7 +6,6 @@ import ClerkSupabaseSync from './components/ClerkSupabaseSync.jsx'
 import ThemedClerkProvider from './components/ThemedClerkProvider.jsx'
 import MaintenanceScreen from './components/MaintenanceScreen.jsx'
 import '@fontsource-variable/geist';
-import '@fontsource-variable/manrope';
 import './index.css'
 import { initAnalytics } from './services/analytics';
 
