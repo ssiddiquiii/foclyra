@@ -22,6 +22,7 @@ import {
 import { clearProgressAndNotes, exportBackup, importBackup } from '../services/dataCommands';
 import { useUIStore } from '../hooks/useUIStore';
 import { useAuth } from '../hooks/useAuth';
+import { useClerk } from '@clerk/clerk-react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db/FoclyraDB';
 import { REGISTERED_MAX_PLAYLISTS } from '../services/quotaService';
@@ -36,6 +37,7 @@ export default function Settings() {
   const navigate = useNavigate();
   const { openFeedbackModal, openAuthModal } = useUIStore();
   const { user, profile, signOut, signOutAllDevices, deleteAccount } = useAuth();
+  const clerk = useClerk();
   
   const [showConfirmReset, setShowConfirmReset] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
@@ -378,20 +380,34 @@ export default function Settings() {
                 <div className="min-w-0">
                   <span className="text-xs font-semibold text-zinc-950 dark:text-zinc-50 flex items-center gap-1.5">
                     <Smartphone size={13} className="text-zinc-500 dark:text-zinc-400" />
-                    <span>Active Sessions</span>
+                    <span>Active Sessions & Devices</span>
                   </span>
                   <span className="text-[11px] text-zinc-500 dark:text-zinc-400 block truncate mt-0.5">
-                    Logged in across authorized devices
+                    Manage login slots, mobile/desktop sessions, and 2FA
                   </span>
                 </div>
-                <button
-                  type="button"
-                  onClick={handleSignOutAllDevices}
-                  className="h-8 px-3 rounded-full border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-[11px] font-medium text-zinc-700 dark:text-zinc-300 transition cursor-pointer flex-shrink-0 shadow-2xs self-start sm:self-auto"
-                  title="Sign out of all sessions across all phones and computers"
-                >
-                  Sign Out All Devices
-                </button>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (clerk?.openUserProfile) {
+                        clerk.openUserProfile();
+                      }
+                    }}
+                    className="h-8 px-3.5 rounded-full bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-100 text-[11px] font-medium transition cursor-pointer flex-shrink-0 shadow-2xs self-start sm:self-auto"
+                    title="View authorized devices, browser details, and security"
+                  >
+                    Manage Sessions
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSignOutAllDevices}
+                    className="h-8 px-3 rounded-full border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-[11px] font-medium text-zinc-700 dark:text-zinc-300 transition cursor-pointer flex-shrink-0 shadow-2xs self-start sm:self-auto"
+                    title="Sign out of all sessions across all phones and computers"
+                  >
+                    Sign Out All
+                  </button>
+                </div>
               </div>
             </div>
           </div>

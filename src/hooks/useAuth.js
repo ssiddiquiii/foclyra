@@ -296,15 +296,31 @@ export const useAuth = create((set, get) => ({
   },
 
   signOutAllDevices: async () => {
-    if (!supabase) return;
     cleanupRealtime();
     await flushPendingProgressSync().catch(() => {});
     trackEvent('user_signed_out_all_devices');
     resetUser();
-    try {
-      await supabase.auth.signOut({ scope: 'global' });
-    } catch (err) {
-      console.warn('Sign out global warning:', err);
+
+    if (typeof window !== 'undefined' && window.Clerk) {
+      try {
+        if (window.Clerk.user && typeof window.Clerk.user.getSessions === 'function') {
+          const sessions = await window.Clerk.user.getSessions();
+          for (const s of sessions) {
+            if (s.id !== window.Clerk.session?.id) {
+              await s.revoke().catch(() => {});
+            }
+          }
+        }
+        await window.Clerk.signOut();
+      } catch (err) {
+        console.warn('Clerk global sign out warning:', err);
+      }
+    } else if (supabase) {
+      try {
+        await supabase.auth.signOut({ scope: 'global' });
+      } catch (err) {
+        console.warn('Sign out global warning:', err);
+      }
     }
 
     localStorage.removeItem(ACTIVE_USER_STORAGE_KEY);
@@ -330,23 +346,43 @@ export const useAuth = create((set, get) => ({
   },
 
   deleteAccount: async () => {
-    if (!supabase) throw new Error('Supabase is not configured.');
     const { user } = get();
     if (!user) throw new Error('No user is currently signed in.');
 
     cleanupRealtime();
     await flushPendingProgressSync().catch(() => {});
 
-    const { error } = await supabase.rpc('delete_user');
-    if (error) {
-      console.warn('RPC delete_user failed or not yet deployed, fallback to profiles purge:', error);
-      await supabase.from('profiles').delete().eq('id', user.id);
+    // Purge user records across Supabase cloud database
+    if (supabase) {
+      try {
+        await Promise.allSettled([
+          supabase.from('user_courses').delete().eq('user_id', user.id),
+          supabase.from('user_notes').delete().eq('user_id', user.id),
+          supabase.from('user_progress').delete().eq('user_id', user.id),
+          supabase.from('profiles').delete().eq('id', user.id)
+        ]);
+      } catch (purgeErr) {
+        console.warn('Supabase cloud purge warning:', purgeErr);
+      }
+    }
+
+    // Permanently delete user from Clerk identity provider
+    if (typeof window !== 'undefined' && window.Clerk?.user) {
+      try {
+        await window.Clerk.user.delete();
+      } catch (clerkErr) {
+        console.warn('Clerk user delete error:', clerkErr);
+      }
     }
 
     trackEvent('account_deleted');
     resetUser();
     try {
-      await supabase.auth.signOut({ scope: 'global' });
+      if (typeof window !== 'undefined' && window.Clerk) {
+        await window.Clerk.signOut();
+      } else if (supabase) {
+        await supabase.auth.signOut({ scope: 'global' });
+      }
     } catch {}
 
     localStorage.removeItem(ACTIVE_USER_STORAGE_KEY);
