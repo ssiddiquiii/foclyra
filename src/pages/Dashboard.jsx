@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useDashboardData } from '../hooks/useDashboardData';
 import { useUIStore } from '../hooks/useUIStore';
@@ -92,6 +92,26 @@ export default function Dashboard() {
   const [directUrl, setDirectUrl] = useState('');
   const [isDirectImporting, setIsDirectImporting] = useState(false);
   const [policyNotice, setPolicyNotice] = useState(null);
+  const returningPromptShownRef = useRef(false);
+
+  useEffect(() => {
+    if (!isLoading && !user && sortedCourses.length === 0 && isReturningRegisteredUser() && !returningPromptShownRef.current) {
+      returningPromptShownRef.current = true;
+      const toastId = toast.add({
+        title: 'Welcome back to Foclyra',
+        description: 'Sign in to restore your saved courses and notes.',
+        type: 'info',
+        timeout: 8000,
+        actionProps: {
+          children: 'Sign in →',
+          onClick() {
+            toast.close(toastId);
+            openAuthModal('returning_user');
+          },
+        },
+      });
+    }
+  }, [isLoading, user, sortedCourses.length, openAuthModal]);
 
   const streakCount = useMemo(() => {
     return calculateStreak(progressList, practiceProgressList);
@@ -362,22 +382,6 @@ export default function Dashboard() {
            ========================================================================= */
         <div className="my-auto py-8 sm:py-16 max-w-[680px] w-full mx-auto space-y-6 sm:space-y-7 text-center">
           {/* Punchy Editorial Heading & Subtitle */}
-          {!user && isReturningRegisteredUser() && (
-            <div className="inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-1 px-4 py-2 sm:py-1.5 rounded-2xl sm:rounded-full bg-[#f4f4f4] dark:bg-zinc-900 border border-[#e5e5e5] dark:border-zinc-800 text-[#111111] dark:text-zinc-200 text-[12px] sm:text-[12.5px] font-medium mx-auto max-w-full shadow-2xs leading-snug">
-              <span className="inline-flex items-center gap-1.5 shrink-0">
-                <span className="size-1.5 rounded-full bg-[#63d94e]" />
-                <span>Welcome back! You have an existing account.</span>
-              </span>
-              <button
-                type="button"
-                onClick={() => openAuthModal('returning_user')}
-                className="font-semibold underline hover:no-underline cursor-pointer text-[#111111] dark:text-white shrink-0"
-              >
-                Sign in to your library →
-              </button>
-            </div>
-          )}
-
           <div className="space-y-2.5">
             <h1 className="text-[clamp(28px,5vw,48px)] leading-[1.1] font-semibold tracking-[-0.035em] text-[#111111] dark:text-white">
               Study any{' '}
@@ -422,6 +426,19 @@ export default function Dashboard() {
                 )}
               </button>
             </div>
+
+            {!user && isReturningRegisteredUser() && (
+              <div className="mt-2.5 flex items-center justify-center gap-1.5 text-[12px] text-[#777777] dark:text-zinc-500">
+                <span>Already have a saved library?</span>
+                <button
+                  type="button"
+                  onClick={() => openAuthModal('returning_user')}
+                  className="font-medium text-[#111111] dark:text-zinc-200 hover:underline cursor-pointer"
+                >
+                  Restore your courses →
+                </button>
+              </div>
+            )}
           </form>
 
           {/* Slow Continuous Starter Playlist Slider */}
