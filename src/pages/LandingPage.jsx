@@ -409,72 +409,76 @@ export default function LandingPage() {
               className="absolute -top-16 left-1/2 -translate-x-1/2 w-[92%] max-w-[880px] h-[340px] bg-gradient-to-b from-emerald-500/15 via-teal-500/8 to-transparent dark:from-emerald-400/20 dark:via-teal-400/10 dark:to-transparent blur-3xl pointer-events-none rounded-full"
             />
             <div className="relative rounded-[22px] sm:rounded-[32px] bg-white dark:bg-[#0c0d11] border border-[#e5e5e5] dark:border-zinc-800 shadow-[0_24px_70px_-15px_rgba(0,0,0,0.1)] dark:shadow-[0_30px_90px_-15px_rgba(0,0,0,0.7)] overflow-hidden">
-            {/* Sleek Window Top Bar with Embedded Swap Toggle */}
-            <div className="min-h-12 sm:h-14 px-3.5 sm:px-5 py-2 sm:py-0 bg-[#fafafa] dark:bg-[#111217] border-b border-[#efefef] dark:border-zinc-800/90 flex items-center justify-between gap-2 text-[11.5px] sm:text-[12.5px]">
+            {/* Sleek Window Top Bar with Right-Aligned Swap Toggle */}
+            <div className="min-h-12 sm:h-14 px-3.5 sm:px-5 py-2 sm:py-0 bg-[#fafafa] dark:bg-[#111217] border-b border-[#efefef] dark:border-zinc-800/90 flex items-center justify-between gap-3 text-[11.5px] sm:text-[12.5px]">
+              {/* Left: Window Dots & Course Title */}
               <div className="flex items-center gap-2 min-w-0">
                 <div className="flex items-center gap-1.5 shrink-0">
                   <span className="size-2.5 sm:size-3 rounded-full bg-[#ff5f57]" />
                   <span className="size-2.5 sm:size-3 rounded-full bg-[#febc2e]" />
                   <span className="size-2.5 sm:size-3 rounded-full bg-[#28c840]" />
                 </div>
-                <span className="ml-2 text-[#777777] dark:text-zinc-400 font-medium truncate hidden xl:inline">
+                <span className="ml-2 text-[#777777] dark:text-zinc-400 font-medium truncate hidden md:inline">
                   {PREVIEW_COURSE.header}
                 </span>
               </div>
 
-              {/* Swap Button Embedded Flush Inside Display Bar */}
-              <div className="relative inline-flex items-center p-0.5 rounded-full bg-[#e9e9ec] dark:bg-zinc-900 border border-[#dedee3] dark:border-zinc-800 shrink-0">
-                <button
-                  type="button"
-                  onClick={() => setViewMode('foclyra')}
-                  className={`relative flex h-6.5 sm:h-7.5 items-center justify-center gap-1.5 rounded-full px-3 sm:px-3.5 text-[11px] sm:text-[12px] font-medium transition-colors duration-200 cursor-pointer whitespace-nowrap select-none ${
-                    viewMode === 'foclyra'
-                      ? 'text-white dark:text-[#111111]'
-                      : 'text-[#666666] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white'
-                  }`}
-                >
-                  {viewMode === 'foclyra' && (
-                    <motion.div
-                      layoutId="landingViewModePill"
-                      transition={{ type: 'spring', stiffness: 500, damping: 38 }}
-                      className="absolute inset-0 bg-[#111111] dark:bg-white rounded-full shadow-2xs"
-                    />
-                  )}
-                  <span className="relative z-10 size-1.5 rounded-full bg-[#63d94e] shrink-0" />
-                  <span className="relative z-10">Foclyra Workspace</span>
-                </button>
+              {/* Right: Status Indicators & Swap Toggle */}
+              <div className="flex items-center gap-2.5 sm:gap-3.5 shrink-0">
+                <div className="hidden lg:flex items-center gap-3 shrink-0">
+                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#f0f0f2] dark:bg-zinc-800/90 font-medium text-[#111111] dark:text-zinc-200 shrink-0 text-[11px] shadow-2xs">
+                    <span className="size-1.5 rounded-full bg-[#f4525f] animate-pulse shrink-0" />
+                    <span className="font-mono font-semibold">{formatTime(pomodoroSec)}</span>
+                    <span className="text-[#8d8d8d] hidden xl:inline">•</span>
+                    <span className="text-[#555555] dark:text-zinc-400 hidden xl:inline">Pomodoro</span>
+                  </div>
 
-                <button
-                  type="button"
-                  onClick={() => setViewMode('youtube')}
-                  className={`relative flex h-6.5 sm:h-7.5 items-center justify-center gap-1.5 rounded-full px-3 sm:px-3.5 text-[11px] sm:text-[12px] font-medium transition-colors duration-200 cursor-pointer whitespace-nowrap select-none ${
-                    viewMode === 'youtube'
-                      ? 'text-white dark:text-[#111111]'
-                      : 'text-[#666666] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white'
-                  }`}
-                >
-                  {viewMode === 'youtube' && (
-                    <motion.div
-                      layoutId="landingViewModePill"
-                      transition={{ type: 'spring', stiffness: 500, damping: 38 }}
-                      className="absolute inset-0 bg-[#111111] dark:bg-white rounded-full shadow-2xs"
-                    />
-                  )}
-                  <span className="relative z-10">Standard YouTube Tab</span>
-                </button>
-              </div>
-
-              <div className="hidden md:flex items-center gap-3 shrink-0">
-                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#f0f0f2] dark:bg-zinc-800/90 font-medium text-[#111111] dark:text-zinc-200 shrink-0 text-[11px] shadow-2xs">
-                  <span className="size-1.5 rounded-full bg-[#f4525f] animate-pulse shrink-0" />
-                  <span className="font-mono font-semibold">{formatTime(pomodoroSec)}</span>
-                  <span className="text-[#8d8d8d] hidden lg:inline">•</span>
-                  <span className="text-[#555555] dark:text-zinc-400 hidden lg:inline">Pomodoro</span>
+                  <div className="flex items-center gap-1.5 text-[11.5px] text-[#666666] dark:text-zinc-400 shrink-0">
+                    <span className="size-1.5 rounded-full bg-[#16a34a] dark:bg-[#63d94e]" />
+                    <span className="text-[#16a34a] dark:text-[#63d94e] font-medium">Auto-saved</span>
+                  </div>
                 </div>
 
-                <div className="flex items-center gap-1.5 text-[11.5px] text-[#666666] dark:text-zinc-400 shrink-0">
-                  <span className="size-1.5 rounded-full bg-[#16a34a] dark:bg-[#63d94e]" />
-                  <span className="text-[#16a34a] dark:text-[#63d94e] font-medium">Auto-saved</span>
+                {/* Swap Toggle Positioned on Right Edge of Frame Top Bar */}
+                <div className="relative inline-flex items-center p-0.5 rounded-full bg-[#e9e9ec] dark:bg-zinc-900 border border-[#dedee3] dark:border-zinc-800 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => setViewMode('foclyra')}
+                    className={`relative flex h-6.5 sm:h-7.5 items-center justify-center gap-1.5 rounded-full px-3 sm:px-3.5 text-[11px] sm:text-[12px] font-medium transition-colors duration-200 cursor-pointer whitespace-nowrap select-none ${
+                      viewMode === 'foclyra'
+                        ? 'text-white dark:text-[#111111]'
+                        : 'text-[#666666] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white'
+                    }`}
+                  >
+                    {viewMode === 'foclyra' && (
+                      <motion.div
+                        layoutId="landingViewModePill"
+                        transition={{ type: 'spring', stiffness: 500, damping: 38 }}
+                        className="absolute inset-0 bg-[#111111] dark:bg-white rounded-full shadow-2xs"
+                      />
+                    )}
+                    <span className="relative z-10 size-1.5 rounded-full bg-[#63d94e] shrink-0" />
+                    <span className="relative z-10">Foclyra Workspace</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setViewMode('youtube')}
+                    className={`relative flex h-6.5 sm:h-7.5 items-center justify-center gap-1.5 rounded-full px-3 sm:px-3.5 text-[11px] sm:text-[12px] font-medium transition-colors duration-200 cursor-pointer whitespace-nowrap select-none ${
+                      viewMode === 'youtube'
+                        ? 'text-white dark:text-[#111111]'
+                        : 'text-[#666666] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white'
+                    }`}
+                  >
+                    {viewMode === 'youtube' && (
+                      <motion.div
+                        layoutId="landingViewModePill"
+                        transition={{ type: 'spring', stiffness: 500, damping: 38 }}
+                        className="absolute inset-0 bg-[#111111] dark:bg-white rounded-full shadow-2xs"
+                      />
+                    )}
+                    <span className="relative z-10">Standard YouTube Tab</span>
+                  </button>
                 </div>
               </div>
             </div>
