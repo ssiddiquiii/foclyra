@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence, useInView, useReducedMotion } from 'framer-motion';
 import { 
   Play, 
-  GraduationCap,
+  BookOpen,
   MessageSquare,
   Send,
   Sparkle,
@@ -295,11 +295,11 @@ export default function LandingPage() {
       <section id="top" className="px-3.5 sm:px-6 pt-10 sm:pt-16 md:pt-22 text-center">
         <h1
           ref={heroRef}
-          className="mx-auto max-w-[1080px] text-[clamp(24px,6.2vw,74px)] leading-[1.12] sm:leading-[1.08] font-semibold tracking-[-0.035em] sm:tracking-[-0.045em] text-[#111111] dark:text-white"
+          className="mx-auto max-w-[1080px] text-[clamp(24px,6vw,72px)] leading-[1.12] sm:leading-[1.08] font-semibold tracking-[-0.035em] sm:tracking-[-0.045em] text-[#111111] dark:text-white"
         >
           <span className="block whitespace-nowrap">
             <GradualWord
-              word="Turn"
+              word="Watch"
               startIndex={0}
               isInView={isHeroInView}
               reduceMotion={shouldReduceMotion}
@@ -310,38 +310,45 @@ export default function LandingPage() {
               transition={
                 shouldReduceMotion
                   ? { duration: 0 }
-                  : { duration: GRADUAL_DURATION, delay: 4 * GRADUAL_DELAY_STEP, ease: [0.2, 0.65, 0.3, 0.9] }
+                  : { duration: GRADUAL_DURATION, delay: 5 * GRADUAL_DELAY_STEP, ease: [0.2, 0.65, 0.3, 0.9] }
               }
               className="inline-block align-middle"
             >
-              <BrandTile bg="bg-[#FF0033]" text="text-white" rotate="-rotate-4" size="lg">
+              <BrandTile bg="bg-[#FF0033]" text="text-white" rotate="-rotate-3" size="lg">
                 <Play className="size-[46%] fill-white text-white ml-[2%]" />
               </BrandTile>
             </motion.span>
             <GradualWord
               word="YouTube"
-              startIndex={5}
+              startIndex={6}
               isInView={isHeroInView}
               reduceMotion={shouldReduceMotion}
             />{' '}
             <GradualWord
-              word="playlists"
-              startIndex={12}
+              word="lectures"
+              startIndex={13}
               isInView={isHeroInView}
               reduceMotion={shouldReduceMotion}
             />
           </span>
           <span className="block whitespace-nowrap mt-0.5 sm:mt-1">
             <GradualWord
-              word="into"
+              word="like"
               startIndex={21}
               isInView={isHeroInView}
               reduceMotion={shouldReduceMotion}
               gradient={false}
             />{' '}
             <GradualWord
-              word="AI-powered"
+              word="a"
               startIndex={26}
+              isInView={isHeroInView}
+              reduceMotion={shouldReduceMotion}
+              gradient={false}
+            />{' '}
+            <GradualWord
+              word="structured"
+              startIndex={28}
               isInView={isHeroInView}
               reduceMotion={shouldReduceMotion}
               gradient={false}
@@ -352,17 +359,17 @@ export default function LandingPage() {
               transition={
                 shouldReduceMotion
                   ? { duration: 0 }
-                  : { duration: GRADUAL_DURATION, delay: 37 * GRADUAL_DELAY_STEP, ease: [0.2, 0.65, 0.3, 0.9] }
+                  : { duration: GRADUAL_DURATION, delay: 39 * GRADUAL_DELAY_STEP, ease: [0.2, 0.65, 0.3, 0.9] }
               }
               className="inline-block align-middle"
             >
-              <BrandTile bg="bg-[#F5C542]" text="text-[#111111]" rotate="rotate-3" size="lg">
-                <GraduationCap className="size-[54%]" strokeWidth={2.2} />
+              <BrandTile bg="bg-[#111111] dark:bg-white" text="text-white dark:text-[#111111]" rotate="rotate-3" size="lg">
+                <BookOpen className="size-[50%]" strokeWidth={2.2} />
               </BrandTile>
             </motion.span>
             <GradualWord
-              word="courses."
-              startIndex={38}
+              word="course."
+              startIndex={40}
               isInView={isHeroInView}
               reduceMotion={shouldReduceMotion}
               gradient={false}
@@ -370,29 +377,29 @@ export default function LandingPage() {
           </span>
         </h1>
 
-        {/* Seamless Subtitle: Balanced scale, no orphan line wrap */}
-        <p className="mx-auto mt-4 sm:mt-5.5 max-w-[700px] text-[14px] sm:text-[16.5px] md:text-[18px] text-[#555555] dark:text-zinc-400 leading-[1.6] font-normal px-2">
-          Import any YouTube playlist into a distraction-free study workspace. Solve doubts at any video timestamp with an in-context AI tutor, take live notes, and export cleanly to Word (.docx).
+        {/* Seamless Subtitle: Relatable, clear, zero buzzwords */}
+        <p className="mx-auto mt-4 sm:mt-5.5 max-w-[660px] text-[14.5px] sm:text-[16.5px] md:text-[18px] text-[#555555] dark:text-zinc-400 leading-[1.6] font-normal px-2">
+          Paste any YouTube playlist link to block out Shorts, sidebar feeds, and comments. Track your progress, write timestamped notes, ask questions on the video, and export everything to Word.
         </p>
 
-        {/* Confident Apple-Grade CTA & Trust Signal */}
+        {/* Confident Editorial CTA & Trust Signal */}
         <div className="relative mt-6 sm:mt-8 w-full inline-flex flex-col items-center">
           <button
             type="button"
             onClick={() => handleLaunchApp('hero_main_pill')}
             className="group inline-flex w-auto h-11 sm:h-12 md:h-12.5 items-center justify-center gap-2.5 rounded-full bg-[#111111] dark:bg-white px-6 sm:px-7 md:px-8 text-[14px] sm:text-[15px] font-medium text-white dark:text-[#111111] hover:bg-[#262626] dark:hover:bg-zinc-200 transition-all duration-200 active:scale-[0.98] cursor-pointer shadow-[0_4px_20px_-4px_rgba(0,0,0,0.18)] dark:shadow-[0_4px_24px_-4px_rgba(255,255,255,0.15)] whitespace-nowrap"
           >
-            <span>Import a Playlist Free</span>
+            <span>Start Studying Free</span>
             <ArrowRight className="size-4 shrink-0 group-hover:translate-x-1 transition-transform duration-200" />
           </button>
 
           <div className="mt-3.5 sm:mt-4 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 text-[11.5px] sm:text-[13px] text-[#666666] dark:text-zinc-400">
             <span className="inline-flex items-center gap-1.5 font-medium text-[#333333] dark:text-zinc-300">
               <span className="size-1.5 rounded-full bg-[#16a34a] dark:bg-[#4ade80]" />
-              <span>No login required for 1st playlist</span>
+              <span>Try your first playlist without signing up</span>
             </span>
             <span className="text-zinc-300 dark:text-zinc-700 hidden sm:inline">•</span>
-            <span>Up to 5 playlists with a free account</span>
+            <span>5 courses free forever</span>
           </div>
         </div>
       </section>
