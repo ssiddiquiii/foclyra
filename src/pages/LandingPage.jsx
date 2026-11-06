@@ -1290,7 +1290,7 @@ export default function LandingPage() {
               aria-hidden="true"
               className="flex-1 flex justify-center md:justify-end items-end select-none pointer-events-none overflow-hidden pt-2 md:pt-0"
             >
-              <span className="block font-heading text-[clamp(62px,23vw,120px)] md:text-[clamp(88px,13.5vw,145px)] lg:text-[clamp(135px,15.5vw,210px)] leading-[0.82] font-extrabold tracking-[-0.065em] bg-[linear-gradient(180deg,#d8d8df_0%,#ececf1_62%,rgba(255,255,255,0.05)_100%)] dark:bg-[linear-gradient(180deg,#2c2c33_0%,#18181d_62%,rgba(10,10,12,0.05)_100%)] bg-clip-text text-transparent pb-[0.06em]">
+              <span className="block font-heading text-[clamp(62px,23vw,120px)] md:text-[clamp(88px,13.5vw,145px)] lg:text-[clamp(135px,15.5vw,210px)] leading-[0.82] font-bold tracking-[-0.055em] bg-[linear-gradient(180deg,#d8d8e0_0%,#ebebf0_68%,rgba(220,220,228,0.45)_100%)] dark:bg-[linear-gradient(180deg,#2d2d35_0%,#1c1c23_68%,rgba(28,28,35,0.42)_100%)] bg-clip-text text-transparent pb-[0.06em]">
                 foclyra
               </span>
             </div>
