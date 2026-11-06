@@ -1,9 +1,9 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { ClerkProvider } from '@clerk/clerk-react'
 import App from './App.jsx'
 import BootstrapGate from './components/BootstrapGate.jsx'
 import ClerkSupabaseSync from './components/ClerkSupabaseSync.jsx'
+import ThemedClerkProvider from './components/ThemedClerkProvider.jsx'
 import MaintenanceScreen from './components/MaintenanceScreen.jsx'
 import '@fontsource-variable/manrope';
 import './index.css'
@@ -24,12 +24,12 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     {IS_MAINTENANCE_MODE ? (
       <MaintenanceScreen />
     ) : (
-      <ClerkProvider publishableKey={clerkPubKey}>
+      <ThemedClerkProvider publishableKey={clerkPubKey}>
         <ClerkSupabaseSync />
         <BootstrapGate>
           <App />
         </BootstrapGate>
-      </ClerkProvider>
+      </ThemedClerkProvider>
     )}
   </React.StrictMode>,
 )

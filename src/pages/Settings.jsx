@@ -10,14 +10,12 @@ import {
   MessageSquarePlus, 
   User, 
   LogOut, 
-  Smartphone, 
-  Trash2, 
   Sparkles, 
   Layers, 
   Cloud, 
-  AlertTriangle,
   Eye,
-  EyeOff
+  EyeOff,
+  ShieldCheck
 } from 'lucide-react';
 import { clearProgressAndNotes, exportBackup, importBackup } from '../services/dataCommands';
 import { useUIStore } from '../hooks/useUIStore';
@@ -36,17 +34,12 @@ import { toast } from '../components/ui/toast';
 export default function Settings() {
   const navigate = useNavigate();
   const { openFeedbackModal, openAuthModal } = useUIStore();
-  const { user, profile, signOut, signOutAllDevices, deleteAccount } = useAuth();
+  const { user, profile, signOut } = useAuth();
   const clerk = useClerk();
   
   const [showConfirmReset, setShowConfirmReset] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [showApiKey, setShowApiKey] = useState(false);
-  
-  // Account Deletion States
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [deleteInputText, setDeleteInputText] = useState('');
-  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
 
   // Active courses live query
   const courses = useLiveQuery(() => db.courses.toArray()) || [];
@@ -214,70 +207,13 @@ export default function Settings() {
     }
   };
 
-  // Security: Global Sign Out from all other sessions
-  const handleSignOutAllDevices = async () => {
-    try {
-      await signOutAllDevices();
-      navigate('/', { replace: true });
-      toast.add({
-        title: 'Signed out globally',
-        description: 'All active sessions on all devices have been signed out.',
-        type: 'info',
-        timeout: 4000,
-      });
-    } catch (err) {
-      console.error(err);
-      toast.add({
-        title: 'Sign out failed',
-        description: err.message,
-        type: 'error',
-        timeout: 4000,
-      });
-    }
-  };
-
-  // GDPR: Delete Account & Cloud Data
-  const handleDeleteAccount = async () => {
-    if (deleteInputText.trim() !== 'DELETE' || isDeletingAccount) return;
-    setIsDeletingAccount(true);
-
-    const deleteToastId = toast.add({
-      title: 'Deleting account...',
-      description: 'Purging cloud data and credentials...',
-      type: 'loading',
-    });
-
-    try {
-      await deleteAccount();
-      navigate('/', { replace: true });
-      toast.update(deleteToastId, {
-        title: 'Account deleted',
-        description: 'Your Foclyra account and cloud data have been permanently removed.',
-        type: 'success',
-        timeout: 5000,
-      });
-      setShowDeleteConfirm(false);
-      setDeleteInputText('');
-    } catch (err) {
-      console.error(err);
-      toast.update(deleteToastId, {
-        title: 'Delete failed',
-        description: err.message || 'Failed to delete account. Please try again.',
-        type: 'error',
-        timeout: 5000,
-      });
-    } finally {
-      setIsDeletingAccount(false);
-    }
-  };
-
   const isGoogleUser = user?.app_metadata?.provider === 'google' || 
     user?.identities?.some(i => i.provider === 'google');
   const displayName = profile?.full_name || user?.email?.split('@')[0] || 'Learner';
   const avatarUrl = profile?.avatar_url || '';
 
   return (
-    <div className="p-3.5 sm:p-8 max-w-4xl mx-auto space-y-6 sm:space-y-8 animate-page-entry min-w-0 w-full">
+    <div className="p-3.5 sm:p-8 max-w-4xl mx-auto space-y-6 sm:space-y-8 animate-page-entry min-w-0 w-full font-sans">
       <div>
         <h1 className="text-2xl sm:text-3xl font-semibold text-[#111111] dark:text-white tracking-[-0.03em]">
           Settings & Preferences
@@ -334,8 +270,21 @@ export default function Settings() {
             <div className="flex items-center gap-2 flex-wrap shrink-0">
               <button
                 type="button"
+                onClick={() => {
+                  if (clerk?.openUserProfile) {
+                    clerk.openUserProfile();
+                  }
+                }}
+                className="h-9 px-4 rounded-full bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-100 text-xs font-medium transition flex items-center gap-1.5 cursor-pointer shadow-xs active:scale-[0.98]"
+                title="Manage active devices, password, and account security"
+              >
+                <ShieldCheck size={14} className="text-emerald-400 dark:text-emerald-600" />
+                <span>Manage Account & Security</span>
+              </button>
+              <button
+                type="button"
                 onClick={async () => { await signOut(); navigate('/', { replace: true }); }}
-                className="h-9 px-4 rounded-full border border-zinc-200/80 dark:border-zinc-800/80 bg-white/90 dark:bg-zinc-900/90 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs font-medium text-zinc-800 dark:text-zinc-200 transition flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                className="h-9 px-3.5 rounded-full border border-zinc-200/80 dark:border-zinc-800/80 bg-white/90 dark:bg-zinc-900/90 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs font-medium text-zinc-800 dark:text-zinc-200 transition flex items-center gap-1.5 cursor-pointer shadow-2xs"
                 title="Sign out from this device"
               >
                 <LogOut size={13} className="text-zinc-400 dark:text-zinc-500" />
@@ -354,60 +303,22 @@ export default function Settings() {
           )}
         </div>
 
-        {/* Quota & Security Details (if logged in) */}
+        {/* Quota Details (if logged in) */}
         {user && (
-          <div className="pt-3 border-t border-zinc-200/80 dark:border-zinc-800/80 space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-              {/* Course Limit Meter */}
-              <div className="p-4 rounded-2xl bg-white/80 dark:bg-zinc-900/60 border border-zinc-200/70 dark:border-zinc-800/70 shadow-2xs">
-                <div className="flex items-center justify-between text-xs mb-2">
-                  <span className="text-zinc-600 dark:text-zinc-400 font-medium flex items-center gap-1.5">
-                    <Layers size={13} className="text-zinc-900 dark:text-zinc-100" />
-                    <span>Study Courses Quota</span>
-                  </span>
-                  <span className="font-bold text-zinc-950 dark:text-zinc-50 font-mono">{activeCount} / {REGISTERED_MAX_PLAYLISTS}</span>
-                </div>
-                <div className="w-full bg-zinc-200 dark:bg-zinc-800 rounded-full h-1.5 overflow-hidden">
-                  <div
-                    className="bg-gradient-to-r from-emerald-500 to-teal-400 h-full transition-all duration-300"
-                    style={{ width: `${Math.min(100, (activeCount / REGISTERED_MAX_PLAYLISTS) * 100)}%` }}
-                  />
-                </div>
+          <div className="pt-3 border-t border-zinc-200/80 dark:border-zinc-800/80">
+            <div className="p-4 rounded-2xl bg-white/80 dark:bg-zinc-900/60 border border-zinc-200/70 dark:border-zinc-800/70 shadow-2xs">
+              <div className="flex items-center justify-between text-xs mb-2">
+                <span className="text-zinc-600 dark:text-zinc-400 font-medium flex items-center gap-1.5">
+                  <Layers size={13} className="text-zinc-900 dark:text-zinc-100" />
+                  <span>Study Courses Quota</span>
+                </span>
+                <span className="font-bold text-zinc-950 dark:text-zinc-50 font-mono">{activeCount} / {REGISTERED_MAX_PLAYLISTS}</span>
               </div>
-
-              {/* Multi-Device Session Security */}
-              <div className="p-4 rounded-2xl bg-white/80 dark:bg-zinc-900/60 border border-zinc-200/70 dark:border-zinc-800/70 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
-                <div className="min-w-0">
-                  <span className="text-xs font-semibold text-zinc-950 dark:text-zinc-50 flex items-center gap-1.5">
-                    <Smartphone size={13} className="text-zinc-500 dark:text-zinc-400" />
-                    <span>Active Sessions & Devices</span>
-                  </span>
-                  <span className="text-[11px] text-zinc-500 dark:text-zinc-400 block truncate mt-0.5">
-                    Manage login slots, mobile/desktop sessions, and 2FA
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (clerk?.openUserProfile) {
-                        clerk.openUserProfile();
-                      }
-                    }}
-                    className="h-8 px-3.5 rounded-full bg-zinc-950 dark:bg-white text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-100 text-[11px] font-medium transition cursor-pointer flex-shrink-0 shadow-2xs self-start sm:self-auto"
-                    title="View authorized devices, browser details, and security"
-                  >
-                    Manage Sessions
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleSignOutAllDevices}
-                    className="h-8 px-3 rounded-full border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-[11px] font-medium text-zinc-700 dark:text-zinc-300 transition cursor-pointer flex-shrink-0 shadow-2xs self-start sm:self-auto"
-                    title="Sign out of all sessions across all phones and computers"
-                  >
-                    Sign Out All
-                  </button>
-                </div>
+              <div className="w-full bg-zinc-200 dark:bg-zinc-800 rounded-full h-1.5 overflow-hidden">
+                <div
+                  className="bg-gradient-to-r from-emerald-500 to-teal-400 h-full transition-all duration-300"
+                  style={{ width: `${Math.min(100, (activeCount / REGISTERED_MAX_PLAYLISTS) * 100)}%` }}
+                />
               </div>
             </div>
           </div>
@@ -487,7 +398,7 @@ export default function Settings() {
         </form>
       </div>
 
-      {/* 2b. AI Lecture Tutor Gemini Key (BYOK) */}
+      {/* 3. AI Lecture Tutor Gemini Key (BYOK) */}
       <div className="rounded-[28px] border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-100/70 dark:bg-zinc-900/50 p-5 sm:p-7 shadow-xs space-y-4 backdrop-blur-xs">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-amber-500/20 to-orange-500/20 border border-amber-500/30 text-amber-600 dark:text-amber-400 flex items-center justify-center flex-shrink-0">
@@ -571,7 +482,7 @@ export default function Settings() {
         </form>
       </div>
 
-      {/* 3. Local Data Backups Bento Card */}
+      {/* 4. Local Data Backups Bento Card */}
       <div className="rounded-[28px] border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-100/70 dark:bg-zinc-900/50 p-5 sm:p-7 shadow-xs space-y-4 backdrop-blur-xs">
         <div>
           <h2 className="text-base font-semibold text-zinc-950 dark:text-zinc-50 tracking-tight mb-1">
@@ -608,7 +519,7 @@ export default function Settings() {
         </div>
       </div>
 
-      {/* 4. Progress Data Management Bento Card */}
+      {/* 5. Progress Data Management Bento Card */}
       <div className="rounded-[28px] border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-100/70 dark:bg-zinc-900/50 p-5 sm:p-7 shadow-xs space-y-4 backdrop-blur-xs">
         <div>
           <h2 className="text-base font-semibold text-zinc-950 dark:text-zinc-50 tracking-tight mb-1">
@@ -656,69 +567,6 @@ export default function Settings() {
           </div>
         )}
       </div>
-
-      {/* 5. Danger Zone: Delete Account (GDPR Compliance) */}
-      {user && (
-        <div className="rounded-[28px] border border-red-500/25 bg-red-500/[0.03] p-5 sm:p-7 space-y-4 shadow-xs">
-          <div>
-            <div className="flex items-center gap-2 text-red-600 dark:text-red-400 font-bold text-base mb-1">
-              <AlertTriangle size={17} />
-              <span>Danger Zone: Delete Account</span>
-            </div>
-            <p className="text-zinc-500 dark:text-zinc-400 text-xs leading-relaxed">
-              Permanently delete your Foclyra account and purge all associated cloud data including courses, progress, and synchronized notes. This action is irreversible.
-            </p>
-          </div>
-
-          {!showDeleteConfirm ? (
-            <div className="pt-1">
-              <button
-                type="button"
-                onClick={() => setShowDeleteConfirm(true)}
-                className="h-9 px-4 rounded-full bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400 border border-red-500/25 text-xs font-medium transition flex items-center gap-2 cursor-pointer shadow-2xs"
-              >
-                <Trash2 size={13} />
-                <span>Delete My Account</span>
-              </button>
-            </div>
-          ) : (
-            <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/25 space-y-3.5">
-              <p className="text-xs text-red-600 dark:text-red-400 font-medium">
-                To confirm permanent deletion of your account and cloud data, please type <strong className="font-mono bg-red-500/20 px-1.5 py-0.5 rounded text-zinc-950 dark:text-zinc-50 font-bold">DELETE</strong> below:
-              </p>
-              
-              <div className="flex flex-col sm:flex-row gap-2 max-w-md">
-                <input
-                  type="text"
-                  value={deleteInputText}
-                  onChange={(e) => setDeleteInputText(e.target.value)}
-                  placeholder="Type DELETE"
-                  className="flex-1 h-9 px-3.5 rounded-full bg-white dark:bg-zinc-900 border border-red-500/40 text-zinc-950 dark:text-zinc-50 text-xs font-mono focus:outline-none focus:ring-1 focus:ring-red-500 placeholder:text-zinc-400"
-                />
-                <button
-                  type="button"
-                  disabled={deleteInputText.trim() !== 'DELETE' || isDeletingAccount}
-                  onClick={handleDeleteAccount}
-                  className="h-9 px-4 rounded-full bg-red-600 hover:bg-red-700 disabled:opacity-40 text-white text-xs font-medium transition cursor-pointer flex items-center justify-center gap-1.5 shadow-xs"
-                >
-                  <Trash2 size={13} />
-                  <span>{isDeletingAccount ? 'Deleting...' : 'Confirm Delete'}</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowDeleteConfirm(false);
-                    setDeleteInputText('');
-                  }}
-                  className="h-9 px-3.5 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-xs font-medium transition cursor-pointer shadow-2xs"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
 
       {/* 6. Community & Feedback Bento Card */}
       <div className="rounded-[28px] border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-100/70 dark:bg-zinc-900/50 p-5 sm:p-7 shadow-xs space-y-4 backdrop-blur-xs">
