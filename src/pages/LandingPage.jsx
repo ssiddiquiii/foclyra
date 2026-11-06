@@ -174,19 +174,19 @@ export default function LandingPage() {
   const [activeFaq, setActiveFaq] = useState(0);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [bottomOffset, setBottomOffset] = useState(24);
-  const githubRef = useRef(null);
+  const footerBarRef = useRef(null);
 
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY || window.pageYOffset;
       setShowScrollTop(scrollY > 350);
 
-      if (githubRef.current) {
-        const rect = githubRef.current.getBoundingClientRect();
+      if (footerBarRef.current) {
+        const rect = footerBarRef.current.getBoundingClientRect();
         const windowHeight = window.innerHeight;
         const distFromBottom = windowHeight - rect.top;
         if (distFromBottom > 0) {
-          // GitHub icon has entered the viewport: dynamically push button up to stick cleanly 16px above it
+          // Footer bar has entered the viewport: dynamically push button up to stick cleanly 16px above it
           const neededBottom = distFromBottom + 16;
           setBottomOffset(Math.max(24, Math.round(neededBottom)));
         } else {
@@ -1296,8 +1296,8 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* Bottom Copyright & Social Bar */}
-          <div className="pt-5 sm:pt-6 border-t border-[#efefef] dark:border-zinc-800/70 flex flex-col sm:flex-row items-center justify-between gap-4 text-[12px] sm:text-[13px] text-[#6f6f6f] dark:text-zinc-400 text-center sm:text-left">
+          {/* Bottom Copyright Bar */}
+          <div ref={footerBarRef} className="pt-5 sm:pt-6 border-t border-[#efefef] dark:border-zinc-800/70 flex flex-col sm:flex-row items-center justify-between gap-4 text-[12px] sm:text-[13px] text-[#6f6f6f] dark:text-zinc-400 text-center sm:text-left">
             <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
               <span>© {new Date().getFullYear()} Foclyra. All rights reserved.</span>
               <span className="hidden sm:inline text-zinc-300 dark:text-zinc-700">•</span>
@@ -1316,21 +1316,6 @@ export default function LandingPage() {
                   Terms of Service
                 </Link>
               </div>
-            </div>
-
-            <div ref={githubRef} className="flex items-center gap-2 shrink-0">
-              <a
-                href="https://github.com/ssiddiquiii/foclyra"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="GitHub"
-                className="size-8 sm:size-9 rounded-full bg-[#f4f4f4] dark:bg-zinc-900 text-[#111111] dark:text-zinc-200 flex items-center justify-center hover:bg-[#e5e5e5] dark:hover:bg-zinc-800 transition shrink-0"
-                title="GitHub Repository"
-              >
-                <svg viewBox="0 0 24 24" className="size-3.5 sm:size-4" fill="currentColor" aria-hidden="true">
-                  <path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.7-3.88-1.54-3.88-1.54-.52-1.33-1.28-1.68-1.28-1.68-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11.1 11.1 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.42-2.7 5.39-5.27 5.67.41.36.78 1.06.78 2.14 0 1.55-.01 2.79-.01 3.17 0 .31.21.68.8.56A11.51 11.51 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z" />
-                </svg>
-              </a>
             </div>
           </div>
         </div>
