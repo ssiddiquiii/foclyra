@@ -63,10 +63,10 @@ const STARTER_COURSES = [
     url: 'https://www.youtube.com/watch?v=rfscVS0vtbw'
   },
   {
-    tag: 'CS50',
-    title: 'CS50 Computer Science',
-    channel: 'Harvard University',
-    url: 'https://www.youtube.com/playlist?list=PLhQjrBD2T382_R13ChS_IUEBCU444Jn4O'
+    tag: 'REACT',
+    title: 'React.js Masterclass',
+    channel: 'Chai aur Code',
+    url: 'https://www.youtube.com/playlist?list=PLu71SKxNbfoDqgPchmvIsL4hTnJIrtige'
   }
 ];
 
