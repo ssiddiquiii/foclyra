@@ -21,8 +21,17 @@ export function PlayerSurface({
   const renderPlayerContent = () => {
     if (lesson.type === 'youtube') {
       const videoId = lesson.videoId || lessonId;
-      const initialThumb = lesson.thumbnailUrl || `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`;
-      const fallbackThumb = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+      const maxResThumb = `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`;
+      const mqThumb = `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`;
+      const hqThumb = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+
+      // Determine initial thumbnail:
+      // If lesson has a custom thumbnail that is not a 4:3 letterboxed YouTube asset (hqdefault/sddefault), use it.
+      // Otherwise, prefer maxresdefault (true 16:9, 1280x720, zero black bars).
+      const hasBakedLetterbox = lesson.thumbnailUrl && (lesson.thumbnailUrl.includes('hqdefault') || lesson.thumbnailUrl.includes('sddefault'));
+      const initialThumb = (lesson.thumbnailUrl && !hasBakedLetterbox)
+        ? lesson.thumbnailUrl
+        : maxResThumb;
 
       return (
         <div className="w-full h-full relative flex items-center justify-center">
@@ -37,8 +46,11 @@ export function PlayerSurface({
                 src={initialThumb} 
                 alt={lesson.title} 
                 onError={(e) => {
-                  if (e.currentTarget.src !== fallbackThumb) {
-                    e.currentTarget.src = fallbackThumb;
+                  // Fallback cascade: maxres -> mqThumb (true 16:9, 0 black bars) -> hqThumb
+                  if (e.currentTarget.src !== mqThumb && e.currentTarget.src !== hqThumb) {
+                    e.currentTarget.src = mqThumb;
+                  } else if (e.currentTarget.src === mqThumb) {
+                    e.currentTarget.src = hqThumb;
                   }
                 }}
                 className="w-full h-full object-cover object-center opacity-95 group-hover/thumb:scale-[1.02] transition duration-500" 
@@ -78,8 +90,8 @@ export function PlayerSurface({
     <div
       className={
         isPlaylistCollapsed
-          ? "w-full bg-black relative flex items-center justify-center border-b border-zinc-800/80 flex-shrink-0 group/stage py-1 sm:py-2"
-          : "w-full px-3 sm:px-6 pt-3 sm:pt-4 flex-shrink-0"
+          ? "w-full bg-black relative flex items-center justify-center border-b border-zinc-800/80 flex-shrink-0 group/stage py-0"
+          : "w-full px-0 sm:px-4 md:px-6 pt-0 sm:pt-4 flex-shrink-0"
       }
     >
       {/* Floating Prev Arrow in Cinema Margin (Theater Mode) */}
@@ -122,8 +134,8 @@ export function PlayerSurface({
         onMouseLeave={controller.handleMouseLeave}
         className={`relative aspect-video w-full overflow-hidden bg-black flex items-center justify-center ${
           isPlaylistCollapsed
-            ? "max-h-[calc(100vh-95px)] max-w-[calc((100vh-95px)*16/9)] 2xl:max-h-[calc(100vh-105px)] 2xl:max-w-[calc((100vh-105px)*16/9)] mx-auto shadow-2xl"
-            : "landscape:w-auto landscape:max-h-[72vh] max-w-7xl mx-auto rounded-[20px] sm:rounded-[24px] shadow-md border border-zinc-200/80 dark:border-zinc-800/80 group/player"
+            ? "w-full max-h-[calc(100vh-80px)] max-w-[calc((100vh-80px)*16/9)] mx-auto shadow-2xl"
+            : "w-full aspect-video max-w-7xl mx-auto rounded-none sm:rounded-[20px] shadow-sm border-y sm:border border-zinc-200/80 dark:border-zinc-800/80 group/player"
         } ${!controller.isControlsVisible && controller.isPlaying ? 'cursor-none' : ''}`}
       >
         {/* Prev / Next buttons inside video on hover (Default Workspace Mode) */}
