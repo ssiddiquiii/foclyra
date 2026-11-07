@@ -14,7 +14,7 @@ const IS_MAINTENANCE_MODE = false;
 
 const clerkPubKey =
   import.meta.env.VITE_CLERK_PUBLISHABLE_KEY ||
-  'pk_test_Zmx1ZW50LXBpcmFuaGEtNDE4NC5jbGVyay5hY2NvdW50cy5kZXYk';
+  'pk_live_Y2xlcmsuZm9jbHlyYS5jb20k';
 
 // Initialize PostHog Web Analytics
 initAnalytics();
