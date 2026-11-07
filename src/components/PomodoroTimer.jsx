@@ -50,30 +50,6 @@ export default function PomodoroTimer() {
   const [isEditing, setIsEditing] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-  const [isPlaylistCollapsed, setIsPlaylistCollapsed] = useState(() => {
-    try {
-      return localStorage.getItem('foclyra_watch_playlist_collapsed') === 'true';
-    } catch {
-      return false;
-    }
-  });
-
-  useEffect(() => {
-    if (!isWatchPage) return undefined;
-    const checkCollapse = () => {
-      try {
-        const val = localStorage.getItem('foclyra_watch_playlist_collapsed') === 'true';
-        setIsPlaylistCollapsed(val);
-      } catch {}
-    };
-    window.addEventListener('storage', checkCollapse);
-    const interval = setInterval(checkCollapse, 500);
-    return () => {
-      window.removeEventListener('storage', checkCollapse);
-      clearInterval(interval);
-    };
-  }, [isWatchPage]);
-
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [strictLockActive, setStrictLockActive] = useState(false);
 
@@ -329,11 +305,7 @@ export default function PomodoroTimer() {
       {/* 🎯 FLOATING POMODORO WIDGET — Right-Aligned & Circular Hover-Expanding */}
       <aside 
         aria-label="Pomodoro focus timer" 
-        className={`fixed bottom-4 sm:bottom-6 z-50 will-change-transform transition-[right] duration-300 ${
-          isWatchPage && !isPlaylistCollapsed 
-            ? 'right-4 sm:right-6 xl:right-[25.5rem]' 
-            : 'right-4 sm:right-6'
-        }`}
+        className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50 will-change-transform"
       >
         {!isExpanded ? (
           /* Circular Button — Expands smoothly into pill on hover */
