@@ -437,8 +437,8 @@ export default function LandingPage() {
           </span>
         </h1>
 
-        {/* Seamless Subtitle: Short, punchy, catchy */}
-        <p className="mx-auto mt-2.5 sm:mt-4 max-w-[480px] text-[12.5px] sm:text-[14.5px] md:text-[15.5px] text-[#555555] dark:text-zinc-400 leading-[1.48] sm:leading-[1.52] font-normal px-3 sm:px-2 text-balance">
+        {/* Seamless Subtitle: Short, punchy, single-line on desktop, cleanly responsive on mobile */}
+        <p className="mx-auto mt-2.5 sm:mt-4 max-w-[460px] sm:max-w-[600px] md:max-w-none text-[12px] sm:text-[13.5px] md:text-[15px] lg:text-[15.5px] text-[#555555] dark:text-zinc-400 leading-[1.48] sm:leading-[1.52] md:leading-normal font-normal px-3 sm:px-2 text-balance md:whitespace-nowrap">
           {ENABLE_AI_FEATURES
             ? 'No Shorts. No rabbit holes. Just your playlist, notes, and AI tutor in one clean workspace.'
             : 'No Shorts. No rabbit holes. Just your playlist and timestamped notes in one clean workspace.'}
