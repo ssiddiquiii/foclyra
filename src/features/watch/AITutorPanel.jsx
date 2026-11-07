@@ -10,7 +10,8 @@ import {
   Copy, 
   BookmarkPlus, 
   AlertCircle,
-  ExternalLink 
+  ExternalLink,
+  HelpCircle
 } from 'lucide-react';
 import { 
   createNote, 
@@ -277,7 +278,7 @@ export function AITutorPanel({
         courseId,
         lessonId,
         timestamp: ts,
-        content: `🤖 AI Tutor:\n${content.trim()}`
+        content: `Note:\n${content.trim()}`
       });
 
       setAddedNoteIndex(idx);
@@ -315,11 +316,11 @@ export function AITutorPanel({
 
   return (
     <div className="flex flex-col h-full bg-transparent overflow-hidden">
-      {/* 1. Minimal Header: Chat icon + AI chat on left, New Chat pencil & Close on right */}
+      {/* 1. Minimal Header: Questions on left, New Chat pencil & Close on right */}
       <div className="flex items-center justify-between pb-3 mb-1 border-b border-zinc-200/60 dark:border-zinc-800/80 shrink-0">
         <div className="flex items-center gap-2">
-          <MessageSquare size={16} className="text-zinc-800 dark:text-zinc-200" strokeWidth={1.9} />
-          <span className="font-semibold text-sm text-zinc-900 dark:text-zinc-100 tracking-tight">AI chat</span>
+          <HelpCircle size={15} className="text-zinc-700 dark:text-zinc-300" strokeWidth={1.8} />
+          <span className="font-semibold text-sm text-zinc-900 dark:text-zinc-100 tracking-tight">Questions</span>
         </div>
 
         <div className="flex items-center gap-1">
@@ -327,8 +328,8 @@ export function AITutorPanel({
             type="button"
             onClick={handleClearHistory}
             className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer"
-            title="New chat"
-            aria-label="New chat"
+            title="New conversation"
+            aria-label="New conversation"
           >
             <SquarePen size={15} />
           </button>
@@ -337,8 +338,8 @@ export function AITutorPanel({
               type="button"
               onClick={onClose}
               className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition cursor-pointer"
-              title="Close chat"
-              aria-label="Close chat"
+              title="Close panel"
+              aria-label="Close panel"
             >
               <X size={15} />
             </button>
@@ -350,11 +351,11 @@ export function AITutorPanel({
       <div ref={chatScrollRef} className="flex-1 overflow-y-auto space-y-4 pr-1 py-3 text-xs sm:text-[13px]">
         {messages.length === 0 && !isInitializing ? (
           <div className="h-full flex flex-col items-center justify-center text-center p-4 space-y-3">
-            <div className="size-9 rounded-2xl bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200/60 dark:border-zinc-700/60 flex items-center justify-center text-zinc-700 dark:text-zinc-300 shadow-2xs">
-              <MessageSquare size={15} />
+            <div className="size-8 rounded-full bg-zinc-100/90 dark:bg-zinc-800/80 border border-zinc-200/70 dark:border-zinc-700/60 flex items-center justify-center text-zinc-400 dark:text-zinc-500 shadow-2xs">
+              <HelpCircle size={14} strokeWidth={1.8} />
             </div>
             <div className="space-y-1">
-              <h3 className="font-medium text-zinc-900 dark:text-zinc-100 text-xs sm:text-sm">
+              <h3 className="font-semibold text-zinc-900 dark:text-zinc-100 text-xs sm:text-[13px] tracking-tight">
                 Ask about this chapter
               </h3>
               <p className="text-zinc-500 dark:text-zinc-400 text-[11px] leading-relaxed max-w-[220px]">
@@ -367,17 +368,17 @@ export function AITutorPanel({
                 type="button"
                 onClick={() => handleSendMessage('Explain what is being taught in simple terms with a clear analogy.')}
                 disabled={isLoading || (!quotaStatus.isUnlimited && quotaStatus.remaining === 0)}
-                className="px-2.5 py-1 rounded-full border border-zinc-200/80 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/70 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-[11px] text-zinc-600 dark:text-zinc-400 transition cursor-pointer shadow-2xs"
+                className="px-3 py-1 rounded-full border border-zinc-200/90 dark:border-zinc-800 bg-white/90 dark:bg-zinc-900/90 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 text-[11px] font-medium text-zinc-700 dark:text-zinc-300 transition-all cursor-pointer shadow-2xs active:scale-[0.98]"
               >
-                💡 Explain Concept
+                Explain concept
               </button>
               <button
                 type="button"
                 onClick={() => handleSendMessage('Summarize the top critical takeaways from this topic.')}
                 disabled={isLoading || (!quotaStatus.isUnlimited && quotaStatus.remaining === 0)}
-                className="px-2.5 py-1 rounded-full border border-zinc-200/80 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/70 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-[11px] text-zinc-600 dark:text-zinc-400 transition cursor-pointer shadow-2xs"
+                className="px-3 py-1 rounded-full border border-zinc-200/90 dark:border-zinc-800 bg-white/90 dark:bg-zinc-900/90 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 text-[11px] font-medium text-zinc-700 dark:text-zinc-300 transition-all cursor-pointer shadow-2xs active:scale-[0.98]"
               >
-                📝 Key Takeaways
+                Key takeaways
               </button>
             </div>
           </div>
