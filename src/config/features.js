@@ -7,4 +7,4 @@
  * 
  * To re-enable AI features in the future, simply change ENABLE_AI_FEATURES to true.
  */
-export const ENABLE_AI_FEATURES = false;
+export const ENABLE_AI_FEATURES = true;
