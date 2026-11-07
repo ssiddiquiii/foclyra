@@ -445,17 +445,17 @@ export default function LandingPage() {
         </p>
 
         {/* Confident Editorial CTA & Trust Signal */}
-        <div className="relative mt-5 sm:mt-7 w-full inline-flex flex-col items-center">
+        <div className="relative mt-4 sm:mt-6 md:mt-7 w-full inline-flex flex-col items-center">
           <button
             type="button"
             onClick={() => handleLaunchApp('hero_main_pill')}
-            className="group inline-flex w-auto h-10 sm:h-11 md:h-12 items-center justify-center gap-2 sm:gap-2.5 rounded-full bg-[#111111] dark:bg-white px-5 sm:px-6 md:px-7 text-[13px] sm:text-[14px] md:text-[15px] font-medium text-white dark:text-[#111111] hover:bg-[#262626] dark:hover:bg-zinc-200 transition-all duration-200 active:scale-[0.98] cursor-pointer shadow-[0_4px_16px_-4px_rgba(0,0,0,0.18)] dark:shadow-[0_4px_20px_-4px_rgba(255,255,255,0.12)] whitespace-nowrap"
+            className="group inline-flex w-auto h-8.5 sm:h-10 md:h-11 items-center justify-center gap-1.5 sm:gap-2 md:gap-2.5 rounded-full bg-[#111111] dark:bg-white px-4 sm:px-5.5 md:px-6.5 text-[12px] sm:text-[13.5px] md:text-[14.5px] font-medium text-white dark:text-[#111111] hover:bg-[#262626] dark:hover:bg-zinc-200 transition-all duration-200 active:scale-[0.98] cursor-pointer shadow-[0_4px_16px_-4px_rgba(0,0,0,0.18)] dark:shadow-[0_4px_20px_-4px_rgba(255,255,255,0.12)] whitespace-nowrap"
           >
             <span>Start Studying Free</span>
-            <ArrowRight className="size-3.5 sm:size-4 shrink-0 group-hover:translate-x-1 transition-transform duration-200" />
+            <ArrowRight className="size-3 sm:size-3.5 md:size-4 shrink-0 group-hover:translate-x-1 transition-transform duration-200" />
           </button>
 
-          <div className="mt-3 sm:mt-3.5 flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 text-[11px] sm:text-[12.5px] text-[#666666] dark:text-zinc-400">
+          <div className="mt-2.5 sm:mt-3.5 flex flex-wrap items-center justify-center gap-x-2 sm:gap-x-2.5 gap-y-1 text-[10.5px] sm:text-[12px] md:text-[12.5px] text-[#666666] dark:text-zinc-400">
             <span className="inline-flex items-center gap-1.5 font-medium text-[#333333] dark:text-zinc-300">
               <span className="size-1.5 rounded-full bg-[#16a34a] dark:bg-[#4ade80]" />
               <span>Try your first playlist without signing up</span>
@@ -479,13 +479,13 @@ export default function LandingPage() {
             />
             <div className="relative rounded-[22px] sm:rounded-[32px] bg-white dark:bg-[#0c0d11] border border-[#e5e5e5] dark:border-zinc-800 shadow-[0_24px_70px_-15px_rgba(0,0,0,0.1)] dark:shadow-[0_30px_90px_-15px_rgba(0,0,0,0.7)] overflow-hidden">
             {/* Sleek Window Top Bar with Right-Aligned Swap Toggle */}
-            <div className="min-h-12 sm:h-14 px-3.5 sm:px-5 py-2 sm:py-0 bg-[#fafafa] dark:bg-[#111217] border-b border-[#efefef] dark:border-zinc-800/90 flex items-center justify-between gap-3 text-[11.5px] sm:text-[12.5px]">
+            <div className="min-h-10 sm:min-h-12 md:h-14 px-2.5 sm:px-4 md:px-5 py-1.5 sm:py-0 bg-[#fafafa] dark:bg-[#111217] border-b border-[#efefef] dark:border-zinc-800/90 flex items-center justify-between gap-1.5 sm:gap-3 text-[11px] sm:text-[12.5px]">
               {/* Left: Window Dots & Course Title */}
-              <div className="flex items-center gap-2 min-w-0">
-                <div className="flex items-center gap-1.5 shrink-0">
-                  <span className="size-2.5 sm:size-3 rounded-full bg-[#ff5f57]" />
-                  <span className="size-2.5 sm:size-3 rounded-full bg-[#febc2e]" />
-                  <span className="size-2.5 sm:size-3 rounded-full bg-[#28c840]" />
+              <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+                <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+                  <span className="size-2 sm:size-2.5 md:size-3 rounded-full bg-[#ff5f57] shrink-0" />
+                  <span className="size-2 sm:size-2.5 md:size-3 rounded-full bg-[#febc2e] shrink-0" />
+                  <span className="size-2 sm:size-2.5 md:size-3 rounded-full bg-[#28c840] shrink-0" />
                 </div>
                 <span className="ml-2 text-[#777777] dark:text-zinc-400 font-medium truncate hidden md:inline">
                   {PREVIEW_COURSE.header}
@@ -493,7 +493,7 @@ export default function LandingPage() {
               </div>
 
               {/* Right: Status Indicators & Swap Toggle */}
-              <div className="flex items-center gap-2.5 sm:gap-3.5 shrink-0">
+              <div className="flex items-center gap-1.5 sm:gap-3.5 shrink-0">
                 <div className="hidden lg:flex items-center gap-3 shrink-0">
                   <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#f0f0f2] dark:bg-zinc-800/90 font-medium text-[#111111] dark:text-zinc-200 shrink-0 text-[11px] shadow-2xs">
                     <span className="size-1.5 rounded-full bg-[#f4525f] animate-pulse shrink-0" />
@@ -513,7 +513,7 @@ export default function LandingPage() {
                   <button
                     type="button"
                     onClick={() => setViewMode('foclyra')}
-                    className={`relative flex h-6.5 sm:h-7.5 items-center justify-center gap-1.5 rounded-full px-3 sm:px-3.5 text-[11px] sm:text-[12px] font-medium transition-colors duration-200 cursor-pointer whitespace-nowrap select-none ${
+                    className={`relative flex h-6 sm:h-7.5 items-center justify-center gap-1 sm:gap-1.5 rounded-full px-2 sm:px-3.5 text-[10.5px] sm:text-[12px] font-medium transition-colors duration-200 cursor-pointer whitespace-nowrap select-none ${
                       viewMode === 'foclyra'
                         ? 'text-white dark:text-[#111111]'
                         : 'text-[#666666] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white'
@@ -526,14 +526,17 @@ export default function LandingPage() {
                         className="absolute inset-0 bg-[#111111] dark:bg-white rounded-full shadow-2xs"
                       />
                     )}
-                    <span className="relative z-10 size-1.5 rounded-full bg-[#63d94e] shrink-0" />
-                    <span className="relative z-10">Foclyra Workspace</span>
+                    <span className="relative z-10 size-1 sm:size-1.5 rounded-full bg-[#63d94e] shrink-0" />
+                    <span className="relative z-10">
+                      <span className="sm:hidden">Foclyra</span>
+                      <span className="hidden sm:inline">Foclyra Workspace</span>
+                    </span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setViewMode('youtube')}
-                    className={`relative flex h-6.5 sm:h-7.5 items-center justify-center gap-1.5 rounded-full px-3 sm:px-3.5 text-[11px] sm:text-[12px] font-medium transition-colors duration-200 cursor-pointer whitespace-nowrap select-none ${
+                    className={`relative flex h-6 sm:h-7.5 items-center justify-center gap-1 sm:gap-1.5 rounded-full px-2 sm:px-3.5 text-[10.5px] sm:text-[12px] font-medium transition-colors duration-200 cursor-pointer whitespace-nowrap select-none ${
                       viewMode === 'youtube'
                         ? 'text-white dark:text-[#111111]'
                         : 'text-[#666666] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white'
@@ -546,7 +549,10 @@ export default function LandingPage() {
                         className="absolute inset-0 bg-[#111111] dark:bg-white rounded-full shadow-2xs"
                       />
                     )}
-                    <span className="relative z-10">Standard YouTube Tab</span>
+                    <span className="relative z-10">
+                      <span className="sm:hidden">YouTube</span>
+                      <span className="hidden sm:inline">Standard YouTube Tab</span>
+                    </span>
                   </button>
                 </div>
               </div>
