@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Play, 
   Pause, 
@@ -48,6 +49,31 @@ export default function PomodoroTimer() {
 
   const [isEditing, setIsEditing] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isPlaylistCollapsed, setIsPlaylistCollapsed] = useState(() => {
+    try {
+      return localStorage.getItem('foclyra_watch_playlist_collapsed') === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  useEffect(() => {
+    if (!isWatchPage) return undefined;
+    const checkCollapse = () => {
+      try {
+        const val = localStorage.getItem('foclyra_watch_playlist_collapsed') === 'true';
+        setIsPlaylistCollapsed(val);
+      } catch {}
+    };
+    window.addEventListener('storage', checkCollapse);
+    const interval = setInterval(checkCollapse, 500);
+    return () => {
+      window.removeEventListener('storage', checkCollapse);
+      clearInterval(interval);
+    };
+  }, [isWatchPage]);
+
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [strictLockActive, setStrictLockActive] = useState(false);
 
@@ -300,30 +326,63 @@ export default function PomodoroTimer() {
         </div>
       )}
 
-      {/* 🎯 FLOATING POMODORO WIDGET */}
-      <aside aria-label="Pomodoro focus timer" className={isWatchPage ? "fixed bottom-3 left-4 sm:left-6 z-40 will-change-transform" : "fixed bottom-3 right-3 sm:right-4 z-50 will-change-transform"}>
+      {/* 🎯 FLOATING POMODORO WIDGET — Right-Aligned & Circular Hover-Expanding */}
+      <aside 
+        aria-label="Pomodoro focus timer" 
+        className={`fixed bottom-4 sm:bottom-6 z-50 will-change-transform transition-[right] duration-300 ${
+          isWatchPage && !isPlaylistCollapsed 
+            ? 'right-4 sm:right-6 xl:right-[25.5rem]' 
+            : 'right-4 sm:right-6'
+        }`}
+      >
         {!isExpanded ? (
-          /* Collapsed Pill Button — Matches Landing Page Preview Pill */
-          <button
+          /* Circular Button — Expands smoothly into pill on hover */
+          <motion.button
             type="button"
+            layout
             onClick={() => setIsExpanded(true)}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+            onFocus={() => setIsHovered(true)}
+            onBlur={() => setIsHovered(false)}
             aria-label={`Open Pomodoro timer, ${formatTime(timeLeft)} remaining in ${mode} mode`}
-            className={`inline-flex h-8 sm:h-9 items-center gap-2 px-3 sm:px-3.5 rounded-full font-medium text-[11.5px] sm:text-[12.5px] shadow-[0_8px_24px_-4px_rgba(0,0,0,0.12)] border backdrop-blur-md transition-all duration-200 hover:scale-[1.02] cursor-pointer ${
+            title={`Pomodoro Timer (${formatTime(timeLeft)}) · Click to open`}
+            className={`group relative inline-flex h-9 sm:h-10 items-center justify-center rounded-full font-medium shadow-[0_8px_24px_-4px_rgba(0,0,0,0.14)] dark:shadow-[0_8px_24px_-4px_rgba(0,0,0,0.5)] border backdrop-blur-xl transition-colors duration-200 cursor-pointer overflow-hidden select-none active:scale-[0.98] ${
               isRunning
                 ? 'bg-[#111111] dark:bg-white border-[#111111] dark:border-white text-white dark:text-[#111111]'
-                : 'bg-[#f4f4f4]/95 dark:bg-zinc-900/95 border-[#e5e5e5] dark:border-zinc-800 text-[#111111] dark:text-white hover:bg-[#eaeaea] dark:hover:bg-zinc-800'
-            }`}
+                : 'bg-white/95 dark:bg-zinc-900/95 border-zinc-200/90 dark:border-zinc-800 text-[#111111] dark:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800'
+            } ${isHovered ? 'px-3 sm:px-3.5 gap-2' : 'w-9 sm:w-10 px-0'}`}
+            transition={{ type: 'spring', stiffness: 450, damping: 32 }}
           >
-            <span className={`size-2 rounded-full shrink-0 ${mode === 'focus' ? 'bg-[#f4525f]' : 'bg-[#63d94e]'} ${isRunning ? 'animate-pulse' : ''}`} />
-            <span className="font-mono font-semibold">{formatTime(timeLeft)}</span>
-            <span className="text-[#8d8d8d] hidden sm:inline">•</span>
-            <span className="hidden sm:inline capitalize">{mode === 'focus' ? 'Pomodoro' : 'Break'}</span>
-            {sessionsCompleted > 0 && (
-              <span className="px-1.5 py-0.5 rounded-full bg-[#FF6B2C]/15 text-[#FF6B2C] text-[10px] font-mono font-semibold">
-                {sessionsCompleted}
-              </span>
-            )}
-          </button>
+            {/* Status Indicator Dot */}
+            <span
+              className={`size-2.5 rounded-full shrink-0 transition-transform duration-200 ${
+                mode === 'focus' ? 'bg-[#f4525f]' : 'bg-[#63d94e]'
+              } ${isRunning ? 'animate-pulse' : ''}`}
+            />
+
+            {/* Smooth Animated Text & Details on Hover */}
+            <AnimatePresence>
+              {isHovered && (
+                <motion.div
+                  initial={{ opacity: 0, width: 0 }}
+                  animate={{ opacity: 1, width: 'auto' }}
+                  exit={{ opacity: 0, width: 0 }}
+                  transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+                  className="flex items-center gap-1.5 sm:gap-2 whitespace-nowrap overflow-hidden text-[11.5px] sm:text-[12.5px]"
+                >
+                  <span className="font-mono font-semibold tracking-tight">{formatTime(timeLeft)}</span>
+                  <span className="text-[#8d8d8d] dark:text-zinc-500">•</span>
+                  <span className="capitalize">{mode === 'focus' ? 'Pomodoro' : 'Break'}</span>
+                  {sessionsCompleted > 0 && (
+                    <span className="px-1.5 py-0.5 rounded-full bg-[#FF6B2C]/15 text-[#FF6B2C] text-[10px] font-mono font-semibold">
+                      {sessionsCompleted}
+                    </span>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.button>
         ) : (
           /* Expanded Floating Bento Panel */
           <div className="w-[296px] sm:w-80 rounded-[22px] p-4 sm:p-5 border border-[#e5e5e5] dark:border-zinc-800 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.2)] space-y-3.5 animate-in zoom-in-95 duration-200 bg-[#f4f4f4] dark:bg-[#141417]">
