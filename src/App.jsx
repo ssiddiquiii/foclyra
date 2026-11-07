@@ -279,47 +279,49 @@ function AppContent() {
       </header>
       )}
 
-      {/* Desktop Floating Vertical Navigation Dock — Editorial Pill Aesthetic */}
-      <aside
-        data-testid="desktop-navigation"
-        aria-label="Primary navigation"
-        className="fixed left-4 top-1/2 z-50 hidden -translate-y-1/2 flex-col items-center justify-center gap-2 rounded-[22px] border border-[#e5e5e5] dark:border-zinc-800 bg-[#f4f4f4]/90 dark:bg-zinc-900/90 p-2 shadow-[0_8px_30px_rgb(0,0,0,0.06)] backdrop-blur-xl lg:flex"
-      >
-        <Link
-          to="/studio"
-          onMouseEnter={preloadDashboard}
-          aria-label="Foclyra Studio Home"
-          className="size-10 rounded-[14px] flex items-center justify-center transition duration-200 hover:scale-105 cursor-pointer"
+      {/* Desktop Floating Vertical Navigation Dock — Editorial Pill Aesthetic (Hidden on Watch page for Udemy-style focus) */}
+      {!isWatchPage && (
+        <aside
+          data-testid="desktop-navigation"
+          aria-label="Primary navigation"
+          className="fixed left-4 top-1/2 z-50 hidden -translate-y-1/2 flex-col items-center justify-center gap-2 rounded-[22px] border border-[#e5e5e5] dark:border-zinc-800 bg-[#f4f4f4]/90 dark:bg-zinc-900/90 p-2 shadow-[0_8px_30px_rgb(0,0,0,0.06)] backdrop-blur-xl lg:flex"
         >
-          <img src="/logo.svg" alt="Foclyra" className="size-6 shrink-0" />
-        </Link>
+          <Link
+            to="/studio"
+            onMouseEnter={preloadDashboard}
+            aria-label="Foclyra Studio Home"
+            className="size-10 rounded-[14px] flex items-center justify-center transition duration-200 hover:scale-105 cursor-pointer"
+          >
+            <img src="/logo.svg" alt="Foclyra" className="size-6 shrink-0" />
+          </Link>
 
-        <div className="w-5 h-px bg-[#e5e5e5] dark:bg-zinc-800 my-0.5" />
+          <div className="w-5 h-px bg-[#e5e5e5] dark:bg-zinc-800 my-0.5" />
 
-        {visibleNavItems.map((item) => {
-          const isActive = isNavigationActive(location.pathname, item.path);
-          const Icon = item.icon;
-          const handleHover = item.path === '/studio' ? preloadDashboard : undefined;
+          {visibleNavItems.map((item) => {
+            const isActive = isNavigationActive(location.pathname, item.path);
+            const Icon = item.icon;
+            const handleHover = item.path === '/studio' ? preloadDashboard : undefined;
 
-          return (
-            <Link
-              key={item.path}
-              to={item.path}
-              onMouseEnter={handleHover}
-              aria-label={item.name}
-              aria-current={isActive ? 'page' : undefined}
-              title={item.name}
-              className={`size-10 rounded-[14px] transition duration-200 flex items-center justify-center cursor-pointer ${
-                isActive
-                  ? 'bg-[#111111] text-white dark:bg-white dark:text-[#111111] shadow-xs'
-                  : 'text-[#666666] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white hover:bg-white dark:hover:bg-zinc-800'
-              }`}
-            >
-              <Icon className="size-[18px]" />
-            </Link>
-          );
-        })}
-      </aside>
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                onMouseEnter={handleHover}
+                aria-label={item.name}
+                aria-current={isActive ? 'page' : undefined}
+                title={item.name}
+                className={`size-10 rounded-[14px] transition duration-200 flex items-center justify-center cursor-pointer ${
+                  isActive
+                    ? 'bg-[#111111] text-white dark:bg-white dark:text-[#111111] shadow-xs'
+                    : 'text-[#666666] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white hover:bg-white dark:hover:bg-zinc-800'
+                }`}
+              >
+                <Icon className="size-[18px]" />
+              </Link>
+            );
+          })}
+        </aside>
+      )}
 
       {/* Mobile Drawer Navigation (Slide-out) */}
       <aside
@@ -416,7 +418,7 @@ function AppContent() {
       <main
         className={`min-w-0 flex-1 flex flex-col ${
           isWatchPage
-            ? 'p-0 min-h-screen xl:h-full xl:overflow-hidden lg:pl-20'
+            ? 'p-0 min-h-screen xl:h-full xl:overflow-hidden'
             : 'safe-area-main pt-14 lg:pt-0 lg:pl-20 xl:pl-22 justify-between'
         }`}
       >

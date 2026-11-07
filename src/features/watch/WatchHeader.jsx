@@ -8,16 +8,18 @@ import { Link } from 'react-router-dom';
  */
 export function WatchHeader({ courseId, courseTitle, lessonTitle, isPlaylistCollapsed, onTogglePlaylist, lessonsCount }) {
   return (
-    <div className="sticky top-0 z-30 flex items-center justify-between border-b border-zinc-200/80 dark:border-zinc-800/80 bg-white/85 dark:bg-zinc-950/85 px-[max(0.75rem,env(safe-area-inset-left))] py-2 sm:px-6 sm:py-2.5 backdrop-blur-md">
-      <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+    <div className="sticky top-0 z-30 flex items-center justify-between border-b border-zinc-200/80 dark:border-zinc-800/80 bg-white/85 dark:bg-zinc-950/85 px-3.5 py-2 sm:px-6 sm:py-2.5 backdrop-blur-md">
+      <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
         <Link 
           to={`/courses/${courseId}`} 
           aria-label="Back to Course Detail" 
-          className="flex h-8 w-8 sm:h-8.5 sm:w-8.5 flex-shrink-0 items-center justify-center rounded-full border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-300 transition hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-950 dark:hover:text-zinc-50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-950 dark:focus-visible:ring-white shadow-2xs" 
-          title="Back to Course Detail"
+          className="group flex h-8 sm:h-8.5 items-center gap-1.5 px-2.5 sm:px-3 rounded-full border border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 transition hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-950 dark:hover:text-zinc-50 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-950 dark:focus-visible:ring-white shadow-2xs shrink-0 cursor-pointer text-xs font-medium" 
+          title="Back to Course"
         >
-          <ArrowLeft size={14} />
+          <ArrowLeft size={13} className="transition-transform group-hover:-translate-x-0.5" />
+          <span className="hidden sm:inline">Back</span>
         </Link>
+        <div className="h-4 w-px bg-zinc-200 dark:bg-zinc-800 hidden sm:block shrink-0" />
         <div className="min-w-0">
           <span className="text-[10px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wider block font-bold truncate">
             {courseTitle}
