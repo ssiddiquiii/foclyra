@@ -1,8 +1,9 @@
 import { BookOpen, Settings, Sparkles, Key } from 'lucide-react';
+import { ENABLE_AI_FEATURES } from '../../config/features';
 
 export const navigationItems = [
   { name: 'Dashboard', path: '/studio', icon: BookOpen },
-  { name: 'API Keys', path: '/api-keys', icon: Key },
+  ...(ENABLE_AI_FEATURES ? [{ name: 'API Keys', path: '/api-keys', icon: Key }] : []),
   { name: 'Settings', path: '/settings', icon: Settings },
   { name: 'Showcase', path: '/', icon: Sparkles }
 ];

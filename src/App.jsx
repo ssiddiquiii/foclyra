@@ -23,6 +23,7 @@ import { useTheme } from './hooks/useTheme';
 import { isNavigationActive, getNavigationItems } from './components/shell/navigation';
 import { Toaster } from './components/ui/toast';
 import { trackPageView } from './services/analytics';
+import { ENABLE_AI_FEATURES } from './config/features';
 
 const LandingPage = lazy(() => import('./pages/LandingPage'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
@@ -507,7 +508,10 @@ function AppContent() {
                     <Route path="/import" element={<Navigate to="/studio" replace />} />
                     <Route path="/courses/:courseId" element={<LearningRoute element={<CourseDetail />} />} />
                     <Route path="/courses/:courseId/lessons/:lessonId" element={<LearningRoute element={<Watch />} />} />
-                    <Route path="/api-keys" element={<ProtectedRoute element={<ApiKeys />} />} />
+                    <Route
+                      path="/api-keys"
+                      element={ENABLE_AI_FEATURES ? <ProtectedRoute element={<ApiKeys />} /> : <Navigate to="/studio" replace />}
+                    />
                     <Route path="/settings" element={<ProtectedRoute element={<Settings />} />} />
                     <Route path="/reset-password" element={<ResetPassword />} />
                     <Route path="/privacy" element={<PrivacyPolicy />} />

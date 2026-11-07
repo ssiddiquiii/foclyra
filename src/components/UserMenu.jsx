@@ -7,6 +7,7 @@ import { useUIStore } from '../hooks/useUIStore';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db/FoclyraDB';
 import { REGISTERED_MAX_PLAYLISTS, GUEST_MAX_PLAYLISTS, getGuestImportHistory, isReturningRegisteredUser } from '../services/quotaService';
+import { ENABLE_AI_FEATURES } from '../config/features';
 
 export default function UserMenu({ onOpenAuth }) {
   const navigate = useNavigate();
@@ -134,17 +135,19 @@ export default function UserMenu({ onOpenAuth }) {
           </button>
 
           {/* API Keys */}
-          <button
-            type="button"
-            onClick={() => {
-              setDropdownOpen(false);
-              navigate('/api-keys');
-            }}
-            className="w-full flex items-center gap-2 px-3 py-2 rounded-full text-[12px] text-[#111111] dark:text-zinc-200 hover:bg-[#eaeaea] dark:hover:bg-zinc-800 font-medium transition cursor-pointer mb-1"
-          >
-            <Key className="size-3.5 text-zinc-500 dark:text-zinc-400" />
-            <span>API Keys</span>
-          </button>
+          {ENABLE_AI_FEATURES && (
+            <button
+              type="button"
+              onClick={() => {
+                setDropdownOpen(false);
+                navigate('/api-keys');
+              }}
+              className="w-full flex items-center gap-2 px-3 py-2 rounded-full text-[12px] text-[#111111] dark:text-zinc-200 hover:bg-[#eaeaea] dark:hover:bg-zinc-800 font-medium transition cursor-pointer mb-1"
+            >
+              <Key className="size-3.5 text-zinc-500 dark:text-zinc-400" />
+              <span>API Keys</span>
+            </button>
+          )}
 
           {/* Sign Out Button */}
           <button

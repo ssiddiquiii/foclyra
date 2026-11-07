@@ -21,12 +21,14 @@ import {
   Flame,
   Cloud,
   Link2,
-  Plus
+  Plus,
+  ShieldCheck
 } from 'lucide-react';
 import { useTheme } from '../hooks/useTheme';
 import { useAuth } from '../hooks/useAuth';
 import { trackEvent } from '../services/analytics';
 import { WobbleCard } from '../components/ui/wobble-card';
+import { ENABLE_AI_FEATURES } from '../config/features';
 
 /**
  * Vidyst-style squircle app tile for intentional editorial accents.
@@ -80,16 +82,17 @@ const HERO_MORPH_ICONS = [
 
 function AnimatedHeroTile({ reduceMotion }) {
   const [index, setIndex] = useState(0);
+  const activeIcons = ENABLE_AI_FEATURES ? HERO_MORPH_ICONS : HERO_MORPH_ICONS.filter((i) => i.key !== 'tutor');
 
   useEffect(() => {
     if (reduceMotion) return undefined;
     const id = setInterval(() => {
-      setIndex((prev) => (prev + 1) % HERO_MORPH_ICONS.length);
+      setIndex((prev) => (prev + 1) % activeIcons.length);
     }, 2400);
     return () => clearInterval(id);
-  }, [reduceMotion]);
+  }, [reduceMotion, activeIcons.length]);
 
-  const active = HERO_MORPH_ICONS[index];
+  const active = activeIcons[index % activeIcons.length];
 
   return (
     <span
@@ -436,7 +439,9 @@ export default function LandingPage() {
 
         {/* Seamless Subtitle: Short, punchy, catchy */}
         <p className="mx-auto mt-4 sm:mt-5 max-w-[540px] text-[14.5px] sm:text-[16.5px] md:text-[17.5px] text-[#555555] dark:text-zinc-400 leading-[1.55] font-normal px-2">
-          No Shorts. No rabbit holes. Just your playlist, timestamped notes, and a smart tutor in one clean workspace.
+          {ENABLE_AI_FEATURES
+            ? 'No Shorts. No rabbit holes. Just your playlist, timestamped notes, and a smart tutor in one clean workspace.'
+            : 'No Shorts. No rabbit holes. Just your playlist, timestamped notes, and structured syllabus in one clean workspace.'}
         </p>
 
         {/* Confident Editorial CTA & Trust Signal */}
@@ -691,38 +696,49 @@ export default function LandingPage() {
                 <div className="lg:col-span-5 flex flex-col justify-between rounded-[16px] sm:rounded-[20px] bg-[#fafafa] dark:bg-[#121318] p-3.5 sm:p-5 border border-[#eaeaea] dark:border-zinc-800/80 gap-3">
                   <div className="space-y-2.5">
                     <div className="flex items-center justify-between pb-2.5 border-b border-[#e5e5e5] dark:border-zinc-800 gap-2">
-                      <div className="inline-flex p-0.5 rounded-full bg-[#efefef] dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800">
-                        <button
-                          type="button"
-                          onClick={() => setPreviewTab('notes')}
-                          className={`px-2.5 py-1 rounded-full text-[11px] sm:text-[11.5px] font-medium transition cursor-pointer select-none ${
-                            previewTab === 'notes'
-                              ? 'bg-white dark:bg-zinc-800 text-[#111111] dark:text-white shadow-2xs font-semibold'
-                              : 'text-[#666666] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white'
-                          }`}
-                        >
-                          Notes ({PREVIEW_COURSE.notes.length})
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setPreviewTab('ai')}
-                          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] sm:text-[11.5px] font-medium transition cursor-pointer select-none ${
-                            previewTab === 'ai'
-                              ? 'bg-white dark:bg-zinc-800 text-[#111111] dark:text-white shadow-2xs font-semibold'
-                              : 'text-[#666666] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white'
-                          }`}
-                        >
-                          <MessageSquare className="size-3" />
-                          <span>AI Chat</span>
-                        </button>
-                      </div>
+                      {ENABLE_AI_FEATURES ? (
+                        <div className="inline-flex p-0.5 rounded-full bg-[#efefef] dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800">
+                          <button
+                            type="button"
+                            onClick={() => setPreviewTab('notes')}
+                            className={`px-2.5 py-1 rounded-full text-[11px] sm:text-[11.5px] font-medium transition cursor-pointer select-none ${
+                              previewTab === 'notes'
+                                ? 'bg-white dark:bg-zinc-800 text-[#111111] dark:text-white shadow-2xs font-semibold'
+                                : 'text-[#666666] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white'
+                            }`}
+                          >
+                            Notes ({PREVIEW_COURSE.notes.length})
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setPreviewTab('ai')}
+                            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] sm:text-[11.5px] font-medium transition cursor-pointer select-none ${
+                              previewTab === 'ai'
+                                ? 'bg-white dark:bg-zinc-800 text-[#111111] dark:text-white shadow-2xs font-semibold'
+                                : 'text-[#666666] dark:text-zinc-400 hover:text-[#111111] dark:hover:text-white'
+                            }`}
+                          >
+                            <MessageSquare className="size-3" />
+                            <span>AI Chat</span>
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <div className="size-5 rounded-md bg-[#111111] dark:bg-white text-white dark:text-[#111111] flex items-center justify-center shrink-0">
+                            <FileText size={11} />
+                          </div>
+                          <span className="text-[12px] font-bold text-[#111111] dark:text-white uppercase tracking-wider">
+                            Timestamped Notes ({PREVIEW_COURSE.notes.length})
+                          </span>
+                        </div>
+                      )}
 
                       <span className="text-[10.5px] sm:text-[11px] text-[#888888] dark:text-zinc-500 font-mono whitespace-nowrap">
-                        {previewTab === 'notes' ? 'Auto-synced' : 'In-Context AI'}
+                        {ENABLE_AI_FEATURES ? (previewTab === 'notes' ? 'Auto-synced' : 'In-Context AI') : 'Auto-synced'}
                       </span>
                     </div>
 
-                    {previewTab === 'notes' ? (
+                    {!ENABLE_AI_FEATURES || previewTab === 'notes' ? (
                       PREVIEW_COURSE.notes.map((note) => {
                       const isSelected = selectedTimestamp === note.time;
                       return (
@@ -797,7 +813,7 @@ export default function LandingPage() {
                   </div>
 
                   <div className="pt-1.5 sm:pt-2">
-                    {previewTab === 'notes' ? (
+                    {!ENABLE_AI_FEATURES || previewTab === 'notes' ? (
                       <button
                         type="button"
                         onClick={() => handleLaunchApp('demo_export')}
@@ -919,35 +935,66 @@ export default function LandingPage() {
               </div>
             </WobbleCard>
 
-            {/* Card 2: In-Context AI Tutor (5 cols) */}
+            {/* Card 2: In-Context AI Tutor or Zero Shorts (Driven by ENABLE_AI_FEATURES) */}
             <WobbleCard
               containerClassName="lg:col-span-5 rounded-[20px] sm:rounded-[26px] bg-[#f4f4f4] dark:bg-zinc-900/90"
               className="p-5 sm:p-6 lg:p-7 flex flex-col justify-between gap-5 h-full"
             >
-              <div className="space-y-2">
-                <div className="flex items-center gap-2.5 sm:gap-3">
-                  <BrandTile bg="bg-[#10B981]" text="text-white" rotate="rotate-2">
-                    <MessageSquare className="size-3.5 sm:size-4" />
-                  </BrandTile>
-                  <h3 className="text-[17px] sm:text-[19px] md:text-[18.5px] lg:text-[20px] leading-[1.22] font-bold tracking-[-0.02em] text-[#111111] dark:text-white">
-                    In-context AI tutor
-                  </h3>
-                </div>
-                <p className="text-[13.5px] sm:text-[14.5px] leading-[1.6] text-[#666666] dark:text-zinc-400">
-                  Ask questions grounded in the current chapter and exact video timestamp. 30 daily questions with zero hallucinations.
-                </p>
-              </div>
+              {ENABLE_AI_FEATURES ? (
+                <>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2.5 sm:gap-3">
+                      <BrandTile bg="bg-[#10B981]" text="text-white" rotate="rotate-2">
+                        <MessageSquare className="size-3.5 sm:size-4" />
+                      </BrandTile>
+                      <h3 className="text-[17px] sm:text-[19px] md:text-[18.5px] lg:text-[20px] leading-[1.22] font-bold tracking-[-0.02em] text-[#111111] dark:text-white">
+                        In-context AI tutor
+                      </h3>
+                    </div>
+                    <p className="text-[13.5px] sm:text-[14.5px] leading-[1.6] text-[#666666] dark:text-zinc-400">
+                      Ask questions grounded in the current chapter and exact video timestamp. 30 daily questions with zero hallucinations.
+                    </p>
+                  </div>
 
-              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-white dark:bg-zinc-800 text-[11.5px] sm:text-[12.5px] font-medium text-[#111111] dark:text-zinc-200 whitespace-nowrap">
-                  <Sparkle className="size-3 sm:size-3.5 text-emerald-500 shrink-0" />
-                  <span>Grounded in Lecture</span>
-                </span>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-white dark:bg-zinc-800 text-[11.5px] sm:text-[12.5px] font-medium text-[#111111] dark:text-zinc-200 whitespace-nowrap">
-                  <CheckCircle2 className="size-3 sm:size-3.5 text-emerald-500 shrink-0" />
-                  <span>Saves directly to notes</span>
-                </span>
-              </div>
+                  <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-white dark:bg-zinc-800 text-[11.5px] sm:text-[12.5px] font-medium text-[#111111] dark:text-zinc-200 whitespace-nowrap">
+                      <Sparkle className="size-3 sm:size-3.5 text-emerald-500 shrink-0" />
+                      <span>Grounded in Lecture</span>
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-white dark:bg-zinc-800 text-[11.5px] sm:text-[12.5px] font-medium text-[#111111] dark:text-zinc-200 whitespace-nowrap">
+                      <CheckCircle2 className="size-3 sm:size-3.5 text-emerald-500 shrink-0" />
+                      <span>Saves directly to notes</span>
+                    </span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2.5 sm:gap-3">
+                      <BrandTile bg="bg-[#2563EB]" text="text-white" rotate="rotate-2">
+                        <ShieldCheck className="size-3.5 sm:size-4" />
+                      </BrandTile>
+                      <h3 className="text-[17px] sm:text-[19px] md:text-[18.5px] lg:text-[20px] leading-[1.22] font-bold tracking-[-0.02em] text-[#111111] dark:text-white">
+                        Zero Shorts & rabbit holes
+                      </h3>
+                    </div>
+                    <p className="text-[13.5px] sm:text-[14.5px] leading-[1.6] text-[#666666] dark:text-zinc-400">
+                      Eliminate algorithmic feeds, infinite Shorts, distracting sidebars, and comments so you can study in peace.
+                    </p>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-white dark:bg-zinc-800 text-[11.5px] sm:text-[12.5px] font-medium text-[#111111] dark:text-zinc-200 whitespace-nowrap">
+                      <ShieldCheck className="size-3 sm:size-3.5 text-blue-500 shrink-0" />
+                      <span>Blocks Shorts & Feeds</span>
+                    </span>
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 sm:px-3.5 sm:py-1.5 rounded-full bg-white dark:bg-zinc-800 text-[11.5px] sm:text-[12.5px] font-medium text-[#111111] dark:text-zinc-200 whitespace-nowrap">
+                      <CheckCircle2 className="size-3 sm:size-3.5 text-emerald-500 shrink-0" />
+                      <span>100% Academic Focus</span>
+                    </span>
+                  </div>
+                </>
+              )}
             </WobbleCard>
 
             {/* Card 3: Timestamped Notes (5 cols) */}
@@ -1086,8 +1133,10 @@ export default function LandingPage() {
               {
                 step: '02',
                 icon: <Clock className="size-3.5 sm:size-4" />,
-                title: 'Watch, ask AI & write notes',
-                desc: 'Study in Theater Mode, ask doubts to the in-context AI tutor, and save notes tied to the exact video second.'
+                title: ENABLE_AI_FEATURES ? 'Watch, ask AI & write notes' : 'Watch & write timestamped notes',
+                desc: ENABLE_AI_FEATURES
+                  ? 'Study in Theater Mode, ask doubts to the in-context AI tutor, and save notes tied to the exact video second.'
+                  : 'Study in Theater Mode without distraction, and save structured notes tied to the exact video second.'
               },
               {
                 step: '03',

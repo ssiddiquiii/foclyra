@@ -23,6 +23,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useClerk } from '@clerk/clerk-react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db/FoclyraDB';
+import { ENABLE_AI_FEATURES } from '../config/features';
 import { REGISTERED_MAX_PLAYLISTS } from '../services/quotaService';
 import { toast } from '../components/ui/toast';
 
@@ -269,24 +270,26 @@ export default function Settings() {
       </div>
 
       {/* 2. API Keys Bento Card */}
-      <div className="rounded-[28px] border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-100/70 dark:bg-zinc-900/50 p-5 sm:p-7 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 backdrop-blur-xs">
-        <div>
-          <h2 className="text-base font-semibold text-zinc-950 dark:text-zinc-50 tracking-tight mb-1">
-            API Keys
-          </h2>
-          <p className="text-zinc-500 dark:text-zinc-400 text-xs leading-relaxed max-w-xl">
-            Add your own OpenAI, Google Gemini, Anthropic, or YouTube Data API keys for unlimited usage. Keys are stored encrypted in your browser.
-          </p>
+      {ENABLE_AI_FEATURES && (
+        <div className="rounded-[28px] border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-100/70 dark:bg-zinc-900/50 p-5 sm:p-7 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 backdrop-blur-xs">
+          <div>
+            <h2 className="text-base font-semibold text-zinc-950 dark:text-zinc-50 tracking-tight mb-1">
+              API Keys
+            </h2>
+            <p className="text-zinc-500 dark:text-zinc-400 text-xs leading-relaxed max-w-xl">
+              Add your own OpenAI, Google Gemini, Anthropic, or YouTube Data API keys for unlimited usage. Keys are stored encrypted in your browser.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => navigate('/api-keys')}
+            className="h-9 px-4 rounded-full bg-zinc-950 hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-100 text-white text-xs font-medium transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs shrink-0 self-start sm:self-auto active:scale-[0.98]"
+          >
+            <span>Manage keys</span>
+            <span aria-hidden="true">→</span>
+          </button>
         </div>
-        <button
-          type="button"
-          onClick={() => navigate('/api-keys')}
-          className="h-9 px-4 rounded-full bg-zinc-950 hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-100 text-white text-xs font-medium transition flex items-center justify-center gap-1.5 cursor-pointer shadow-xs shrink-0 self-start sm:self-auto active:scale-[0.98]"
-        >
-          <span>Manage keys</span>
-          <span aria-hidden="true">→</span>
-        </button>
-      </div>
+      )}
 
       {/* 4. Local Data Backups Bento Card */}
       <div className="rounded-[28px] border border-zinc-200/80 dark:border-zinc-800/80 bg-zinc-100/70 dark:bg-zinc-900/50 p-5 sm:p-7 shadow-xs space-y-4 backdrop-blur-xs">

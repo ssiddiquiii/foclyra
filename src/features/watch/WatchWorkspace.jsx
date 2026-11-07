@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Check, CheckCircle2, Circle, Clock, FileText, ListVideo, Search, ChevronRight, Sparkle } from 'lucide-react';
 import { NotesPanel } from './NotesPanel';
 import { AITutorPanel } from './AITutorPanel';
+import { ENABLE_AI_FEATURES } from '../../config/features';
 
 /**
  * Playlist Syllabus List: Displays lectures in playlist order with status checkmarks and durations.
@@ -118,55 +119,64 @@ export function DesktopWatchWorkspace(props) {
       {/* Sidebar Header with Switcher */}
       <div className="p-3.5 border-b border-zinc-200/80 dark:border-zinc-800/80 bg-white/70 dark:bg-zinc-900/60 backdrop-blur-md space-y-2.5 flex-shrink-0">
         <div className="flex items-center justify-between gap-2">
-          {/* Editorial Tab Switcher with Fluid Spring Pill */}
-          <div className="relative flex items-center bg-zinc-200/70 dark:bg-zinc-800/70 p-0.5 rounded-full border border-zinc-200/80 dark:border-zinc-700/80">
-            <button
-              type="button"
-              onClick={() => setDesktopTab('lectures')}
-              className={`relative py-1 px-3 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer select-none ${
-                desktopTab === 'lectures'
-                  ? 'text-white dark:text-zinc-950'
-                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-100'
-              }`}
-            >
-              {desktopTab === 'lectures' && (
-                <motion.div
-                  layoutId="desktopWatchTabPill"
-                  transition={{ type: 'spring', stiffness: 500, damping: 38 }}
-                  className="absolute inset-0 bg-zinc-950 dark:bg-white rounded-full shadow-2xs"
-                />
-              )}
-              <ListVideo size={12} className="relative z-10 shrink-0" />
-              <span className="relative z-10">Lectures ({lessons?.length || 0})</span>
-            </button>
+          {ENABLE_AI_FEATURES ? (
+            /* Editorial Tab Switcher with Fluid Spring Pill */
+            <div className="relative flex items-center bg-zinc-200/70 dark:bg-zinc-800/70 p-0.5 rounded-full border border-zinc-200/80 dark:border-zinc-700/80">
+              <button
+                type="button"
+                onClick={() => setDesktopTab('lectures')}
+                className={`relative py-1 px-3 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer select-none ${
+                  desktopTab === 'lectures'
+                    ? 'text-white dark:text-zinc-950'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-100'
+                }`}
+              >
+                {desktopTab === 'lectures' && (
+                  <motion.div
+                    layoutId="desktopWatchTabPill"
+                    transition={{ type: 'spring', stiffness: 500, damping: 38 }}
+                    className="absolute inset-0 bg-zinc-950 dark:bg-white rounded-full shadow-2xs"
+                  />
+                )}
+                <ListVideo size={12} className="relative z-10 shrink-0" />
+                <span className="relative z-10">Lectures ({lessons?.length || 0})</span>
+              </button>
 
-            <button
-              type="button"
-              onClick={() => setDesktopTab('ai')}
-              className={`relative py-1 px-3 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer select-none ${
-                desktopTab === 'ai'
-                  ? 'text-white dark:text-zinc-950'
-                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-100'
-              }`}
-            >
-              {desktopTab === 'ai' && (
-                <motion.div
-                  layoutId="desktopWatchTabPill"
-                  transition={{ type: 'spring', stiffness: 500, damping: 38 }}
-                  className="absolute inset-0 bg-zinc-950 dark:bg-white rounded-full shadow-2xs"
-                />
-              )}
-              <Sparkle size={11} className="relative z-10 shrink-0 text-current" />
-              <span className="relative z-10">AI Tutor</span>
-            </button>
-          </div>
+              <button
+                type="button"
+                onClick={() => setDesktopTab('ai')}
+                className={`relative py-1 px-3 rounded-full text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer select-none ${
+                  desktopTab === 'ai'
+                    ? 'text-white dark:text-zinc-950'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-100'
+                }`}
+              >
+                {desktopTab === 'ai' && (
+                  <motion.div
+                    layoutId="desktopWatchTabPill"
+                    transition={{ type: 'spring', stiffness: 500, damping: 38 }}
+                    className="absolute inset-0 bg-zinc-950 dark:bg-white rounded-full shadow-2xs"
+                  />
+                )}
+                <Sparkle size={11} className="relative z-10 shrink-0 text-current" />
+                <span className="relative z-10">AI Tutor</span>
+              </button>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 rounded-lg bg-zinc-200/80 dark:bg-zinc-800 flex items-center justify-center text-zinc-900 dark:text-zinc-100">
+                <ListVideo size={13} />
+              </div>
+              <h2 className="text-xs font-bold text-zinc-950 dark:text-zinc-50 uppercase tracking-wider">
+                Lectures ({lessons?.length || 0})
+              </h2>
+            </div>
+          )}
 
           <div className="flex items-center gap-1.5">
-            {desktopTab === 'lectures' && (
-              <span className="text-[10.5px] font-semibold text-zinc-500 dark:text-zinc-400 font-mono">
-                {percent}%
-              </span>
-            )}
+            <span className="text-[10.5px] font-semibold text-zinc-500 dark:text-zinc-400 font-mono">
+              {percent}%
+            </span>
             <button
               type="button"
               onClick={onToggleCollapse}
@@ -179,50 +189,37 @@ export function DesktopWatchWorkspace(props) {
           </div>
         </div>
 
-        {/* Visual Progress Bar (Shown in Lectures tab) */}
-        {desktopTab === 'lectures' && (
-          <div className="w-full h-1 bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-300"
-              style={{ width: `${percent}%` }}
-            />
-          </div>
-        )}
+        {/* Visual Progress Bar */}
+        <div className="w-full h-1 bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden">
+          <div 
+            className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-300"
+            style={{ width: `${percent}%` }}
+          />
+        </div>
       </div>
 
       {/* Workspace Panel Content with Smooth Crossfade */}
       <div className="flex-1 overflow-y-auto p-3.5">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={desktopTab}
-            initial={{ opacity: 0, y: 3 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -3 }}
-            transition={{ duration: 0.15, ease: 'easeOut' }}
-            className="h-full"
-          >
-            {desktopTab === 'lectures' ? (
-              <PlaylistSyllabusList
-                courseId={courseId}
-                lessonId={lessonId}
-                lessons={lessons}
-                progressList={progressList}
-                onNavigate={onNavigate}
-              />
-            ) : (
-              <AITutorPanel
-                courseId={courseId}
-                lessonId={lessonId}
-                courseTitle={courseTitle}
-                lessonTitle={lessonTitle}
-                description={description}
-                getCurrentTime={getCurrentTime}
-                onSeek={onSeek}
-                onClose={() => setDesktopTab('lectures')}
-              />
-            )}
-          </motion.div>
-        </AnimatePresence>
+        {!ENABLE_AI_FEATURES || desktopTab === 'lectures' ? (
+          <PlaylistSyllabusList
+            courseId={courseId}
+            lessonId={lessonId}
+            lessons={lessons}
+            progressList={progressList}
+            onNavigate={onNavigate}
+          />
+        ) : (
+          <AITutorPanel
+            courseId={courseId}
+            lessonId={lessonId}
+            courseTitle={courseTitle}
+            lessonTitle={lessonTitle}
+            description={description}
+            getCurrentTime={getCurrentTime}
+            onSeek={onSeek}
+            onClose={() => setDesktopTab('lectures')}
+          />
+        )}
       </div>
     </aside>
   );
@@ -259,12 +256,12 @@ export function MobileWatchWorkspace(props) {
             aria-pressed={activeTab === 'notes'}
             onClick={() => onTabChange('notes')}
             className={`relative flex-1 h-9 rounded-full flex items-center justify-center gap-1.5 text-xs font-medium transition-colors cursor-pointer select-none ${
-              activeTab === 'notes'
+              activeTab === 'notes' || (!ENABLE_AI_FEATURES && activeTab === 'ai')
                 ? 'text-white dark:text-zinc-950'
                 : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-100'
             }`}
           >
-            {activeTab === 'notes' && (
+            {(activeTab === 'notes' || (!ENABLE_AI_FEATURES && activeTab === 'ai')) && (
               <motion.div
                 layoutId="mobileWatchTabPill"
                 transition={{ type: 'spring', stiffness: 500, damping: 38 }}
@@ -275,26 +272,28 @@ export function MobileWatchWorkspace(props) {
             <span className="relative z-10">Notes ({notesProps?.notes?.length || 0})</span>
           </button>
 
-          <button
-            type="button"
-            aria-pressed={activeTab === 'ai'}
-            onClick={() => onTabChange('ai')}
-            className={`relative flex-1 h-9 rounded-full flex items-center justify-center gap-1.5 text-xs font-medium transition-colors cursor-pointer select-none ${
-              activeTab === 'ai'
-                ? 'text-white dark:text-zinc-950'
-                : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-100'
-            }`}
-          >
-            {activeTab === 'ai' && (
-              <motion.div
-                layoutId="mobileWatchTabPill"
-                transition={{ type: 'spring', stiffness: 500, damping: 38 }}
-                className="absolute inset-0 bg-zinc-950 dark:bg-white rounded-full shadow-xs"
-              />
-            )}
-            <Sparkle size={12} className="relative z-10 shrink-0 text-current" />
-            <span className="relative z-10">AI Tutor</span>
-          </button>
+          {ENABLE_AI_FEATURES && (
+            <button
+              type="button"
+              aria-pressed={activeTab === 'ai'}
+              onClick={() => onTabChange('ai')}
+              className={`relative flex-1 h-9 rounded-full flex items-center justify-center gap-1.5 text-xs font-medium transition-colors cursor-pointer select-none ${
+                activeTab === 'ai'
+                  ? 'text-white dark:text-zinc-950'
+                  : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-zinc-100'
+              }`}
+            >
+              {activeTab === 'ai' && (
+                <motion.div
+                  layoutId="mobileWatchTabPill"
+                  transition={{ type: 'spring', stiffness: 500, damping: 38 }}
+                  className="absolute inset-0 bg-zinc-950 dark:bg-white rounded-full shadow-xs"
+                />
+              )}
+              <Sparkle size={12} className="relative z-10 shrink-0 text-current" />
+              <span className="relative z-10">AI Tutor</span>
+            </button>
+          )}
 
           {lessons && lessons.length > 1 && (
             <button
@@ -322,14 +321,14 @@ export function MobileWatchWorkspace(props) {
 
         {/* Mobile Tab Content */}
         <div className="p-3.5 sm:p-4">
-          {!isDesktop && activeTab === 'notes' && (
+          {!isDesktop && (activeTab === 'notes' || (!ENABLE_AI_FEATURES && activeTab === 'ai')) && (
             <NotesPanel
               {...notesProps}
               courseTitle={courseTitle}
               lessonTitle={lessonTitle}
             />
           )}
-          {!isDesktop && activeTab === 'ai' && (
+          {!isDesktop && ENABLE_AI_FEATURES && activeTab === 'ai' && (
             <div className="h-[480px]">
               <AITutorPanel
                 courseId={courseId}
