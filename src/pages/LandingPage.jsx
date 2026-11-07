@@ -438,10 +438,10 @@ export default function LandingPage() {
         </h1>
 
         {/* Seamless Subtitle: Short, punchy, catchy */}
-        <p className="mx-auto mt-3.5 sm:mt-5 max-w-[540px] text-[13.5px] sm:text-[16px] md:text-[17px] text-[#555555] dark:text-zinc-400 leading-[1.5] sm:leading-[1.55] font-normal px-3 sm:px-2">
+        <p className="mx-auto mt-2.5 sm:mt-4 max-w-[480px] text-[12.5px] sm:text-[14.5px] md:text-[15.5px] text-[#555555] dark:text-zinc-400 leading-[1.48] sm:leading-[1.52] font-normal px-3 sm:px-2 text-balance">
           {ENABLE_AI_FEATURES
-            ? 'No Shorts. No rabbit holes. Just your playlist, timestamped notes, and a smart tutor in one clean workspace.'
-            : 'No Shorts. No rabbit holes. Just your playlist, timestamped notes, and structured syllabus in one clean workspace.'}
+            ? 'No Shorts. No rabbit holes. Just your playlist, notes, and AI tutor in one clean workspace.'
+            : 'No Shorts. No rabbit holes. Just your playlist and timestamped notes in one clean workspace.'}
         </p>
 
         {/* Confident Editorial CTA & Trust Signal */}
