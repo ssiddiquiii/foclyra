@@ -539,3 +539,6 @@ export async function migrateGuestPlaylistToAccount(user) {
     return { success: false, error: err.message, migratedCount: 0 };
   }
 }
+
+export { snapshotUserLocalData, restoreUserLocalData } from './localUserStore.js';
+

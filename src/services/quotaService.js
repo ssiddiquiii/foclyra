@@ -1,5 +1,6 @@
 import { supabase, isSupabaseConfigured } from './supabaseClient.js';
 import { db } from '../db/FoclyraDB.js';
+import { snapshotUserLocalData } from './localUserStore.js';
 
 const GUEST_IMPORTS_STORAGE_KEY = 'foclyra_guest_imported_playlists';
 const RETURNING_USER_STORAGE_KEY = 'foclyra_has_registered_account';
@@ -265,6 +266,9 @@ export async function trackCourseImport({ user, course, lessonCount = 0 }) {
     return;
   }
 
+  // Multi-user safety: snapshot user state locally
+  snapshotUserLocalData(user.id).catch(() => {});
+
   if (isSupabaseConfigured() && supabase) {
     try {
       await supabase.from('user_courses').upsert({
@@ -291,6 +295,11 @@ export async function trackCourseRemoval({ user, courseId }) {
     removeGuestImport(cleanId);
     return;
   }
+
+  // Multi-user safety: snapshot user state locally after deletion
+  setTimeout(() => {
+    snapshotUserLocalData(user.id).catch(() => {});
+  }, 100);
 
   if (isSupabaseConfigured() && supabase) {
     try {
